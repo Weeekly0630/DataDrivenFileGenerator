@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <info>
+        <name>{{ name }}</name>
+        <version>{{ version }}</version>
+        <description>{{ description }}</description>
+    </info>
+    <subsystems>
+        {% for system in subsystems %}
+        <subsystem>{{ system }}</subsystem>
+        {% endfor %}
+    </subsystems>
+    <services>
+        {{ CHILDREN_CONTEXT0 }}
+    </services>
+</system>

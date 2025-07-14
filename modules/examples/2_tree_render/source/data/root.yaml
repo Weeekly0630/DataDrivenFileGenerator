@@ -1,0 +1,7 @@
+TEMPLATE_PATH: "root.j2"
+CHILDREN_PATH: ["services/*.yaml"]
+
+name: "System Configuration"
+version: "2.0"
+description: "System configuration with nested services"
+subsystems: ["Web Service", "Database"]

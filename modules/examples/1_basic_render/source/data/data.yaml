@@ -1,0 +1,11 @@
+TEMPLATE: template.j2
+CHILDREN: 
+
+paragrahs:
+  - "Paragrah 1"
+  - "Paragrah 2"
+  - "Paragrah 3"
+
+titles:
+  Title1: hahaha
+  Title2: ahahah

@@ -1,0 +1,21 @@
+# 数据处理器配置
+data_type: yaml
+data_config:
+  root_path: .\source\data
+  file_pattern: ["*.yaml"]
+  preserved_template_key: "TEMPLATE_PATH"
+  preserved_children_key: "CHILDREN_PATH"
+
+# 模板处理器配置
+template_type: jinja
+template_config:
+  template_dir: .\source\template
+  preserved_children_key: "CHILDREN_CONTEXT"
+  autoescape: false # xml转义
+
+# 要处理的入口文件
+patterns:
+  - "*.yaml"
+
+# 输出目录
+output_dir: .\source\output
