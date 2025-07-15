@@ -17,7 +17,8 @@
                 <port>8080</port>
                 <enabled>True</enabled>
             </info>
-            <endpoints><endpoint>
+            <endpoints>
+                <endpoint>
                     <name>REST API</name>
                     <path>/api/v1</path>
                     <methods>
@@ -28,7 +29,8 @@
                     <auth-required>True</auth-required>
                 </endpoint>
             </endpoints>
-            <children1><service>
+            <children1>
+                <service>
                     <name>Child Config</name>
                     <type>service</type>
                     <port>8080</port>
