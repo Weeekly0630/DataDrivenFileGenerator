@@ -1,0 +1,8 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# CALCULATION-FORMULA #}
+{%- macro calc_formula_node(value, prefix) -%}
+{%- if value is not none and value != "" -%}
+<a:{{prefix}}a name="CALCULATION-FORMULA" value="{{value}}" />
+{%- endif -%}
+{%- endmacro -%}

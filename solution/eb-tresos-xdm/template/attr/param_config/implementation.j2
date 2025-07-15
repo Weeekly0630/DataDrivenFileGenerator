@@ -1,0 +1,11 @@
+{%- import "attr/common.j2" as Common -%}
+
+{%- macro implementation_node(implementationConfig) -%}
+{%- if implementationConfig is not none and implementationConfig|length -%}
+<a:a name="IMPLEMENTATIONCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS">
+    {% for cfg in implementationConfig -%}
+    <icc:v {{cfg.classType}}class="{{cfg.className}}">{{cfg.name}}</icc:v>
+    {%- endfor -%}
+</a:a>
+{%- endif -%}
+{%- endmacro -%}

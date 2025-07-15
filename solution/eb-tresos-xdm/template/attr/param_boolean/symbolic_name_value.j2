@@ -1,0 +1,12 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# SYMBOLICNAMEVALUE #}
+{%- macro symbolic_name_value_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+<a:{{prefix}}a name="SYMBOLICNAMEVALUE" value="true" />
+    {%- else -%}
+<a:{{prefix}}a name="SYMBOLICNAMEVALUE" value="false" />
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}

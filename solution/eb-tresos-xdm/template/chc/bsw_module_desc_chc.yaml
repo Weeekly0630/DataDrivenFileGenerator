@@ -1,0 +1,7 @@
+# Basic AUTOSAR MCAL configuration template
+TEMPLATE_NAME: "chc/bsw_module_desc_chc.xdm" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+  
+name: "" # Name of the AR-PACKAGE
+venderSpesificModuledefAsPath: "" # AS path for the vendor-specific module definition

@@ -1,0 +1,17 @@
+{%- import "attr/common.j2" as Common -%}
+
+{%- macro dynamic_attribute_node(name, type, value, expr, children_text) -%}
+{%- if children_text == "" -%}
+<a:da   {{- Common.set_attr("name", name) -}} 
+        {{- Common.set_attr("type", type) -}} 
+        {{- Common.set_attr("value", value) -}} 
+        {{- Common.set_attr("expr", expr) -}} />
+{%- else -%}
+<a:da   {{- Common.set_attr("name", name) -}} 
+        {{- Common.set_attr("type", type) -}} 
+        {{- Common.set_attr("value", value) -}} 
+        {{- Common.set_attr("expr", expr) -}} >
+    {{children_text}}
+</a:da>
+{%- endif -%}
+{%- endmacro -%}

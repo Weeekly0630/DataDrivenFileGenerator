@@ -1,0 +1,10 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# DERIVED #}
+{%- macro derived_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+<a:{{prefix}}a name="DERIVED" value="TRUE" />
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}

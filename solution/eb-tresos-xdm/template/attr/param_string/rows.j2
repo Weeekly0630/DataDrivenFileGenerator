@@ -1,0 +1,8 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# SCOPE #}
+{%- macro rows_node(value, prefix) -%}
+{%- if value is not none and value != "" -%}
+<a:{{prefix}}a name="ROWS" value="{{value}}" />
+{%- endif -%}
+{%- endmacro -%}

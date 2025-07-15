@@ -1,0 +1,19 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<v:lst name="{{name}}" 
+    {{- Common.set_attr("type", type) -}}>
+    {{- AttrNodeType.min_node(minConfig, "d") -}}
+    {{- AttrNodeType.max_node(maxConfig, "d") -}}
+    {{- AttrNodeType.invalid_node(invalidConfig, "d") -}}
+    {{- AttrNodeType.editable_node(editableConfig, "d") -}}
+    {{- AttrNodeType.visible_node(visibleConfig) -}}
+    {{- AttrNodeType.enable_node(enableConfig) -}}
+    {{- AttrNodeType.lable_node(lable) -}}
+    {{- AttrNodeType.tab_node(tab) -}}
+    {{- AttrNodeType.rows_node(rows) -}}
+
+    {{ children_text }} 
+</v:lst>
+{%- endblock -%}
+

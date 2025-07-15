@@ -1,0 +1,18 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# SCOPE #}
+{%- macro ref_node(refs, prefix) -%}
+{%- if refs is not none -%}
+    {%- if refs is string and refs != "" -%}
+<a:da name="REF" value="{{refs}}" />
+    {%- elif refs is sequence and refs|length > 0 -%}
+<a:da name="REF">
+        {%- for ref in refs -%}
+            {%- if ref is not none and ref != "" -%}
+    <a:v>{{ref}}</a:v>
+            {%- endif -%}
+        {%- endfor -%}
+</a:da>
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}

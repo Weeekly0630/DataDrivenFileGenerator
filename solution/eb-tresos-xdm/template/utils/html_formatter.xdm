@@ -1,0 +1,10 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<d:example type="AR-ELEMENT">
+    <a:a name="DESC">
+        <a:v><![CDATA[EN:{{ HtmlFormatter.format_content(desc) }}]]></a:v>
+    </a:a>
+</d:example>
+
+{%- endblock -%}

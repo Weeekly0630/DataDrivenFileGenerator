@@ -1,0 +1,10 @@
+{%- macro handle_element(data, depth) -%}
+{%- set header_level = depth if depth <= 6 else 6 -%}
+{%- if data is string -%}<p>{{ data }}</p>
+{%- elif data is mapping -%}{%- for key, value in data.items() -%}<h{{ header_level }}>{{ key }}</h{{ header_level }}>{{- handle_element(value, depth + 1) }}{%- endfor -%}
+{%- elif data is sequence and data is not string -%}<ul>{%- for item in data -%}<li>{{- handle_element(item, depth + 1) }}</li>{%- endfor -%}</ul>{%- endif -%}
+{% endmacro %}
+
+{%- macro format_content(data, depth=1) -%}
+<html>{{ handle_element(data, depth) }}</html>
+{%- endmacro -%}

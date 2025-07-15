@@ -1,0 +1,21 @@
+{%- import "attr/common.j2" as Common -%}
+
+{%- macro __min_node(type, tsts, value, prefix) -%}
+{%- if type == "XPath" -%}
+<a:{{prefix}}a name="MIN" type="XPath">
+    {%- for tst in tsts -%}
+    <a:tst  expr="{{-tst.expr-}}" 
+            {{-Common.set_attr("true", tst.true_text)-}}
+            {{-Common.set_attr("false", tst.false_text)-}} />
+    {%- endfor -%}
+</a:{{prefix}}a>
+{%- else -%}
+    {%- if value is not none -%}
+<a:{{prefix}}a name="MIN" value="{{value}}"/>
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro min_node(minConfig, prefix) -%}
+{{__min_node(minConfig.type, minConfig.tsts, minConfig.value, prefix)}}
+{%- endmacro -%}

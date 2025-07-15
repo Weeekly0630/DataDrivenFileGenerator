@@ -1,0 +1,7 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+
+{{ AttrNodeType.invalid_node(invalidConfig) }}
+
+{%- endblock -%}

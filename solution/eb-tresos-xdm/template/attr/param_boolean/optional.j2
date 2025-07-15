@@ -1,0 +1,11 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# OPTIONAL Static Definition #}
+{%- macro optional_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+    <a:{{prefix}}a name="OPTIONAL" value="true" />
+    {%- else -%}
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}

@@ -1,0 +1,8 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# SCOPE #}
+{%- macro scope_node(value, prefix) -%}
+{%- if value is not none and value != "" -%}
+<a:{{prefix}}a name="SCOPE" value="{{value}}" />
+{%- endif -%}
+{%- endmacro -%}

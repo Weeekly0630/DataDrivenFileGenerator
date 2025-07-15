@@ -1,0 +1,19 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<v:ref name="{{name}}" type="{{type}}">
+    {{- AttrNodeType.desc_html_node(description)-}}
+    {{- AttrNodeType.pb_variant_multi_plicity_node(pbVariantMultiPlicity) -}} 
+    {{- AttrNodeType.pb_variant_val_node(pbVariantValue) -}} 
+    {{- AttrNodeType.scope_node(scope) -}} 
+    {{- AttrNodeType.implementation_node(variantConfig) -}}
+    {{- AttrNodeType.origin_node(origin) -}}
+    {{- AttrNodeType.invalid_node(invalidConfig, "d") -}}
+    {{- AttrNodeType.optional_node(optional, "") -}}
+    {{- AttrNodeType.lable_node(lable) -}}
+    {{- AttrNodeType.enable_node(enableConfig, "d") -}}
+    {{- AttrNodeType.ref_node(refs, "d") -}}
+    <a:a name="UUID" value="{{UUID}}" />
+    {{ children_text }} 
+</v:ref>
+{%- endblock -%}

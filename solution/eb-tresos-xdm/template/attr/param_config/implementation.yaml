@@ -1,0 +1,4 @@
+variantConfig:
+  - classType: "" # Class type for the variant configuration, "v" or "m" or ""
+    className: "PreCompile"
+    name: "VariantPreCompile"

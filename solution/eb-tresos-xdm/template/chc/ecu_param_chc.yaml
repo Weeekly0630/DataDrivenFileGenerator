@@ -1,0 +1,8 @@
+# Basic AUTOSAR MCAL configuration template
+TEMPLATE_NAME: "chc/ecu_param_chc.xdm"  # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+
+name: "" # Name of the AR-PACKAGE
+UUID: "" # UUID for the package
+moduleRefASPath: "" # AS path for the module reference

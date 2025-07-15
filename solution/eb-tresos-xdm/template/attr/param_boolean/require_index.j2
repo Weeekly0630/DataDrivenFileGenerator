@@ -1,0 +1,15 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# REQUIRES-INDEX #}
+{%- macro __require_index_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+    <a:{{prefix}}a name="REQUIRES-INDEX" value="true"/>
+    {%- else -%}
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro require_index_node(value, prefix) -%}
+{{__require_index_node(value, prefix)}}
+{%- endmacro -%}

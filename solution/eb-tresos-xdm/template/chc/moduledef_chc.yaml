@@ -1,0 +1,20 @@
+# Basic AUTOSAR MCAL configuration template
+TEMPLATE_NAME: "chc/moduledef_chc.xdm"  # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+  
+# Change these values to match your project
+name: "" # Name of the AR-PACKAGE
+autosarVersion: "4.4.0" # AUTOSAR version
+revisionLabel: "1.0.0" # Revision label for the package
+docDate: "2023-10-01" # Date of the document
+postBuildVariantSupport: false # Support for post-build variant configuration
+description: "" # Description of the package
+UUID: "" # UUID for the package
+implementationConfigVariantDesc: "" # Description of the implementation configuration variant
+refinedModuleDefPath: ""
+
+variantConfig:
+  - classType: "" # Class type for the variant configuration
+    className: "PreCompile"
+    name: "VariantPreCompile"

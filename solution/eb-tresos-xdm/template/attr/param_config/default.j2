@@ -1,0 +1,21 @@
+{%- import "attr/common.j2" as Common -%}
+{# DEFAULT #}
+{%- macro __default_node(type, tsts, value, prefix) -%}
+{%- if type == "XPath" -%}
+<a:{{prefix}}a name="DEFAULT" type="XPath">
+    {%- for tst in tsts -%}
+    <a:tst  expr="{{-tst.expr-}}" 
+            {{-Common.set_attr("true", tst.true_text)-}}
+            {{-Common.set_attr("false", tst.false_text)-}} />
+    {%- endfor -%}
+</a:{{prefix}}a>
+{%- else -%}
+    {%- if value is not none -%}
+<a:{{prefix}}a name="DEFAULT" value="{{value}}"/>
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro default_node(defaultConfig, prefix) -%}
+{{__default_node(defaultConfig.type, defaultConfig.tsts, defaultConfig.value, prefix)}}
+{%- endmacro -%}

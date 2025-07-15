@@ -1,0 +1,7 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "mcal_base.xdm"
+CHILDREN_PATH: []
+
+### User data
+name: ""  # Name of the AR-PACKAGE
+UUID: ""  # UUID for the package

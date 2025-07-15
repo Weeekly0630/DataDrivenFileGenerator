@@ -1,0 +1,74 @@
+TEMPLATE_NAME: "var/v_var.xdm" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+
+# Basic AUTOSAR V-CTR configuration template
+name: "" # Name of the container
+type: "" # Type of the container, e.g., "IDENTIFIABLE"
+description: "A variable description" # Description of the container
+UUID: "" # UUID for the container
+
+calcFormula: ""
+calcLanguage: ""
+derived: # boolean
+pbVariantMultiPlicity: # boolean
+pbVariantValue: # boolean
+scope: "" # Scope of the container, e.g., "GLOBAL", "LOCAL"
+
+variantConfig:
+  - classType: "" # Class type for the variant configuration
+    className: ""
+    name: ""
+
+lable: "" # Label for the container
+origin: ""
+optional: # boolean
+symbolicNameValue: # boolean
+
+defaultConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+visibleConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+readOnlyConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+invalidConfig:
+  xpath:
+    - expr:
+      true_text:
+      false_text:
+
+  range:
+    - expr:
+      true:
+      false:
+
+editableConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+rangeConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value: aaaaa

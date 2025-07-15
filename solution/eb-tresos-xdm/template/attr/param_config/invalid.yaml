@@ -1,0 +1,10 @@
+invalidConfig:
+  xpath:
+    - expr:
+      true_text:
+      false_text:
+
+  range:
+    - expr:
+      true:
+      false:

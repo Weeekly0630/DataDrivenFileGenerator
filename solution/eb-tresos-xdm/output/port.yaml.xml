@@ -1,0 +1,33 @@
+<datamodel version="3.0"
+  xmlns="http://www.tresos.de/_projects/DataModel2/08/root.xsd"
+  xmlns:a="http://www.tresos.de/_projects/DataModel2/08/attribute.xsd"
+  xmlns:v="http://www.tresos.de/_projects/DataModel2/06/schema.xsd"
+  xmlns:d="http://www.tresos.de/_projects/DataModel2/06/data.xsd">
+  <!-- 
+
+    -->
+  <d:ctr type="AUTOSAR" factory="autosar"
+    xmlns:ad="http://www.tresos.de/_projects/DataModel2/08/admindata.xsd"
+    xmlns:icc="http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd"
+    xmlns:mt="http://www.tresos.de/_projects/DataModel2/11/multitest.xsd">
+    <d:lst type="TOP-LEVEL-PACKAGES">
+      <d:ctr name="PORT" type="AR-PACKAGE">
+        <a:a name="UUID" value="abcdefg" />
+        <d:lst type="ELEMENTS">
+            <!-- port config -->
+            <v:ctr name="port config" type=""><a:a name="IMPLEMENTATIONCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS">
+            <icc:v class="None">None</icc:v></a:a><a:a name="INVALID" type="Multi">
+                <mt:xpath><a:tst expr="None"/></mt:xpath>
+                <mt:range><a:tst expr="None"/></mt:range></a:a><a:a name="OPTIONAL" value="true" /><a:a name="REQUIRES-INDEX" value="true"/><a:a name="UUID" value="" />
+            </v:ctr>
+            <!-- port callback -->
+            <v:ctr name="port callback" type=""><a:a name="IMPLEMENTATIONCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS">
+            <icc:v class="None">None</icc:v></a:a><a:a name="INVALID" type="Multi">
+                <mt:xpath><a:tst expr="../ctr1.yaml"/></mt:xpath>
+                <mt:range><a:tst expr="None"/></mt:range></a:a><a:a name="OPTIONAL" value="true" /><a:a name="REQUIRES-INDEX" value="true"/><a:a name="UUID" value="" />
+            </v:ctr>
+        </d:lst>
+      </d:ctr>
+    </d:lst>
+  </d:ctr>
+</datamodel>

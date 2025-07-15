@@ -1,0 +1,133 @@
+
+{### ReDefinition ###}
+{# param boolean #}
+
+{%- import "attr/param_boolean/optional.j2" as Optional -%}
+{%- macro optional_node(value, prefix="") -%}
+{{Optional.optional_node(value, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_boolean/require_index.j2" as ReqIndex -%}
+{%- macro require_index_node(value, prefix="") -%}
+{{ReqIndex.require_index_node(value, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_boolean/derived.j2" as Derived -%}
+{%- macro derived_node(value, prefix="") -%}
+{{ Derived.derived_node(value, prefix) }}
+{%- endmacro -%}
+
+{%- import "attr/param_boolean/postbuild_variant_multi_plicity.j2" as PbVarMultiPlicity -%}
+{%- macro pb_variant_multi_plicity_node(value, prefix="") -%}
+{{ PbVarMultiPlicity.pb_variant_multi_plicity_node(value, prefix) }}
+{%- endmacro -%}
+
+{%- import "attr/param_boolean/postbuild_variant_value.j2" as PbVarValue -%}
+{%- macro pb_variant_val_node(value, prefix="") -%}
+{{ PbVarValue.pb_variant_val_node(value, prefix) }}
+{%- endmacro -%}
+
+{%- import "attr/param_boolean/symbolic_name_value.j2" as SymbolicNameVal -%}
+{%- macro symbolic_name_value_node(symbolicNameValue, prefix="") -%}
+{{ SymbolicNameVal.symbolic_name_value_node(symbolicNameValue, prefix) }}
+{%- endmacro -%}
+
+{# param config #}
+{%- import "attr/param_config/enable.j2" as Enable -%}
+{%- import "attr/param_config/editable.j2" as Editable -%}
+{%- import "attr/param_config/implementation.j2" as Imp -%}
+{%- import "attr/param_config/invalid.j2" as Invalid -%}
+{%- import "attr/param_config/visible.j2" as Visiable -%}
+
+
+{%- macro enable_node(EnableConfig, prefix="") -%}
+{{Enable.enable_node(EnableConfig, prefix)}}
+{%- endmacro -%}
+
+{%- macro editable_node(EditableConfig, prefix="") -%}
+{{Editable.editable_node(EditableConfig, prefix)}}
+{%- endmacro -%}
+
+{%- macro implementation_node(implementationConfig) -%}
+{{Imp.implementation_node(implementationConfig)}}
+{%- endmacro -%}
+
+{%- macro invalid_node(invalidConfig, prefix="") -%}
+{{Invalid.invalid_node(invalidConfig, prefix)}}
+{%- endmacro -%}
+
+{%- macro visible_node(visibleConfig, prefix="") -%}
+{{Visiable.visible_node(visibleConfig, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_config/default.j2" as Default -%}
+{%- macro default_node(defaultConfig, prefix="") -%}
+{{Default.default_node(defaultConfig, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_config/readonly.j2" as Readonly -%}
+{%- macro readonly_node(readOnlyConfig, prefix="") -%}
+{{Readonly.readonly_node(readOnlyConfig, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_config/range.j2" as Range -%}
+{%- macro range_node(rangeConfig, prefix="") -%}
+{{Range.range_node(rangeConfig, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_config/min.j2" as Min -%}
+{%- macro min_node(minConfig, prefix="")-%}
+{{Min.min_node(minConfig, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_config/max.j2" as Max -%}
+{%- macro max_node(maxConfig, prefix="")-%}
+{{Max.max_node(maxConfig, prefix)}}
+{%- endmacro -%}
+
+{# param string #}
+
+{%- import "attr/param_string/calculation_formula.j2" as CalcFormula -%}
+{%- macro calc_formula_node(calcFormula, prefix="") -%}
+{{CalcFormula.calc_formula_node(calcFormula, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/desc_html.j2" as DescHtml -%}
+{%- macro desc_html_node(desc, prefix="")-%}
+{{DescHtml.desc_html_node(desc, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/calculation_language.j2" as CalcLanguage -%}
+{%- macro calc_language_node(calcLanguage, prefix="")-%}
+{{CalcLanguage.calc_language_node(calcLanguage, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/scope.j2" as Scope -%}
+{%- macro scope_node(scope, prefix="")-%}
+{{Scope.scope_node(scope, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/lable.j2" as Lable -%}
+{%- macro lable_node(lable, prefix="")-%}
+{{Lable.lable_node(lable, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/orgin.j2" as Orgin -%}
+{%- macro origin_node(origin, prefix="")-%}
+{{Orgin.origin_node(origin, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/tab.j2" as Tab -%}
+{%- macro tab_node(tab, prefix="")-%}
+{{Tab.tab_node(tab, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/ref.j2" as Ref -%}
+{%- macro ref_node(refs, prefix="")-%}
+{{Ref.ref_node(refs, prefix)}}
+{%- endmacro -%}
+
+{%- import "attr/param_string/rows.j2" as Rows -%}
+{%- macro rows_node(rows, prefix="")-%}
+{{Rows.rows_node(rows, prefix)}}
+{%- endmacro -%}

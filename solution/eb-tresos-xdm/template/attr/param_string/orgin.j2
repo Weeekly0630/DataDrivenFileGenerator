@@ -1,0 +1,8 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# ORIGIN #}
+{%- macro origin_node(value, prefix) -%}
+{%- if value is not none and value != ""  -%}
+<a:{{prefix}}a name="ORIGIN" value="{{value}}" />
+{%- endif -%}
+{%- endmacro -%}

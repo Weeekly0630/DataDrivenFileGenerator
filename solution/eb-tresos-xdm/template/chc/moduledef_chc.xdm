@@ -1,0 +1,44 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<d:chc name="{{ name }}" type="AR-ELEMENT" value="MODULE-DEF">
+    <v:ctr type="MODULE-DEF">
+        <a:a name="RELEASE" value="asc:{{ autosarVersion }}" />
+        <a:a name="ADMIN-DATA" type="ADMIN-DATA">
+            <ad:ADMIN-DATA>
+                <ad:DOC-REVISIONS>
+                    <ad:DOC-REVISION>
+                        <ad:REVISION-LABEL>{{ revisionLabel }}</ad:REVISION-LABEL>
+                        <ad:ISSUED-BY>AUTOSAR</ad:ISSUED-BY>
+                        <ad:DATE>{{ docDate }}</ad:DATE>
+                    </ad:DOC-REVISION>
+                </ad:DOC-REVISIONS>
+            </ad:ADMIN-DATA>
+        </a:a>
+        <a:a name="POSTBUILDVARIANTSUPPORT" value="{{ postBuildVariantSupport }}" />
+        <a:a name="DESC" value="{{ HtmlFormatter.format_content(description) }}" />
+        <a:a name="LOWER-MULTIPLICITY" value="1" />
+        <a:a name="UPPER-MULTIPLICITY" value="1" />
+        <a:a name="UUID" value="{{ UUID }}" />
+        <!--  /** @implements  ConfigVariant_Object */ -->
+        <v:var name="IMPLEMENTATION_CONFIG_VARIANT" type="ENUMERATION">
+            <a:a name="DESC">
+                <a:v>
+                    <![CDATA[EN:{{ HtmlFormatter.format_content(implementationConfigVariantDesc) }}]]>
+                </a:v>
+            </a:a>
+            {{- AttrNodeType.implementation_node(variantConfig) -}}
+            <a:a name="LABEL" value="Config Variant" />
+            <a:a name="UUID" value="ECUC:1f10a459-ede1-4768-8df1-10750395700b" />
+            <a:da name="DEFAULT" value="VariantPostBuild" />
+            <a:da name="RANGE">
+                {% for cfg in variantConfig -%}
+                <a:v>{{cfg.name}}</a:v>
+                {%- endfor %}
+            </a:da>
+        </v:var> 
+        {{ children_text }} 
+        <d:ref type="REFINED_MODULE_DEF" value="{{ refinedModuleDefPath }}" />
+    </v:ctr>
+</d:chc>
+{%- endblock -%}

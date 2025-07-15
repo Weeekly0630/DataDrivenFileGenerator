@@ -1,0 +1,8 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# CALCULATION-LANGUAGE #}
+{%- macro calc_language_node(value, prefix) -%}
+{%- if value is not none and value != "" -%}
+<a:{{prefix}}a name="CALCULATION-LANGUAGE" value="{{value}}" />
+{%- endif -%}
+{%- endmacro -%}

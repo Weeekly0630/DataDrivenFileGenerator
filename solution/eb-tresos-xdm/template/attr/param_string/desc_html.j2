@@ -1,0 +1,10 @@
+{%- import "attr/common.j2" as Common -%}
+{%- import "utils/html_formatter.j2" as HtmlFormatter -%}
+
+{%- macro desc_html_node(desc, prefix) -%}
+{%- if desc is not none and desc != "" -%}
+<a:{{prefix}}a name="DESC">
+    <a:v><![CDATA[EN:{{ HtmlFormatter.format_content(desc) }}]]></a:v>
+</a:{{prefix}}a>
+{%- endif -%}
+{%- endmacro -%}

@@ -1,0 +1,62 @@
+TEMPLATE_NAME: "var/v_lst.xdm" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+
+# Basic AUTOSAR V-LST configuration template
+name: "" # Name of the container
+type: "" # Type of the container, e.g., "IDENTIFIABLE"
+UUID: "" # UUID for the container
+
+minConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+maxConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+invalidConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+editableConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+visibleConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+enableConfig:
+  type: 
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+lable:
+
+tab:
+
+rows:

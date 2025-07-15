@@ -1,0 +1,14 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<d:chc name="{{ name }}" type="AR-ELEMENT" value="ECU_PARAMETER_DEFINITION">
+    <d:ctr type="AR-ELEMENT">
+        <a:a name="UUID" value="{{ UUID }}" />
+        <a:a name="DEF"
+            value="ASPath:/AR_PACKAGE_SCHEMA/ECU_PARAMETER_DEFINITION" />
+        <d:lst name="MODULE_REF">
+            <d:ref type="MODULE_REF" value="ASPath:{{ moduleRefASPath }}" />
+        </d:lst>
+    </d:ctr>
+</d:chc>
+{%- endblock -%}

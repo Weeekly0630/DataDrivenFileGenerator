@@ -1,0 +1,13 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# POSTBUILDVARIANTMULTIPLICITY #}
+{%- macro pb_variant_multi_plicity_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+<a:{{prefix}}a name="POSTBUILDVARIANTMULTIPLICITY" value="true" />
+    {%- else -%}
+<a:{{prefix}}a name="POSTBUILDVARIANTMULTIPLICITY" value="false" />
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+

@@ -1,0 +1,9 @@
+# Basic AUTOSAR MCAL configuration template
+TEMPLATE_NAME: "attr/a_a" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+
+name: "" 
+type: ""  
+value: ""
+expr: ""

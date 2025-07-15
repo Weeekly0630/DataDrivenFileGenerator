@@ -1,0 +1,15 @@
+# Basic AUTOSAR MCAL configuration template
+TEMPLATE_NAME: "attr/a_a" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+  
+invalidConfig:
+  xpath: 
+    - expr: "hahaha"
+      true_text: "hahaha"
+      false_text: "hahaha"
+  
+  # range:
+  #   - expr: "hahaha"
+  #     true: "hahaha"
+  #     false:

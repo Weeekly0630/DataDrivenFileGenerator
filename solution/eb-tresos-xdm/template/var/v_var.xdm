@@ -1,0 +1,27 @@
+{%- extends "base/base.j2" -%}
+
+{%- block content -%}
+<!-- @implements {{ name }}_Object -->
+<v:var name="{{ name }}" type="{{ type }}">
+    {{- AttrNodeType.desc_html_node(description)-}}
+    {{- AttrNodeType.calc_formula_node(calcFormula) -}} 
+    {{- AttrNodeType.calc_language_node(calcLanguage) -}} 
+    {{- AttrNodeType.derived_node(derived) -}} 
+    {{- AttrNodeType.pb_variant_multi_plicity_node(pbVariantMultiPlicity) -}} 
+    {{- AttrNodeType.pb_variant_val_node(pbVariantValue) -}} 
+    {{- AttrNodeType.scope_node(scope) -}} 
+    {{- AttrNodeType.implementation_node(variantConfig) -}}
+    {{- AttrNodeType.lable_node(lable) -}}
+    {{- AttrNodeType.origin_node(origin) -}}
+    {{- AttrNodeType.optional_node(optional) -}}
+    {{- AttrNodeType.symbolic_name_value_node(symbolicNameValue) -}}
+    {{- AttrNodeType.default_node(defaultConfig, "d") -}}
+    {{- AttrNodeType.visible_node(visibleConfig) -}}
+    {{- AttrNodeType.readonly_node(readOnlyConfig, "d") -}}
+    {{- AttrNodeType.invalid_node(invalidConfig) -}}
+    {{- AttrNodeType.editable_node(editableConfig, "d") -}}
+    {{- AttrNodeType.range_node(rangeConfig, "d") -}}
+    <a:a name="UUID" value="{{ UUID }}" />
+    {{ children_text }}
+</v:var>
+{%- endblock -%}

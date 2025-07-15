@@ -1,0 +1,3 @@
+{% macro set_attr(name, value) -%}
+    {%- if value|default('') %} {{ name }}="{{ value }}"{% endif -%}
+{%- endmacro %}

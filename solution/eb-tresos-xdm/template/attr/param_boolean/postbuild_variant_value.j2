@@ -1,0 +1,12 @@
+{%- import "attr/common.j2" as Common -%}
+
+{# POSTBUILDVARIANTVALUE #}
+{%- macro pb_variant_val_node(value, prefix) -%}
+{%- if value is not none -%}
+    {%- if value is true -%}
+<a:{{prefix}}a name="POSTBUILDVARIANTVALUE" value="true" />
+    {%- else -%}
+<a:{{prefix}}a name="POSTBUILDVARIANTVALUE" value="false" />
+    {%- endif -%}
+{%- endif -%}
+{%- endmacro -%}

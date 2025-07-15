@@ -1,0 +1,10 @@
+invalidConfig:
+  xpath: 
+    - expr: "hahaha"
+      true_text: "hahaha"
+      false_text: "hahaha"
+  
+  # range:
+  #   - expr: "hahaha"
+  #     true: "hahaha"
+  #     false:

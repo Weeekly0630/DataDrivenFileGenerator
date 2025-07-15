@@ -1,0 +1,45 @@
+TEMPLATE_NAME: "var/v_ref.xdm" # Type of the template, cannot be changed
+CHILDREN:
+  - ""
+
+# Basic AUTOSAR V-LST configuration template
+name: "" # Name of the container
+type: "" # Type of the container, e.g., "IDENTIFIABLE"
+UUID: "" # UUID for the container
+
+description:
+
+pbVariantMultiPlicity:
+
+pbVariantValue:
+
+scope:
+
+variantConfig:
+  # - classType: "" # Class type for the variant configuration, "v" or "m" or ""
+  #   className: "PreCompile"
+  #   name: "VariantPreCompile"
+
+origin:
+
+invalidConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+optional:
+
+lable:
+
+enableConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+refs:
