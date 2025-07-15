@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <info>
+        <name>System Configuration</name>
+        <version>2.0</version>
+        <description>System configuration with nested services</description>
+    </info>
+    <subsystems>
+        <subsystem>Web Service</subsystem>
+        <subsystem>Database</subsystem>
+    </subsystems>
+    <services>
+        <web-service>
+            <info>
+                <name>Web Service</name>
+                <type>http</type>
+                <port>8080</port>
+                <enabled>True</enabled>
+            </info>
+            <endpoints><endpoint>
+                    <name>REST API</name>
+                    <path>/api/v1</path>
+                    <methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </methods>
+                    <auth-required>True</auth-required>
+                </endpoint>
+            </endpoints>
+            <children1><service>
+                    <name>Child Config</name>
+                    <type>service</type>
+                    <port>8080</port>
+                    <enabled>True</enabled>
+                </service>
+            </children1>
+        </web-service>
+        <database-service>
+            <info>
+                <name>Database Service</name>
+                <type>postgresql</type>
+                <port>5432</port>
+                <enabled>True</enabled>
+            </info>
+            <config>
+                <max-connections>100</max-connections>
+            </config>
+        </database-service>
+    </services>
+</system>

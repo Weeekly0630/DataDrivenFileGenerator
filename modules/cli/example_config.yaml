@@ -1,0 +1,21 @@
+# 数据处理器配置
+data_type: yaml
+data_config:
+  root_path: U:\Users\Enlink\Documents\code\python\Xdm\modules\test\expr_test\data
+  file_pattern: ["*.yaml"]
+  preserved_template_key: "TEMPLATE"
+  preserved_children_key: "CHILDREN"
+
+# 模板处理器配置
+template_type: jinja
+template_config:
+  template_dir: U:\Users\Enlink\Documents\code\python\Xdm\modules\test\expr_test\template
+  preserved_children_key: "children_text"
+  autoescape: false # xml转义
+
+# 要处理的入口文件
+patterns:
+  - "*.yaml"
+
+# 输出目录
+output_dir: ../test/test_data/output

@@ -1,0 +1,10 @@
+<endpoint>
+    <name>{{ name }}</name>
+    <path>{{ path }}</path>
+    <methods>
+        {% for method in methods %}
+        <method>{{ method }}</method>
+        {% endfor %}
+    </methods>
+    <auth-required>{{ auth_required }}</auth-required>
+</endpoint>

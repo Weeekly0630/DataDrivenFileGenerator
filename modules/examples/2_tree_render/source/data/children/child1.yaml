@@ -1,0 +1,6 @@
+TEMPLATE_PATH: "child.j2"
+CHILDREN_PATH: []
+name: "Child Config"
+type: "service"
+port: 8080
+enabled: true

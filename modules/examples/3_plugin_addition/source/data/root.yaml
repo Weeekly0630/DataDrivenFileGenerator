@@ -1,0 +1,14 @@
+TEMPLATE_PATH: "root_template.j2"
+CHILDREN_PATH: ["./children_0/*.yaml", "./children_1/*.yaml"]
+
+ch0_value_expr:
+  type: function
+  args:
+    - math:node_value
+    - .\children_0\ch0.yaml
+
+ch1_value_expr:
+  type: function
+  args:
+    - math:node_value
+    - .\children_1\ch1.yaml

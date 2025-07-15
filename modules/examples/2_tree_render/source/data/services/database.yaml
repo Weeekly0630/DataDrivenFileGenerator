@@ -1,0 +1,7 @@
+TEMPLATE_PATH: "database.j2"
+CHILDREN_PATH: []
+name: "Database Service"
+type: "postgresql"
+port: 5432
+enabled: true
+max_connections: 100

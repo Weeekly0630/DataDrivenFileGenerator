@@ -1,0 +1,6 @@
+TEMPLATE_PATH: "endpoint.j2"
+CHILDREN_PATH: []
+name: "REST API"
+path: "/api/v1"
+methods: ["GET", "POST", "PUT"]
+auth_required: true

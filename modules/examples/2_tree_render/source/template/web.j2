@@ -1,0 +1,14 @@
+<web-service>
+    <info>
+        <name>{{ name }}</name>
+        <type>{{ type }}</type>
+        <port>{{ port }}</port>
+        <enabled>{{ enabled }}</enabled>
+    </info>
+    <endpoints>
+        {{ CHILDREN_CONTEXT0 | indent(8) }}
+    </endpoints>
+    <children1>
+        {{ CHILDREN_CONTEXT1 | indent(8) }}
+    </children1>
+</web-service>
