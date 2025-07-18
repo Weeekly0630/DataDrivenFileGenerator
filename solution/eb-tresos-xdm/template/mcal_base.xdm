@@ -18,7 +18,6 @@
         <a:a name="UUID" value="{{ UUID }}" />
         <d:lst type="ELEMENTS">
             {{ CHILDREN_CONTEXT0 | indent(12) }}
-            {{ CHILDREN_CONTEXT1 | indent(12) }}
         </d:lst>
       </d:ctr>
     </d:lst>

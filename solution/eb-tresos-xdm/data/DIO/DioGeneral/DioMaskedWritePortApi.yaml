@@ -1,12 +1,11 @@
 TEMPLATE_PATH: "var/v_var.xdm" # Type of the template, cannot be changed
-CHILDREN_PATH:
-  - ""
+CHILDREN_PATH: []
 
 # Basic AUTOSAR V-CTR configuration template
-name: "" # Name of the container
+name: "DioMaskedWritePortApi" # Name of the container
 type: "" # Type of the container, e.g., "IDENTIFIABLE"
-UUID: "" # UUID for the container
 description: "" # Description of the container
+UUID: "" # UUID for the container
 
 calcFormula: ""
 calcLanguage: ""
@@ -48,10 +47,10 @@ readOnlyConfig:
       false_text:
   value:
 invalidConfig:
-  # xpath:
-  #   - expr:
-  #     true_text:
-  #     false_text:
+  xpath:
+    - expr: {type: function, args: [dataNode:get_abs_path]}
+      true_text:
+      false_text:
 
   # range:
   #   - expr:

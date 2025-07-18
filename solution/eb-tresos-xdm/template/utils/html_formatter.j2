@@ -1,10 +1,29 @@
-{%- macro handle_element(data, depth) -%}
-{%- set header_level = depth if depth <= 6 else 6 -%}
-{%- if data is string -%}<p>{{ data }}</p>
-{%- elif data is mapping -%}{%- for key, value in data.items() -%}<h{{ header_level }}>{{ key }}</h{{ header_level }}>{{- handle_element(value, depth + 1) }}{%- endfor -%}
-{%- elif data is sequence and data is not string -%}<ul>{%- for item in data -%}<li>{{- handle_element(item, depth + 1) }}</li>{%- endfor -%}</ul>{%- endif -%}
-{% endmacro %}
+{%- macro format_element(data, depth=1) -%}
+  {# 动态计算标题级别 #}
+  {%- set h_level = [depth, 6] | min -%}
+  
+  {%- if data is string -%}
+    <p>{{ data | e }}</p>
 
-{%- macro format_content(data, depth=1) -%}
-<html>{{ handle_element(data, depth) }}</html>
+  {%- elif data is mapping -%}
+    {%- for key, value in data.items() -%}
+      <h{{ h_level }}>{{ key | e }}</h{{ h_level }}>
+      {{ format_element(value, depth + 1) }}
+    {%- endfor -%}
+
+  {%- elif data is sequence -%}
+    <ul>
+      {%- for item in data -%}
+        <li>{{ format_element(item, depth + 1) }}</li>
+      {%- endfor -%}
+    </ul>
+  
+  {%- else -%}
+    {# 处理数字/布尔值等基本类型 #}
+    <p>{{ data }}</p>
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro format_content(data) -%}
+{{ format_element(data) }}
 {%- endmacro -%}

@@ -1,0 +1,50 @@
+TEMPLATE_PATH: "var/v_ref.xdm" # Type of the template, cannot be changed
+CHILDREN_PATH:
+  - ""
+
+# Basic AUTOSAR V-LST configuration template
+name: "DioEcucPartitionRef" # Name of the container
+type: "REFERENCE" # Type of the container, e.g., "IDENTIFIABLE"
+UUID: "eb0e19f4-aab3-43cf-bc3f-313d4c043d2d" # UUID for the container
+
+description: Maps the DIO driver to zero or multiple ECUC partitions to make the modules API available in this partition.
+
+pbVariantMultiPlicity:
+
+pbVariantValue:
+
+scope: ECU
+
+variantConfig:
+  - classType: "m" # Class type for the variant configuration, "v" or "m" or ""
+    className: "PreCompile"
+    name: "VariantPreCompile"
+  - classType: "v" # Class type for the variant configuration, "v" or "m" or ""
+    className: "PreCompile"
+    name: "VariantPreCompile"
+
+origin: AUTOSAR_ECUC
+
+invalidConfig:
+  xpath:
+    - expr: {type: function, args: [dataNode:get_abs_path]}
+      true_text:
+      false_text:
+  # range:
+  #   - expr:
+  #     true:
+  #     false:
+
+optional:
+
+lable:
+
+enableConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+refs: ASPathDataOfSchema:/AUTOSAR/EcucDefs/EcuC/EcucPartitionCollection/EcucPartition

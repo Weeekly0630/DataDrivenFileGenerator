@@ -1,9 +1,9 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "var/v_lst.xdm" # Type of the template, cannot be changed
-CHILDREN_PATH: []
+CHILDREN_PATH: [/*/DioEcucPartitionRef.yaml]
 
 ### User data
-name: "" # Name of the container
+name: "DioEcucPartitionRef" # Name of the container
 type: "" # Type of the container, e.g., "IDENTIFIABLE"
 UUID: "" # UUID for the container
 
@@ -24,13 +24,14 @@ maxConfig:
   value:
 
 invalidConfig:
-  type: 
-  tsts:
-    - expr:
+  xpath:
+    - expr: {type: function, args: [dataNode:get_abs_path]}
       true_text:
       false_text:
-  value:
-
+  # range:
+  #   - expr:
+  #     true:
+  #     false:
 editableConfig:
   type: 
   tsts:

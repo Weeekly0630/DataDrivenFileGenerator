@@ -1,0 +1,79 @@
+TEMPLATE_PATH: "var/v_var.xdm" # Type of the template, cannot be changed
+CHILDREN_PATH: []
+
+# Basic AUTOSAR V-CTR configuration template
+name: "DioDevErrorDetect" # Name of the container
+type: "BOOLEAN" # Type of the container, e.g., "IDENTIFIABLE"
+description:
+  Functional Description: "Switches the development error detection and notification ON or OFF."
+  value:
+    - true: detection and notification is ON.
+    - false: detection and notification is OFF
+
+UUID: "94d9ac3e-a3d1-44a8-933b-ee750e4f416f" # UUID for the container
+
+calcFormula: ""
+calcLanguage: ""
+derived: # boolean
+pbVariantMultiPlicity: # boolean
+pbVariantValue: # boolean
+scope: "LOCAL" # Scope of the container, e.g., "GLOBAL", "LOCAL"
+
+variantConfig:
+  - classType: "v" # Class type for the variant configuration
+    className: "PreCompile"
+    name: "VariantPreCompile"
+
+lable: "Dio Development Error Detect" # Label for the container
+origin: "AUTOSAR_ECUC"
+optional: # boolean
+symbolicNameValue: false # boolean
+
+defaultConfig:
+  type:
+  tsts:
+    # - expr:
+    #   true_text:
+    #   false_text:
+  value: false
+
+visibleConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+readOnlyConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+invalidConfig:
+  xpath:
+    - expr: {type: function, args: [dataNode:get_abs_path]}
+      true_text:
+      false_text:
+  # range:
+  #   - expr:
+  #     true:
+  #     false:
+
+editableConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+rangeConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:

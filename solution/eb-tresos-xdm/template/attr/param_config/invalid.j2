@@ -8,31 +8,31 @@
     {{- Common.set_attr("type", "Multi") -}} >
     <mt:xpath>
         {%- for xpath_tst in invalidConfig.xpath -%}
-        <a:tst  {{- Common.set_attr("expr", xpath_tst.expr | expr_filter ) -}}
-                {{- Common.set_attr("true", xpath_tst.true_text) -}}
-                {{- Common.set_attr("false", xpath_tst.false_text) -}} />
+        <a:tst  {{- Common.set_attr("expr", xpath_tst.expr | expr_filter ) }}
+                {{ Common.set_attr("true", xpath_tst.true_text) }}
+                {{ Common.set_attr("false", xpath_tst.false_text) }} />
         {%- endfor -%}
     </mt:xpath>
     <mt:range>
         {%- for range_tst in invalidConfig.range -%}
-        <a:tst  {{- Common.set_attr("expr", range_tst.expr | expr_filter ) -}}
-                {{- Common.set_attr("true", range_tst.true_text) -}}
-                {{- Common.set_attr("false", range_tst.false_text) -}} />
+        <a:tst  {{- Common.set_attr("expr", range_tst.expr | expr_filter ) }}
+                {{ Common.set_attr("true", range_tst.true_text) }}
+                {{ Common.set_attr("false", range_tst.false_text) }} />
         {%- endfor -%}
     </mt:range>
     {%- elif (invalidConfig.xpath|default([]))|length > 0 -%}
     {{- Common.set_attr("type", "XPath") -}} >
         {%- for tst in invalidConfig.xpath -%}
-    <a:tst  {{- Common.set_attr("expr", tst.expr | expr_filter ) -}}
-            {{- Common.set_attr("true", tst.true_text) -}}
-            {{- Common.set_attr("false", tst.false_text) -}} />
+    <a:tst  {{- Common.set_attr("expr", tst.expr | expr_filter ) }}
+            {{ Common.set_attr("true", tst.true_text) }}
+            {{ Common.set_attr("false", tst.false_text) }} />
         {%- endfor -%}
     {%- elif (invalidConfig.range|default([]))|length > 0 -%}
     {{- Common.set_attr("type", "Range") -}} >
         {%- for tst in invalidConfig.range %}
-    <a:tst  {{- Common.set_attr("expr", tst.expr | expr_filter ) -}}
-            {{- Common.set_attr("true", tst.true_text) -}}
-            {{- Common.set_attr("false", tst.false_text) -}} />
+    <a:tst  {{- Common.set_attr("expr", tst.expr | expr_filter ) }}
+            {{ Common.set_attr("true", tst.true_text) }}
+            {{ Common.set_attr("false", tst.false_text) }} />
         {%- endfor -%}
     {%- else -%} >
     {%- endif -%}

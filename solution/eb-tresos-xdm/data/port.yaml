@@ -1,7 +1,0 @@
-# Preserved Key for DataDrivenGenerator
-TEMPLATE_PATH: "mcal_base.xdm"
-CHILDREN_PATH: [PORT/ctr0.yaml, PORT/ctr1.yaml]
-
-# User data
-name: "PORT"  # Name of the AR-PACKAGE
-UUID: "abcdefg"  # UUID for the package

@@ -1,12 +1,12 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "var/v_ctr.xdm" # Type of the template, cannot be changed
-CHILDREN_PATH: []
+CHILDREN_PATH: ["DioGeneral/*.yaml"]
 
 ### User data
-name: # Name of the container
-type: # Type of the container, e.g., "IDENTIFIABLE"
-UUID: # UUID for the container
-description: 
+name: "DioGeneral" # Name of the container
+type: "IDENTIFIABLE" # Type of the container, e.g., "IDENTIFIABLE"
+UUID: "98bd4ef7-71b5-4a81-a7a7-9df8fab2737e" # UUID for the container
+description: "Configuration of the Dio (Digital IO) module."
 
 variantConfig:
   # - classType: # Class type for the variant configuration
@@ -14,18 +14,18 @@ variantConfig:
   #   name:
 
 invalidConfig:
-  xpath:
-    - expr:
-      true_text:
-      false_text:
+  # xpath:
+  #   - expr:
+  #     true_text:
+  #     false_text:
 
-  range:
-    - expr:
-      true_text:
-      false_text:
+  # range:
+  #   - expr:
+  #     true_text:
+  #     false_text:
 
-optional: 
-require_index: 
+optional:
+require_index:
 enableConfig:
   type:
   tsts:

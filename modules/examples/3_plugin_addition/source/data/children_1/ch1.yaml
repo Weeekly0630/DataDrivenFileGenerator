@@ -3,3 +3,8 @@ CHILDREN_PATH:
 
 name: children1
 value: 200
+
+expr1:
+  type: function
+  args:
+    - dataNode:get_abs_path

@@ -1,10 +1,9 @@
 # Basic AUTOSAR MCAL configuration template
 TEMPLATE_PATH: "chc/moduledef_chc.xdm"  # Type of the template, cannot be changed
-CHILDREN_PATH:
-  - ""
+CHILDREN_PATH: [DioGeneral.yaml, DioConfig.yaml]
   
 # Change these values to match your project
-name: "" # Name of the AR-PACKAGE
+name: "Dio" # Name of the AR-PACKAGE
 autosarVersion: "4.4.0" # AUTOSAR version
 revisionLabel: "1.0.0" # Revision label for the package
 docDate: "2023-10-01" # Date of the document
@@ -15,11 +14,6 @@ implementationConfigVariantDesc: "" # Description of the implementation configur
 refinedModuleDefPath: ""
 
 ConfigVariantUUID:
-variantConfig:
-  # - classType: "" # Class type for the variant configuration
-  #   className: "PreCompile"
-  #   name: "VariantPreCompile"
-
 rangeConfig:
   type:
   tsts:
@@ -27,3 +21,8 @@ rangeConfig:
       true_text:
       false_text:
   value:
+
+variantConfig:
+  # - classType: "" # Class type for the variant configuration
+  #   className: "PreCompile"
+  #   name: "VariantPreCompile"

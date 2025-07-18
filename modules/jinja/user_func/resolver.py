@@ -2,6 +2,7 @@ from .func_handler import UserFunctionResolver, UserFunctionInfo
 from modules.core import DataHandler
 from modules.node.data_node import DataNode
 from typing import Dict, Callable, List, Type
+from dataclasses import dataclass
 import importlib
 import os
 import sys
@@ -18,7 +19,9 @@ class FunctionPlugin:
         return []
 
     @classmethod
-    def dynamic_functions(cls, node: DataNode, data_handler: DataHandler) -> List[UserFunctionInfo]:
+    def dynamic_functions(
+        cls, node: DataNode, data_handler: DataHandler
+    ) -> List[UserFunctionInfo]:
         """返回插件提供的动态函数列表（需要节点上下文以及节点树上下文）"""
         return []
 
@@ -59,7 +62,7 @@ class UserFunctionResolverFactory:
             result += self._serialize_function_info(value, indent=0) + "\n"
 
         result += f"========Dynamic functions========\n"
-        for info in self._create_dynamic_functions(None, None):
+        for info in self._create_dynamic_functions():
             result += self._serialize_function_info(info, indent=0) + "\n"
 
         return result
@@ -118,22 +121,6 @@ class UserFunctionResolverFactory:
 
     def _collect_static_functions(self):
         """收集所有插件的静态函数"""
-        # 内置静态函数
-        # builtin_static = {
-        #     "user:double": UserFunctionInfo(
-        #         name="user:double",
-        #         arg_range=[1, 1],
-        #         description="Double the input value",
-        #         handler=lambda x: 2 * x.value,
-        #     ),
-        #     "util:uppercase": UserFunctionInfo(
-        #         name="util:uppercase",
-        #         arg_range=[1, 1],
-        #         description="Convert string to uppercase",
-        #         handler=lambda s: s.upper(),
-        #     ),
-        # }
-
         # 收集插件静态函数
         plugin_static = {}
         for plugin_class in self.plugin_classes:
@@ -154,44 +141,15 @@ class UserFunctionResolverFactory:
         # 合并所有静态函数
         self.static_functions = {**plugin_static}
 
-    def _create_dynamic_functions(
-        self, node: DataNode, data_handler: DataHandler
-    ) -> List[UserFunctionInfo]:
+    def _create_dynamic_functions(self) -> List[UserFunctionInfo]:
         """创建内置和插件的动态函数"""
-        # 内置动态函数
-        # builtin_dynamic = [
-        #     UserFunctionInfo(
-        #         name="node:name",
-        #         arg_range=[0, 0],
-        #         description="Get current node name",
-        #         handler=lambda: node.name,
-        #     ),
-        #     UserFunctionInfo(
-        #         name="node:path",
-        #         arg_range=[0, 0],
-        #         description="Get node absolute path",
-        #         handler=lambda: node.get_absolute_path(),
-        #     ),
-        #     UserFunctionInfo(
-        #         name="node:get_rel",
-        #         arg_range=[1, 1],
-        #         description="Find node by relative path",
-        #         handler=lambda x: self.data_handler.find_by_file_path(node, x)[0],
-        #     ),
-        #     UserFunctionInfo(
-        #         name="node:get_attr",
-        #         arg_range=[2, 2],
-        #         description="Get node attribute",
-        #         handler=lambda x, attr: str(x.data.get(attr, "")),
-        #     ),
-        # ]
-
         # 插件动态函数
         plugin_dynamic = []
         for plugin_class in self.plugin_classes:
             try:
                 # 获取插件的动态函数
-                funcs = plugin_class.dynamic_functions(node, data_handler)
+                funcs = plugin_class.dynamic_functions(
+                )
                 plugin_dynamic.extend(funcs)
             except Exception as e:
                 print(
@@ -205,8 +163,13 @@ class UserFunctionResolverFactory:
     ) -> UserFunctionResolver:
         """创建函数解析器"""
         static_funcs = list(self.static_functions.values())
-        dynamic_funcs = self._create_dynamic_functions(node, data_handler)
-        return UserFunctionResolver(static_funcs + dynamic_funcs)
+        dynamic_funcs = self._create_dynamic_functions()
+        from .func_handler import UserFunctionContext
+
+        return UserFunctionResolver(
+            UserFunctionContext(node, data_handler),
+            static_funcs + dynamic_funcs,
+        )
 
     def reload_plugins(self):
         """重新加载所有插件"""

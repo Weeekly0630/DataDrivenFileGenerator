@@ -1,29 +1,37 @@
 TEMPLATE_PATH: "var/v_var.xdm" # Type of the template, cannot be changed
-CHILDREN_PATH:
-  - ""
+CHILDREN_PATH: []
 
 # Basic AUTOSAR V-CTR configuration template
-name: "" # Name of the container
+name: "DioFlipChannelApi" # Name of the container
 type: "" # Type of the container, e.g., "IDENTIFIABLE"
-UUID: "" # UUID for the container
-description: "" # Description of the container
+
+# Description of the container
+description:
+  [
+    Adds / Removes the service Dio_FlipChannel() from the code.,
+    {
+      "True": Dio_FlipChannel() API is enabled.,
+      "False": Dio_FlipChannel() API is disabled.,
+    },
+  ]
+UUID: "758d9cf1-d1e3-4e9d-8006-da65bb37ec1d" # UUID for the container
 
 calcFormula: ""
 calcLanguage: ""
 derived: # boolean
 pbVariantMultiPlicity: # boolean
 pbVariantValue: # boolean
-scope: "" # Scope of the container, e.g., "GLOBAL", "LOCAL"
+scope: "LOCAL" # Scope of the container, e.g., "GLOBAL", "LOCAL"
 
 variantConfig:
-  # - classType: "" # Class type for the variant configuration
-  #   className: ""
-  #   name: ""
+  - classType: "v" # Class type for the variant configuration
+    className: "PreCompile"
+    name: "VariantPreCompile"
 
-lable: "" # Label for the container
-origin: ""
+lable: "Dio Flip Channel API" # Label for the container
+origin: "AUTOSAR_ECUC"
 optional: # boolean
-symbolicNameValue: # boolean
+symbolicNameValue: false # boolean
 
 defaultConfig:
   type:
@@ -31,7 +39,7 @@ defaultConfig:
     # - expr:
     #   true_text:
     #   false_text:
-  value:
+  value: false
 
 visibleConfig:
   type:
@@ -47,12 +55,12 @@ readOnlyConfig:
       true_text:
       false_text:
   value:
-invalidConfig:
-  # xpath:
-  #   - expr:
-  #     true_text:
-  #     false_text:
 
+invalidConfig:
+  xpath:
+    - expr: {type: function, args: [dataNode:get_abs_path]}
+      true_text:
+      false_text:
   # range:
   #   - expr:
   #     true:

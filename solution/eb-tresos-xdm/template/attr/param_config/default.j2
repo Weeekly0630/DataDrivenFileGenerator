@@ -11,7 +11,11 @@
 </a:{{prefix}}a>
 {%- else -%}
     {%- if value is not none -%}
-<a:{{prefix}}a name="DEFAULT" value="{{value}}"/>
+        {% if value is true %}
+<a:{{prefix}}a name="DEFAULT" value="true"/>
+        {% elif value is false %}
+<a:{{prefix}}a name="DEFAULT" value="false"/>
+        {% endif %}
     {%- endif -%}
 {%- endif -%}
 {%- endmacro -%}

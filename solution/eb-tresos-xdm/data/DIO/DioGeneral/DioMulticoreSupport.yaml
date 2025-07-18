@@ -1,0 +1,96 @@
+TEMPLATE_PATH: "var/v_var.xdm" # Type of the template, cannot be changed
+CHILDREN_PATH: []
+
+# Basic AUTOSAR V-CTR configuration template
+name: "DioMulticoreSupport" # Name of the container
+type: "" # Type of the container, e.g., "IDENTIFIABLE"
+description: "This parameter globally enables the possibility to support multicore. If this parmeter is enabled, at least one EcucPartition needs to be defined (in all variants)." # Description of the container
+UUID: "ECUC:2cfeb26f-6cbf-f63f-b20b-b616fgdeef1c" # UUID for the container
+
+calcFormula: ""
+calcLanguage: ""
+derived: # boolean
+pbVariantMultiPlicity: # boolean
+pbVariantValue: false # boolean
+scope: "LOCAL" # Scope of the container, e.g., "GLOBAL", "LOCAL"
+
+variantConfig:
+  - classType: "v" # Class type for the variant configuration
+    className: "PreCompile"
+    name: "VariantPreCompile"
+
+lable: "Dio Multicore Support" # Label for the container
+origin: "BYD"
+optional: # boolean
+symbolicNameValue: false # boolean
+
+defaultConfig:
+  type:
+  tsts:
+    # - expr:
+    #   true_text:
+    #   false_text:
+  value: true
+
+visibleConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+readOnlyConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+invalidConfig:
+  xpath:
+    - expr:
+        {
+          type: "expression",
+          args:
+            [
+              " and ",
+              { type: "expression", args: [" = ", ".", "'true'"] },
+              {
+                type: "expression",
+                args:
+                  [
+                    "",
+                    "not(num:i(count(",
+                    {
+                      type: function,
+                      args: [dataNode:get_abs_path],
+                    },
+                    "/*",
+                    ") > 0))",
+                  ],
+              },
+            ],
+        }
+      true_text: Dio Multicore Support is only enabled when at least one EcucPartition needs to be defined (in all variants).
+      false_text:
+
+  # range:
+  #   - expr:
+  #     true:
+  #     false:
+
+editableConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:
+
+rangeConfig:
+  type:
+  tsts:
+    - expr:
+      true_text:
+      false_text:
+  value:

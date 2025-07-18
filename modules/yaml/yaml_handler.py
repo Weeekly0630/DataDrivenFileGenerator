@@ -250,8 +250,8 @@ class YamlDataTreeHandler(DataHandler):
                             file_system_path,
                         )
                     # 处理每个模式
+                    current_group_number = 0
                     for pattern in patterns:
-                        current_group_number = 0
                         if not pattern:  # 跳过空模式
                             continue
                         if file_node.parent:
@@ -273,7 +273,7 @@ class YamlDataTreeHandler(DataHandler):
                                             f"Error processing child {matching_file.name}: {str(e)}",
                                             str(matching_file.get_absolute_path()),
                                         ) from e
-                        data_node.children_group_number.append(current_group_number)
+                    data_node.children_group_number.append(current_group_number)
                                         
         else:
             raise YamlLoadError(f"Failed to load data", file_system_path)

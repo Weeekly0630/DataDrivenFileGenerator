@@ -1,0 +1,7 @@
+# Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "mcal_base.xdm"
+CHILDREN_PATH: [[DIO/Dio_module_def.yaml, DIO/Dio_ecu.yaml]]
+
+# User data
+name: "Dio" # Name of the AR-PACKAGE
+UUID: "bcbcbeaa-5787-4958-903f-d570d64f0ceb" # UUID for the package

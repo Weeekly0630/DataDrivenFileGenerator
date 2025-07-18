@@ -1,5 +1,5 @@
-TEMPLATE_NAME: "var/v_ref.xdm" # Type of the template, cannot be changed
-CHILDREN:
+TEMPLATE_PATH: "var/v_ref.xdm" # Type of the template, cannot be changed
+CHILDREN_PATH:
   - ""
 
 # Basic AUTOSAR V-LST configuration template

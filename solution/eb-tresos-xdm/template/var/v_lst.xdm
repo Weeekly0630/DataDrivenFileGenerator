@@ -13,7 +13,7 @@
     {{- AttrNodeType.tab_node(tab) -}}
     {{- AttrNodeType.rows_node(rows) -}}
 
-    {{ children_text }} 
+    {{ CHILDREN_CONTEXT0 | indent(4) }} 
 </v:lst>
 {%- endblock -%}
 

@@ -131,3 +131,8 @@
 {%- macro rows_node(rows, prefix="")-%}
 {{Rows.rows_node(rows, prefix)}}
 {%- endmacro -%}
+
+{%- import "attr/param_string/uuid.j2" as UUID -%}
+{%- macro uuid_node(uuid, prefix="")-%}
+{{UUID.uuid_node(uuid, prefix)}}
+{%- endmacro -%}

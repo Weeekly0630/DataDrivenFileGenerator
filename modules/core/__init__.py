@@ -10,23 +10,23 @@ from typing import (
     Iterator,
     runtime_checkable,
     Callable,
-    Type
+    Type,
 )
 from pathlib import Path
 from ..node.data_node import DataNode
-from ..jinja.user_func.func_handler import UserFunctionResolver
 from modules.node.file_node import DirectoryNode
 
+# from ..jinja.user_func.func_handler import UserFunctionResolver
 
-@runtime_checkable
-class UserFunctionResolverGenerator(Protocol):
-    """Protocol for UserFunctionResolver
-    当前DataDrivenGenerator所提供的构建Resolver时可以提供的上下文
-    """
+# @runtime_checkable
+# class UserFunctionResolverGenerator(Protocol):
+#     """Protocol for UserFunctionResolver
+#     当前DataDrivenGenerator所提供的构建Resolver时可以提供的上下文
+#     """
 
-    def create_resolver(self, node: DataNode) -> UserFunctionResolver:
-        """DataDrivenGenerator will call this function when itering the data tree"""
-        ...
+#     def create_resolver(self, node: DataNode) -> UserFunctionResolver:
+#         """DataDrivenGenerator will call this function when itering the data tree"""
+#         ...
 
 
 @runtime_checkable
@@ -50,6 +50,7 @@ class DataHandler(Protocol):
             str: 用于在数据中标识模板路径的键名
         """
         ...
+
     @property
     def preserved_children_key(self) -> str:
         """子节点的键名
@@ -58,8 +59,7 @@ class DataHandler(Protocol):
             str: 用于在数据中标识子节点的键名
         """
         ...
-        
-        
+
     def create_data_tree(self, pattern: str) -> List[DataNode]:
         """从指定模式创建数据树
 
@@ -109,7 +109,7 @@ class TemplateHandler(Protocol):
     #         str: 用于在数据中标识子节点的键名
     #     """
     #     ...
-        
+
     @property
     def preserved_children_key(self) -> str:
         """子节点的键名, 用于在模板中所使用的标记子节点内容位置
@@ -118,7 +118,7 @@ class TemplateHandler(Protocol):
             str: 用于在数据中标识子节点的键名
         """
         ...
-        
+
     def render_template(
         self, template_path: str, node: DataNode, data_handler: DataHandler
     ) -> str:

@@ -1,5 +1,8 @@
 TEMPLATE_PATH: "web.j2"
-CHILDREN_PATH: ["endpoints/*.yaml", "../children/*.yaml"]
+CHILDREN_PATH: [
+  "endpoints/*.yaml", 
+  "../children/*.yaml"
+]
 name: "Web Service"
 type: "http"
 port: 8080

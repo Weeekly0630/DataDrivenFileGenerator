@@ -12,10 +12,7 @@
     {{- AttrNodeType.editable_node(editableConfig) -}}
     {{- AttrNodeType.visible_node(visibleConfig) -}}
     {{- AttrNodeType.tab_node(tab) -}}
-    
-    <a:a name="UUID" value="{{ UUID }}" />
-    {% if CHILDREN_PATH | length > 0 %}
+    {{- AttrNodeType.uuid_node(UUID) -}}
     {{ CHILDREN_CONTEXT0 | indent(4) }}
-    {% endif %}
 </v:ctr>
 {%- endblock -%}

@@ -41,7 +41,3 @@ class DataNode(DirectoryNode["DataNode"]):
         for node in self.iter_data_nodes():
             yield node.data
 
-    from ..jinja.user_func.func_handler import (
-        UserFunctionResolver,
-        UserFunctionInfo,
-    )

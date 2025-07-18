@@ -2,6 +2,8 @@ from typing import Dict, Any, Callable, Protocol, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
+from modules.core import DataHandler
+from modules.node.data_node import DataNode
 
 
 class UserFunctionErrorType(Enum):
@@ -33,11 +35,20 @@ class UserFunctionInfo:
     handler: Callable
 
 
+@dataclass
+class UserFunctionContext:
+    node: DataNode
+    data_handler: DataHandler
+
+
 class UserFunctionResolver:
     """用户定义函数解析器"""
 
-    def __init__(self, function_info: List[UserFunctionInfo]):
+    def __init__(
+        self, context: UserFunctionContext, function_info: List[UserFunctionInfo]
+    ):
         self.info: Dict[str, UserFunctionInfo] = {}
+        self.context: UserFunctionContext = context
         for info in function_info:
             if info.name in self.info:
                 raise UserFunctionError(
@@ -103,7 +114,7 @@ class UserFunctionResolver:
 
             try:
                 # 执行实际处理函数
-                return handler(*args)
+                return handler(self.context, *args)
             except Exception as e:
                 # 捕获执行异常
                 raise UserFunctionError(
