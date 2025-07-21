@@ -117,31 +117,13 @@ class JinjaTemplateHandler:
             jinja2.TemplateError: 如果渲染过程出错
         """
         node_resolver = self.resolver_factory.create_resolver(node, data_handler)
-        print(f"Create Resolver: {node_resolver}")
+        # print(f"Create Resolver: {node_resolver}")
 
         data = node.data  # 获取节点数据
 
         template = self.env.get_template(template_path)
-        data["__node__"] = node
-        data["__resolver__"] = node_resolver
+        
+        # add resolver to context
+        data["__context__"] = {"resolver": node_resolver}
+        
         return template.render(**data)
-        # if filters:
-        #     # 保存当前的过滤器字典（浅拷贝）
-        #     original_filters = self.env.filters.copy()
-        #     try:
-        #         # 注册新的过滤器
-        #         for key, value in filters.items():
-        #             self.register_filter(key, value)
-        #         template = self.env.get_template(template_path)
-        #         return template.render(data)
-        #     finally:
-        #         # 无论是否发生异常，都恢复原始过滤器
-        #         self.env.filters = original_filters
-        # else:
-        #     template = self.env.get_template(template_path)
-        #     return template.render(data)
-        # if resolver:
-        #     for key, value in resolver.items():
-        #         self.register_filter(key, value)
-        # template = self.env.get_template(template_path)
-        # return template.render(data)

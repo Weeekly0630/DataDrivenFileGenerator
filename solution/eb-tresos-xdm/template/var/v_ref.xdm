@@ -8,7 +8,7 @@
     {{- AttrNodeType.scope_node(scope) -}} 
     {{- AttrNodeType.implementation_node(variantConfig) -}}
     {{- AttrNodeType.origin_node(origin) -}}
-    {{- AttrNodeType.invalid_node(invalidConfig, "d") -}}
+    {{- AttrNodeType.invalid_node(__context__, invalidConfig, "d") -}}
     {{- AttrNodeType.optional_node(optional, "") -}}
     {{- AttrNodeType.lable_node(lable) -}}
     {{- AttrNodeType.enable_node(enableConfig, "d") -}}

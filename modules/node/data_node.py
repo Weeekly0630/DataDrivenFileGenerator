@@ -19,16 +19,18 @@ class DataNode(DirectoryNode["DataNode"]):
         self.data: Dict[str, Any] = data
         self.children_group_number: List[int] = [] # 记录子节点组的数量
         
-    def serialize_tree(self, indent: int = 0) -> str:
-        """Serialize the data node to a dictionary representation."""
-        return f"""
-{" " * indent}{{
-{"  " * (indent)}"name": {self.name},
-{"  " * (indent)}"data": {self.data},
-{"  " * (indent)}"children": {''.join([child.serialize_tree(indent + 2) for child in self.children])}
-{" " * indent}}}
-"""
+    # def serialize_tree(self, indent: int = 0) -> str:
+    #     """序列化目录树为字符串"""
+    #     result = [" " * indent + self.get_absolute_path() + "/"]
 
+    #     for child in self.children:
+    #         if isinstance(child, DirectoryNode):
+    #             result.append(child.serialize_tree(indent + 2))
+    #         else:
+    #             result.append(" " * (indent + 2) + child.name)
+
+    #     return "\n".join(result)
+    
     def iter_data_nodes(self) -> Iterable["DataNode"]:
         """深度优先遍历所有数据节点"""
         for child in self.children:

@@ -52,8 +52,8 @@
 {{Imp.implementation_node(implementationConfig)}}
 {%- endmacro -%}
 
-{%- macro invalid_node(invalidConfig, prefix="") -%}
-{{Invalid.invalid_node(invalidConfig, prefix)}}
+{%- macro invalid_node(__context__, invalidConfig, prefix="") -%}
+{{Invalid.invalid_node(__context__, invalidConfig, prefix)}}
 {%- endmacro -%}
 
 {%- macro visible_node(visibleConfig, prefix="") -%}

@@ -74,6 +74,18 @@ class DataHandler(Protocol):
         """
         ...
 
+    def serialize_data_tree(self, root: DataNode, indent: int = 0) -> str:
+        """序列化数据树为字符串
+
+        Args:
+            root: 数据树的根节点
+            indent: 缩进级别
+
+        Returns:
+            str: 序列化后的字符串
+        """
+        ...
+
     def find_by_file_path(self, node: DataNode, pattern: str) -> List[DataNode]:
         """根据 文件 路径模式查找数据节点
 

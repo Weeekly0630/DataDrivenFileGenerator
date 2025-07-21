@@ -313,3 +313,20 @@ class YamlDataTreeHandler(DataHandler):
             raise
 
         return data_tree_list
+
+    def serialize_data_tree(self, root: DataNode, indent: int = 0) -> str:
+        """序列化目录树为字符串"""
+        # 转换到FileNode
+        file_node = self._file_node_mapping.get(root, None)
+        if file_node is None:
+            return ""
+        
+        result = [" " * indent + file_node.get_absolute_path() + "/"]
+
+        for child in root.children:
+            if isinstance(child, DirectoryNode):
+                result.append(self.serialize_data_tree(cast(DataNode, child), indent + 2))
+            else:
+                result.append(" " * (indent + 2) + child.name)
+
+        return "\n".join(result)

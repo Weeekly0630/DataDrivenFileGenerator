@@ -5,7 +5,7 @@
 <v:ctr name="{{ name }}" type="{{ type }}">
     {{- AttrNodeType.desc_html_node(description)-}}
     {{- AttrNodeType.implementation_node(variantConfig) -}}
-    {{- AttrNodeType.invalid_node(invalidConfig) -}}
+    {{- AttrNodeType.invalid_node(__context__, invalidConfig) -}}
     {{- AttrNodeType.optional_node(optional, "") -}}
     {{- AttrNodeType.enable_node(enableConfig, "d") -}}
     {{- AttrNodeType.require_index_node(require_index) -}}

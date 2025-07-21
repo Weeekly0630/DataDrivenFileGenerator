@@ -73,7 +73,11 @@ class DataDrivenGenerator:
                 GeneratorErrorType.DATA_INIT_ERROR,
                 f"No data files found matching pattern: {pattern}",
             )
-
+        # 1.1 打印数据树
+        print("\n==============Serialized Data Tree==============")
+        for tree in trees:
+            print(self.data_handler.serialize_data_tree(tree))
+        
         # 2. 对每个树进行后序遍历和渲染
         for tree in trees:
             self._process_node(tree)
