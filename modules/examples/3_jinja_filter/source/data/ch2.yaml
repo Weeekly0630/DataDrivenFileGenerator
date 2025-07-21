@@ -1,8 +1,8 @@
 TEMPLATE_PATH: "math_template.j2"
 CHILDREN_PATH:
 
-name: children1
-value: 200
+name: children2
+value: 800
 
 expr1:
   type: function

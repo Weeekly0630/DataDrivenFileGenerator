@@ -1,6 +1,6 @@
 # Basic AUTOSAR MCAL configuration template
 TEMPLATE_PATH: "chc/moduledef_chc.xdm"  # Type of the template, cannot be changed
-CHILDREN_PATH: [DioGeneral.yaml, DioConfig.yaml]
+CHILDREN_PATH: [[DioGeneral.yaml, DioConfig.yaml]]
   
 # Change these values to match your project
 name: "Dio" # Name of the AR-PACKAGE

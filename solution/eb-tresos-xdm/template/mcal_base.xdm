@@ -17,7 +17,7 @@
       <d:ctr name="{{ name }}" type="AR-PACKAGE">
         <a:a name="UUID" value="{{ UUID }}" />
         <d:lst type="ELEMENTS">
-            {{ CHILDREN_CONTEXT0 | indent(12) }}
+            {{ CHILDREN_CONTEXT[0] | indent(12) }}
         </d:lst>
       </d:ctr>
     </d:lst>

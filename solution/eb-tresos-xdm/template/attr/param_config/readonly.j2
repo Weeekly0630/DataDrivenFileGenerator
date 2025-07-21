@@ -1,11 +1,11 @@
 {%- import "attr/common.j2" as Common -%}
 
 {# READONLY #}
-{%- macro __readonly_node(type, tsts, value, prefix) -%}
+{%- macro __readonly_node(__context__, type, tsts, value, prefix) -%}
 {%- if type == "XPath" -%}
 <a:{{prefix}}a name="READONLY" type="XPath">
     {%- for tst in tsts -%}
-    <a:tst  expr="{{-tst.expr-}}" 
+    <a:tst  expr="{{- tst.expr | expr_filter(__context__) -}}" 
             {{-Common.set_attr("true", tst.true_text)-}}
             {{-Common.set_attr("false", tst.false_text)-}} />
     {%- endfor -%}
@@ -21,6 +21,6 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro readonly_node(readOnlyConfig, prefix) -%}
-{{__readonly_node(readOnlyConfig.type, readOnlyConfig.tsts, readOnlyConfig.value, prefix)}}
+{%- macro readonly_node(__context__, readOnlyConfig, prefix) -%}
+{{__readonly_node(__context__, readOnlyConfig.type, readOnlyConfig.tsts, readOnlyConfig.value, prefix)}}
 {%- endmacro -%}

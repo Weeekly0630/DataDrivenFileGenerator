@@ -14,15 +14,8 @@ class FunctionPlugin:
     """插件基类，支持静态和动态函数"""
 
     @classmethod
-    def static_functions(cls) -> List[UserFunctionInfo]:
-        """返回插件提供的静态函数列表（与节点无关）"""
-        return []
-
-    @classmethod
-    def dynamic_functions(
-        cls, node: DataNode, data_handler: DataHandler
-    ) -> List[UserFunctionInfo]:
-        """返回插件提供的动态函数列表（需要节点上下文以及节点树上下文）"""
+    def functions(cls) -> List[UserFunctionInfo]:
+        """返回插件提供的函数列表"""
         return []
 
     @classmethod
@@ -41,12 +34,12 @@ class UserFunctionResolverFactory:
     def __init__(self, plugins_dir: str = str(Path(__file__).parent / "plugins")):
         self.plugins_dir = plugins_dir
         self.plugin_classes: List[Type[FunctionPlugin]] = []
-        self.static_functions: Dict[str, UserFunctionInfo] = {}
+        self.functions: Dict[str, UserFunctionInfo] = {}
 
         # 初始化时加载所有插件
         self._load_plugins()
-        # 收集所有静态函数
-        self._collect_static_functions()
+        # 收集所有函数
+        self._collect_functions()
 
     @staticmethod
     def _serialize_function_info(info: UserFunctionInfo, indent: int) -> str:
@@ -57,13 +50,9 @@ class UserFunctionResolverFactory:
 
     def show_function_info(self) -> str:
         result = ""
-        result += f"========Static functions========\n"
-        for key, value in self.static_functions.items():
+        result += f"========Functions========\n"
+        for key, value in self.functions.items():
             result += self._serialize_function_info(value, indent=0) + "\n"
-
-        result += f"========Dynamic functions========\n"
-        for info in self._create_dynamic_functions():
-            result += self._serialize_function_info(info, indent=0) + "\n"
 
         return result
 
@@ -119,57 +108,37 @@ class UserFunctionResolverFactory:
                         f"Error initializing plugin {plugin_class.__name__}: {str(e)}"
                     )
 
-    def _collect_static_functions(self):
+    def _collect_functions(self):
         """收集所有插件的静态函数"""
         # 收集插件静态函数
-        plugin_static = {}
+        plugin = {}
         for plugin_class in self.plugin_classes:
             try:
-                for func_info in plugin_class.static_functions():
+                for func_info in plugin_class.functions():
                     # 防止函数名冲突
-                    if func_info.name in plugin_static:
+                    if func_info.name in plugin:
                         print(
                             f"Warning: Duplicate static function name '{func_info.name}' in plugin {plugin_class.__name__}"
                         )
                     else:
-                        plugin_static[func_info.name] = func_info
+                        plugin[func_info.name] = func_info
             except Exception as e:
                 print(
                     f"Error collecting static functions from {plugin_class.__name__}: {str(e)}"
                 )
 
         # 合并所有静态函数
-        self.static_functions = {**plugin_static}
-
-    def _create_dynamic_functions(self) -> List[UserFunctionInfo]:
-        """创建内置和插件的动态函数"""
-        # 插件动态函数
-        plugin_dynamic = []
-        for plugin_class in self.plugin_classes:
-            try:
-                # 获取插件的动态函数
-                funcs = plugin_class.dynamic_functions(
-                )
-                plugin_dynamic.extend(funcs)
-            except Exception as e:
-                print(
-                    f"Error creating dynamic functions from {plugin_class.__name__}: {str(e)}"
-                )
-
-        return plugin_dynamic
+        self.functions = {**plugin}
 
     def create_resolver(
         self, node: DataNode, data_handler: DataHandler
     ) -> UserFunctionResolver:
         """创建函数解析器"""
-        static_funcs = list(self.static_functions.values())
-        dynamic_funcs = self._create_dynamic_functions()
+        funcs = list(self.functions.values())
+
         from .func_handler import UserFunctionContext
 
-        return UserFunctionResolver(
-            UserFunctionContext(node, data_handler),
-            static_funcs + dynamic_funcs,
-        )
+        return UserFunctionResolver(UserFunctionContext(node, data_handler), funcs)
 
     def reload_plugins(self):
         """重新加载所有插件"""
@@ -182,4 +151,3 @@ class UserFunctionResolverFactory:
 
         self.plugin_classes.clear()
         self._load_plugins()
-        self._collect_static_functions()

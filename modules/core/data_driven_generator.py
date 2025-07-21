@@ -77,7 +77,7 @@ class DataDrivenGenerator:
         print("\n==============Serialized Data Tree==============")
         for tree in trees:
             print(self.data_handler.serialize_data_tree(tree))
-        
+
         # 2. 对每个树进行后序遍历和渲染
         for tree in trees:
             self._process_node(tree)
@@ -111,30 +111,40 @@ class DataDrivenGenerator:
         data = node.data
 
         # 4. 收集子节点渲染结果
-        
-        print(f"Processing node: {node.name} with children{node.children_group_number}: {[child.name for child in node.children]}")        
-        
+
+        print(
+            f"Processing node: {node.name} with children{node.children_group_number}: {[child.name for child in node.children]}"
+        )
+
         # 给子节点编号?
         current_children_index = 0
-        
+
+        data[self.template_handler.preserved_children_key] = []
+
         if len(node.children_group_number) == 0:
-            # 如果没有子节点，给一个index0变量的默认值
-            data[self.template_handler.preserved_children_key + "0"] = ""
-        else:    
+            # 如果没有子节点，preserved_children_key为空列表
+            pass
+        else:
             for group_index, group_number in enumerate(node.children_group_number):
                 children_content: Union[List[str], str] = []
                 print(f"    Processing group {group_index}: {group_number}")
                 # 从children中取number个子节点
-                for child_index in range(current_children_index, current_children_index + group_number):
+                for child_index in range(
+                    current_children_index, current_children_index + group_number
+                ):
                     if child_index < len(node.children):
                         child = node.children[child_index]
-                        if isinstance(child, DataNode) and child in self._rendered_contents:
+                        if (
+                            isinstance(child, DataNode)
+                            and child in self._rendered_contents
+                        ):
                             children_content.append(self._rendered_contents[child])
 
                 # 5. 添加子节点内容到上下文
-                data[self.template_handler.preserved_children_key + str(group_index)] = "\n".join(
-                    children_content
+                data[self.template_handler.preserved_children_key].append(
+                    "\n".join(children_content)
                 )
+                
                 # 更新当前子节点索引
                 current_children_index += group_number
 

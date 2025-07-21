@@ -15,7 +15,7 @@ template_config:
 
 # 要处理的入口文件
 patterns:
-  - "*.yaml"
+  - "root.yaml"
 
 # 输出目录
 output_dir: .\source\output

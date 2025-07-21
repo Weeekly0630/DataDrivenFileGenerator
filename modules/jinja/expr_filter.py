@@ -15,6 +15,9 @@ def expr_filter(*args, **kwargs: Dict):
     Returns:
         str: Processed expression as a string.
     """
+    if len(args) < 2:
+        raise ValueError("Lost context argument.")
+
     if isinstance(args[1], Dict):
         resolver = args[1].get("resolver", None)
         if not isinstance(resolver, UserFunctionResolver):

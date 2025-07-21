@@ -2,11 +2,11 @@
 
 
 {# RANGE #}
-{%- macro __range_node(type, tsts, value, prefix) -%}
+{%- macro __range_node(__context__, type, tsts, value, prefix) -%}
 {%- if type == "XPath" -%}
 <a:{{prefix}}a name="RANGE" type="XPath">
     {%- for tst in tsts -%}
-    <a:tst  expr="{{-tst.expr-}}" 
+    <a:tst  expr="{{-tst.expr | expr_filter(__context__) -}}" 
             {{-Common.set_attr("true", tst.true_text)-}}
             {{-Common.set_attr("false", tst.false_text)-}} />
     {%- endfor -%}
@@ -26,6 +26,6 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro range_node(rangeConfig, prefix) -%}
-{{__range_node(rangeConfig.type, rangeConfig.tsts, rangeConfig.value, prefix)}}
+{%- macro range_node(__context__, rangeConfig, prefix) -%}
+{{__range_node(__context__, rangeConfig.type, rangeConfig.tsts, rangeConfig.value, prefix)}}
 {%- endmacro -%}

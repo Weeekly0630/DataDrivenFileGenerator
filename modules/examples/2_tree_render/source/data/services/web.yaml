@@ -1,7 +1,7 @@
 TEMPLATE_PATH: "web.j2"
 CHILDREN_PATH: [
-  "endpoints/*.yaml", 
-  "../children/*.yaml"
+  "endpoints/api1.yaml",
+  "endpoints/api2.yaml",
 ]
 name: "Web Service"
 type: "http"

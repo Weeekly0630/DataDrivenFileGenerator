@@ -28,9 +28,9 @@
             <a:a name="LABEL" value="Config Variant" />
             {{- AttrNodeType.uuid_node(ConfigVariantUUID) -}}
             <a:da name="DEFAULT" value="VariantPostBuild" />
-            {{- AttrNodeType.range_node(rangeConfig, "d") -}}
+            {{- AttrNodeType.range_node(__context__, rangeConfig, "d") -}}
         </v:var> 
-        {{ CHILDREN_CONTEXT0 | indent(8) }} 
+        {{ CHILDREN_CONTEXT[0] | indent(8) }} 
         <d:ref type="REFINED_MODULE_DEF" value="{{ refinedModuleDefPath }}" />
     </v:ctr>
 </d:chc>

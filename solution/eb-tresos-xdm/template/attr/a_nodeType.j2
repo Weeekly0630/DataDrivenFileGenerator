@@ -40,12 +40,12 @@
 {%- import "attr/param_config/visible.j2" as Visiable -%}
 
 
-{%- macro enable_node(EnableConfig, prefix="") -%}
-{{Enable.enable_node(EnableConfig, prefix)}}
+{%- macro enable_node(__context__, EnableConfig, prefix="") -%}
+{{Enable.enable_node(__context__, EnableConfig, prefix)}}
 {%- endmacro -%}
 
-{%- macro editable_node(EditableConfig, prefix="") -%}
-{{Editable.editable_node(EditableConfig, prefix)}}
+{%- macro editable_node(__context__, EditableConfig, prefix="") -%}
+{{Editable.editable_node(__context__, EditableConfig, prefix)}}
 {%- endmacro -%}
 
 {%- macro implementation_node(implementationConfig) -%}
@@ -56,33 +56,33 @@
 {{Invalid.invalid_node(__context__, invalidConfig, prefix)}}
 {%- endmacro -%}
 
-{%- macro visible_node(visibleConfig, prefix="") -%}
-{{Visiable.visible_node(visibleConfig, prefix)}}
+{%- macro visible_node(__context__, visibleConfig, prefix="") -%}
+{{Visiable.visible_node(__context__, visibleConfig, prefix)}}
 {%- endmacro -%}
 
 {%- import "attr/param_config/default.j2" as Default -%}
-{%- macro default_node(defaultConfig, prefix="") -%}
-{{Default.default_node(defaultConfig, prefix)}}
+{%- macro default_node(__context__, defaultConfig, prefix="") -%}
+{{Default.default_node(__context__, defaultConfig, prefix)}}
 {%- endmacro -%}
 
 {%- import "attr/param_config/readonly.j2" as Readonly -%}
-{%- macro readonly_node(readOnlyConfig, prefix="") -%}
-{{Readonly.readonly_node(readOnlyConfig, prefix)}}
+{%- macro readonly_node(__context__, readOnlyConfig, prefix="") -%}
+{{Readonly.readonly_node(__context__, readOnlyConfig, prefix)}}
 {%- endmacro -%}
 
 {%- import "attr/param_config/range.j2" as Range -%}
-{%- macro range_node(rangeConfig, prefix="") -%}
-{{Range.range_node(rangeConfig, prefix)}}
+{%- macro range_node(__context__, rangeConfig, prefix="") -%}
+{{Range.range_node(__context__, rangeConfig, prefix)}}
 {%- endmacro -%}
 
 {%- import "attr/param_config/min.j2" as Min -%}
-{%- macro min_node(minConfig, prefix="")-%}
-{{Min.min_node(minConfig, prefix)}}
+{%- macro min_node(__context__, minConfig, prefix="")-%}
+{{Min.min_node(__context__, minConfig, prefix)}}
 {%- endmacro -%}
 
 {%- import "attr/param_config/max.j2" as Max -%}
-{%- macro max_node(maxConfig, prefix="")-%}
-{{Max.max_node(maxConfig, prefix)}}
+{%- macro max_node(__context__, maxConfig, prefix="")-%}
+{{Max.max_node(__context__, maxConfig, prefix)}}
 {%- endmacro -%}
 
 {# param string #}

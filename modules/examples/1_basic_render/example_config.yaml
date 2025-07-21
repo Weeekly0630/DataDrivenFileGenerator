@@ -19,3 +19,4 @@ patterns:
 
 # 输出目录
 output_dir: .\source\output
+output_file_extension: "xml"

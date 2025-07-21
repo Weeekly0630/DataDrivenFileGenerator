@@ -5,6 +5,10 @@
     <expr>
         /root.yaml/ch0.yaml
     </expr>
+
+    <children>
+        
+    </children>
 </group0>
 <group1>
     <node name="children1", value="200">
@@ -13,6 +17,19 @@
     <expr>
         /root.yaml/ch1.yaml
     </expr>
+
+    <children>
+        <node name="children2", value="800">
+        </node>
+
+        <expr>
+            /root.yaml/ch1.yaml/ch2.yaml
+        </expr>
+
+        <children>
+            
+        </children>
+    </children>
 </group1>
 
 <path_value path=".\children_0\ch0.yaml">
@@ -26,3 +43,7 @@
 <expr>
     /root.yaml
 </expr>
+
+<value>
+    0
+</value>

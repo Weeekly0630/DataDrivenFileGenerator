@@ -33,7 +33,7 @@ class UserFunctionInfo:
     arg_range: tuple
     description: str
     handler: Callable
-
+    validator: Optional[Callable] = None
 
 @dataclass
 class UserFunctionContext:
@@ -111,8 +111,11 @@ class UserFunctionResolver:
             #         error_type=UserFunctionErrorType.PARAM_INVALID,
             #         message=f"Invalid parameter values for {func_name}",
             #     )
-
+            
             try:
+                if info.validator:
+                    info.validator(*args)
+
                 # 执行实际处理函数
                 return handler(self.context, *args)
             except Exception as e:

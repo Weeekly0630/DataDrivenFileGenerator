@@ -15,13 +15,13 @@
     {{- AttrNodeType.origin_node(origin) -}}
     {{- AttrNodeType.optional_node(optional) -}}
     {{- AttrNodeType.symbolic_name_value_node(symbolicNameValue) -}}
-    {{- AttrNodeType.default_node(defaultConfig, "d") -}}
-    {{- AttrNodeType.visible_node(visibleConfig) -}}
-    {{- AttrNodeType.readonly_node(readOnlyConfig, "d") -}}
+    {{- AttrNodeType.default_node(__context__, defaultConfig, "d") -}}
+    {{- AttrNodeType.visible_node(__context__, visibleConfig) -}}
+    {{- AttrNodeType.readonly_node(__context__, readOnlyConfig, "d") -}}
     {{- AttrNodeType.invalid_node(__context__, invalidConfig) -}}
-    {{- AttrNodeType.editable_node(editableConfig, "d") -}}
-    {{- AttrNodeType.range_node(rangeConfig, "d") -}}
+    {{- AttrNodeType.editable_node(__context__, editableConfig, "d") -}}
+    {{- AttrNodeType.range_node(__context__, rangeConfig, "d") -}}
     {{- AttrNodeType.uuid_node(UUID) -}}
-    {{- CHILDREN_CONTEXT0 | indent(4) -}}
+    {{- CHILDREN_CONTEXT[0] | indent(4) -}}
 </v:var>
 {%- endblock -%}

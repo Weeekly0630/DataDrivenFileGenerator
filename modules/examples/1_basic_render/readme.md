@@ -1,15 +1,24 @@
 # 基础渲染示例
 
-使用Yaml及Jinja2模板引擎进行基础的模板生成。
-YamlHandler读取yaml文件生成字典数据，Jinja2TemplateHandler使用该字典数据渲染模板。
+此文档介绍如何使用 DataDrivenGenerator 进行简单的模板渲染。
 
-## 1.使用方法
-```python
-cli.py ./example_config.yaml
+## 1. 简介
+
+- **数据源**：数据源负责可以是任意的类型，例如`JSON`, `YAML`等。Generator根据指定的`data_type`进行数据模型的处理，最终将存储为字典数据。
+- **模板引擎**：Jinja2，负责模板的渲染。
+
+## 2. 使用方法
+
+使用python运行cli\.py，并输入一个config.yaml配置文件
+
+```bash
+python cli.py ./example_config.yaml
 ```
 
-## 2.示例文件
-### example_config.yaml
+## 3. 示例文件
+
+### 3.1 example_config.yaml
+
 cli将使用命令行指定的配置文件进行处理。
 
 ```yaml
@@ -36,11 +45,17 @@ patterns:
 output_dir: .\expr_test\output
 ```
 
-### data.yaml
-```yaml
-TEMPLATE: template.j2
-CHILDREN: 
+1. DataDrivenGenerator将会根据指定的`data_type`以及`template_type`, 创建对应的DataHandler和TemplateHander.
+2. DataHandler负责进行字典数据的处理，TemplateHandler负责将字典数据在指定模板中渲染。
 
+### 3.2 字典数据data.yaml
+
+```yaml
+### Preserved Key
+TEMPLATE: template.j2 # 指定模板路径
+CHILDREN: # 指定子数据节点
+
+### User Data
 paragrahs:
   - "Paragrah 1"
   - "Paragrah 2"
@@ -51,7 +66,7 @@ titles:
   Title2: ahahah
 ```
 
-### template.j2
+### 3.3 模板template.j2
 
 ```jinja2
 <html>
@@ -65,7 +80,8 @@ titles:
     {% endfor %}
 </html>
 ```
-## 3. 执行流程
+
+## 4. 执行流程
 
 ```mermaid
 graph TD
@@ -78,7 +94,8 @@ graph TD
     template_processor -->|渲染模板| rendered_template[Rendered Template]
 ```
 
-## 4. 输出结果
+## 5. 输出结果
+
 ```xml
 <html>
     <p>Paragrah 1</p>

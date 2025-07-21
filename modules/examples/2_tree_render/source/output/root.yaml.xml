@@ -10,34 +10,6 @@
         <subsystem>Database</subsystem>
     </subsystems>
     <services>
-        <web-service>
-            <info>
-                <name>Web Service</name>
-                <type>http</type>
-                <port>8080</port>
-                <enabled>True</enabled>
-            </info>
-            <endpoints>
-                <endpoint>
-                    <name>REST API</name>
-                    <path>/api/v1</path>
-                    <methods>
-                        <method>GET</method>
-                        <method>POST</method>
-                        <method>PUT</method>
-                    </methods>
-                    <auth-required>True</auth-required>
-                </endpoint>
-            </endpoints>
-            <children1>
-                <service>
-                    <name>Child Config</name>
-                    <type>service</type>
-                    <port>8080</port>
-                    <enabled>True</enabled>
-                </service>
-            </children1>
-        </web-service>
         <database-service>
             <info>
                 <name>Database Service</name>
@@ -49,5 +21,37 @@
                 <max-connections>100</max-connections>
             </config>
         </database-service>
+        <web-service>
+            <info>
+                <name>Web Service</name>
+                <type>http</type>
+                <port>8080</port>
+                <enabled>True</enabled>
+            </info>
+            <endpoints>
+                <endpoint>
+                    <name>REST API1</name>
+                    <path>/api/v1</path>
+                    <methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </methods>
+                    <auth-required>True</auth-required>
+                </endpoint>
+            </endpoints>
+            <children1>
+                <endpoint>
+                    <name>REST API2</name>
+                    <path>/api/v2</path>
+                    <methods>
+                        <method>GET</method>
+                        <method>POST</method>
+                        <method>PUT</method>
+                    </methods>
+                    <auth-required>True</auth-required>
+                </endpoint>
+            </children1>
+        </web-service>
     </services>
 </system>

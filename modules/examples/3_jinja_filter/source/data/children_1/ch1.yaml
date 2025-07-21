@@ -1,0 +1,10 @@
+TEMPLATE_PATH: "math_template.j2"
+CHILDREN_PATH: ["../ch2.yaml"]
+
+name: children1
+value: 200
+
+expr1:
+  type: function
+  args:
+    - dataNode:get_abs_path

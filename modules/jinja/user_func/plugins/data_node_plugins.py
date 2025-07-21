@@ -8,11 +8,6 @@ from typing import List, Callable
 class DataNodePlugin(FunctionPlugin):
     """数据节点相关操作"""
 
-    @classmethod
-    def static_functions(cls) -> List[UserFunctionInfo]:
-        """静态数学函数"""
-        return []
-
     @staticmethod
     def _get_targets(node, data_handler: DataHandler, file_path: str) -> List[DataNode]:
         target_nodes = data_handler.find_by_file_path(node, file_path)
@@ -26,7 +21,7 @@ class DataNodePlugin(FunctionPlugin):
         return target_nodes
 
     @classmethod
-    def dynamic_functions(
+    def functions(
         cls
     ) -> List[UserFunctionInfo]:
         

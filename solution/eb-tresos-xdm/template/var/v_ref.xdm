@@ -11,9 +11,9 @@
     {{- AttrNodeType.invalid_node(__context__, invalidConfig, "d") -}}
     {{- AttrNodeType.optional_node(optional, "") -}}
     {{- AttrNodeType.lable_node(lable) -}}
-    {{- AttrNodeType.enable_node(enableConfig, "d") -}}
+    {{- AttrNodeType.enable_node(__context__, enableConfig, "d") -}}
     {{- AttrNodeType.ref_node(refs, "d") -}}
     {{- AttrNodeType.uuid_node(UUID) -}}
-    {{ CHILDREN_CONTEXT0 | indent(4) }}
+    {{ CHILDREN_CONTEXT[0] | indent(4) }}
 </v:ref>
 {%- endblock -%}

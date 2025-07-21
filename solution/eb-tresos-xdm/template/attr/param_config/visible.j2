@@ -1,11 +1,11 @@
 {%- import "attr/common.j2" as Common -%}
 
 {# VISIBLE #}
-{%- macro __visible_node(type, tsts, value, prefix) -%}
+{%- macro __visible_node(__context__, type, tsts, value, prefix) -%}
 {%- if type == "XPath" -%}
 <a:{{prefix}}a name="VISIBLE" type="XPath">
     {%- for tst in tsts -%}
-    <a:tst  expr="{{-tst.expr-}}" 
+    <a:tst  expr="{{- tst.expr | expr_filter(__context__) -}}" 
             {{-Common.set_attr("true", tst.true_text)-}}
             {{-Common.set_attr("false", tst.false_text)-}} />
     {%- endfor -%}
@@ -21,6 +21,6 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro visible_node(config, prefix) -%}
-{{__visible_node(config.type, config.tsts, config.value, prefix)}}
+{%- macro visible_node(__context__, config, prefix) -%}
+{{__visible_node(__context__, config.type, config.tsts, config.value, prefix)}}
 {%- endmacro -%}

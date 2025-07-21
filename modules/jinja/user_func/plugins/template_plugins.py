@@ -6,37 +6,18 @@ from typing import List, Callable, Any
 
 
 class MathUtilsPlugin(FunctionPlugin):
-    """数学工具插件，包含静态和动态函数"""
+    """数学工具插件"""
 
     @classmethod
-    def static_functions(cls) -> List[UserFunctionInfo]:
-        """静态数学函数"""
-        return [
-            UserFunctionInfo(
-                name="math:square",
-                arg_range=(1, 1),
-                description="Calculate the square of a number",
-                handler=lambda x: x * x,
-            ),
-            UserFunctionInfo(
-                name="math:sum",
-                arg_range=(2, None),
-                description="Sum all arguments",
-                handler=lambda *args: sum(args),
-            ),
-        ]
-
-    @classmethod
-    def dynamic_functions(cls) -> List[UserFunctionInfo]:
-        """动态数学函数（使用节点上下文）同时使用工厂方法"""
+    def functions(cls) -> List[UserFunctionInfo]:
 
         def node_value(context: UserFunctionContext, file_path: str) -> Any:
             find_nodes = context.data_handler.find_by_file_path(context.node, file_path)
             if len(find_nodes) > 0:
                 target = find_nodes[0]
-                return target.data.get("value", None)
+                return target.data.get("value", "")
             else:
-                return None
+                return ""
 
         def children_sum(context: UserFunctionContext) -> str:
             return "sum"
@@ -58,9 +39,7 @@ class MathUtilsPlugin(FunctionPlugin):
 
     @classmethod
     def on_plugin_load(cls):
-        print(
-            f"MathUtilsPlugin loaded with {len(cls.static_functions())} static functions"
-        )
+        print("MathUtilsPlugin loaded")
 
     @classmethod
     def on_plugin_unload(cls):
