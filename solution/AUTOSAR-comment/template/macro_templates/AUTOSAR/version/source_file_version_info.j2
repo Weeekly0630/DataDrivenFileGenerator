@@ -1,0 +1,9 @@
+{%- macro source_file_version_info(__context__, prefix, version_info, suffix) -%}
+#define {{prefix|upper}}_VENDOR_ID{{suffix|upper}}                          {{ version_info.vender_id | expr_filter(__context__) }}
+#define {{prefix|upper}}_AR_RELEASE_MAJOR_VERSION{{suffix|upper}}           {{ version_info.ar_release_major_version | expr_filter(__context__) }}
+#define {{prefix|upper}}_AR_RELEASE_MINOR_VERSION{{suffix|upper}}           {{ version_info.ar_release_minor_version | expr_filter(__context__) }}
+#define {{prefix|upper}}_AR_RELEASE_REVISION_VERSION{{suffix|upper}}        {{ version_info.ar_release_revision_version | expr_filter(__context__) }}
+#define {{prefix|upper}}_SW_MAJOR_VERSION{{suffix|upper}}                   {{ version_info.sw_major_version | expr_filter(__context__) }}
+#define {{prefix|upper}}_SW_MINOR_VERSION{{suffix|upper}}                   {{ version_info.sw_minor_version | expr_filter(__context__) }}
+#define {{prefix|upper}}_SW_PATCH_VERSION{{suffix|upper}}                   {{ version_info.sw_revision_version | expr_filter(__context__) }}
+{%- endmacro -%}

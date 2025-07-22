@@ -15,8 +15,8 @@
 *   All Rights Reserved.
  =============================================================================*/
 
-#ifndef {{ Imp | expr_filter(__context__) }}_IP_H
-#define {{ Imp | expr_filter(__context__) }}_IP_H
+#ifndef {{ Imp  | expr_filter(__context__) | upper }}_IP_H
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -25,36 +25,36 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-#include "{{ Imp | expr_filter(__context__) }}_Ip_Cfg.h"
+#include "{{ Imp  | expr_filter(__context__) }}_Ip_Cfg.h"
 
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-#define {{ Imp | expr_filter(__context__) }}_IP_VENDOR_ID                          {{ vi | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_MAJOR_VERSION           {{ AR_RELEASE_MAJOR_VERSION | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_MINOR_VERSION           {{ AR_RELEASE_MINOR_VERSION | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_REVISION_VERSION        {{ AR_RELEASE_REVISION_VERSION | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_SW_MAJOR_VERSION                   {{ x | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_SW_MINOR_VERSION                   {{ y | expr_filter(__context__) }}
-#define {{ Imp | expr_filter(__context__) }}_IP_SW_PATCH_VERSION                   {{ z | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_VENDOR_ID                          {{ vi | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION           {{ AR_RELEASE_MAJOR_VERSION | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION           {{ AR_RELEASE_MINOR_VERSION | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION        {{ AR_RELEASE_REVISION_VERSION | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION                   {{ x | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION                   {{ y | expr_filter(__context__) }}
+#define {{ Imp  | expr_filter(__context__) | upper }}_IP_SW_PATCH_VERSION                   {{ z | expr_filter(__context__) }}
 
 /*==============================================================================
 *                              FILE VERSION CHECKS
 ==============================================================================*/
 /* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h are of the same vendor */
-#if ({{ Imp | expr_filter(__context__) }}_IP_VENDOR_ID != {{ Imp | expr_filter(__context__) }}_IP_CFG_VENDOR_ID)
-    #error "{{ Imp | expr_filter(__context__) }}_Ip.h and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h have different vendor ids"
+#if ({{ Imp  | expr_filter(__context__) | upper }}_IP_VENDOR_ID != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_VENDOR_ID)
+    #error "{{ Imp  | expr_filter(__context__) }}_Ip.h and {{ Imp  | expr_filter(__context__) }}_Ip_Cfg.h have different vendor ids"
 #endif
 /* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h are of the same Autosar version */
-#if (({{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_MAJOR_VERSION    != {{ Imp | expr_filter(__context__) }}_IP_CFG_AR_RELEASE_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_MINOR_VERSION    != {{ Imp | expr_filter(__context__) }}_IP_CFG_AR_RELEASE_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) }}_IP_AR_RELEASE_REVISION_VERSION != {{ Imp | expr_filter(__context__) }}_IP_CFG_AR_RELEASE_REVISION_VERSION))
+#if (({{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION    != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_AR_RELEASE_MAJOR_VERSION) || \
+     ({{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION    != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_AR_RELEASE_MINOR_VERSION) || \
+     ({{ Imp  | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_AR_RELEASE_REVISION_VERSION))
     #error "AutoSar version of {{ Imp | expr_filter(__context__) }}_Ip.h and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h are different"
 #endif
 /* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h are of the same software version */
-#if (({{ Imp | expr_filter(__context__) }}_IP_SW_MAJOR_VERSION    != {{ Imp | expr_filter(__context__) }}_IP_CFG_SW_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) }}_IP_SW_MINOR_VERSION    != {{ Imp | expr_filter(__context__) }}_IP_CFG_SW_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) }}_IP_SW_REVISION_VERSION != {{ Imp | expr_filter(__context__) }}_IP_CFG_SW_REVISION_VERSION))
+#if (({{ Imp  | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION    != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_SW_MAJOR_VERSION) || \
+     ({{ Imp  | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION    != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_SW_MINOR_VERSION) || \
+     ({{ Imp  | expr_filter(__context__) | upper }}_IP_SW_REVISION_VERSION != {{ Imp  | expr_filter(__context__) | upper }}_IP_CFG_SW_REVISION_VERSION))
     #error "Software version of {{ Imp | expr_filter(__context__) }}_Ip.h and {{ Imp | expr_filter(__context__) }}_Ip_Cfg.h are different"
 #endif
 
@@ -94,6 +94,6 @@ extern "C"{
 
 /** @} */
 
-#endif /* {{ Imp | expr_filter(__context__) }}_IP_H */
+#endif /* {{ Imp  | expr_filter(__context__) | upper }}_IP_H */
 
 /* -------------------------------  EOF  ------------------------------------ */

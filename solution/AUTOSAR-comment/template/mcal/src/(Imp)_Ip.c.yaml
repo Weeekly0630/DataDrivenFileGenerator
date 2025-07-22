@@ -14,3 +14,10 @@ AR_RELEASE_MAJOR_VERSION_C:
 AR_RELEASE_MINOR_VERSION_C:
 AR_RELEASE_REVISION_VERSION_C: 
 
+file_info:
+  file: 
+  brief:
+  version:
+  group_name:
+copyright_info:
+  autosar_version:

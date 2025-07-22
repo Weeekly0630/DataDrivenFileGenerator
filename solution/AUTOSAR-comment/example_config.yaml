@@ -15,7 +15,7 @@ template_config:
 
 # 要处理的入口文件
 patterns:
-  - "*.yaml"
+  - "Cdd_Ipc_Ip.c.yaml"
 
 # 输出目录
 output_dir: .\output

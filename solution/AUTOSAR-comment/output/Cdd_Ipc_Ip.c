@@ -1,8 +1,20 @@
-{%- extends "base.j2" -%}
-{%- block content -%}
-{{ Doxygen.source_file_header_start(__context__, file_info) }}
+/**
+*   @file       Cdd_Ipc_Ip.c
+*   @brief      None
+*   @version    1.1.1
+*   @addtogroup CDD_IPC_MODULE
+*   @{
+*/
 
-{{ Autosar.source_file_copyright(__context__, copyright_info) }}
+/*==============================================================================
+*   Autosar Version      : 4.4.0
+*   Autosar Revision     : ASR_REL_4_4_REV_110
+*   Autosar Conf.Variant :
+*   SW Version           : 1.1.0
+
+*   Copyright (C) 2022 Byd
+*   All Rights Reserved.
+==============================================================================*/
 
 #ifdef __cplusplus
 extern "C"{
@@ -11,31 +23,37 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-#include "{{ Imp | expr_filter(__context__) }}_Ip.h"
+#include "Cdd_Ipc_Ip.h"
 
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-{{ Autosar.source_file_version_info(__context__, Imp | expr_filter(__context__) | upper, version_info, suffix="C") }}
+#define CDD_IPC_IP_VENDOR_ID_C                        255
+#define CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION_C         4
+#define CDD_IPC_IP_AR_RELEASE_MINOR_VERSION_C         4
+#define CDD_IPC_IP_AR_RELEASE_REVISION_VERSION_C      0
+#define CDD_IPC_IP_SW_MAJOR_VERSION_C                 1
+#define CDD_IPC_IP_SW_MINOR_VERSION_C                 1
+#define CDD_IPC_IP_SW_PATCH_VERSION_C                 0
 
 /*==============================================================================
 *                              FILE VERSION CHECKS
 ==============================================================================*/
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same vendor */
-#if ({{ Imp | expr_filter(__context__) | upper }}_IP_VENDOR_ID_C != {{ Imp | expr_filter(__context__) | upper }}_IP_VENDOR_ID)
-    #error "{{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h have different vendor ids"
+/* Check if current file and Cdd_Ipc_Ip.h are of the same vendor */
+#if (CDD_IPC_IP_VENDOR_ID_C != CDD_IPC_IP_VENDOR_ID)
+    #error "Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h have different vendor ids"
 #endif
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same Autosar version */
-#if (({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION_C != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION))
-    #error "AutoSar version of {{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h are different"
+/* Check if current file and Cdd_Ipc_Ip.h are of the same Autosar version */
+#if ((CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION_C    != CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION) || \
+     (CDD_IPC_IP_AR_RELEASE_MINOR_VERSION_C    != CDD_IPC_IP_AR_RELEASE_MINOR_VERSION) || \
+     (CDD_IPC_IP_AR_RELEASE_REVISION_VERSION_C != CDD_IPC_IP_AR_RELEASE_REVISION_VERSION))
+    #error "AutoSar version of Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h are different"
 #endif
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same software version */
-#if (({{ Imp | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_SW_REVISION_VERSION_C != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_REVISION_VERSION))
-    #error "Software version of {{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h are different"
+/* Check if current file and Cdd_Ipc_Ip.h are of the same software version */
+#if ((CDD_IPC_IP_SW_MAJOR_VERSION_C    != CDD_IPC_IP_SW_MAJOR_VERSION) || \
+     (CDD_IPC_IP_SW_MINOR_VERSION_C    != CDD_IPC_IP_SW_MINOR_VERSION) || \
+     (CDD_IPC_IP_SW_REVISION_VERSION_C != CDD_IPC_IP_SW_REVISION_VERSION))
+    #error "Software version of Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h are different"
 #endif
 
 /*==============================================================================
@@ -95,7 +113,6 @@ extern "C"{
 }
 #endif
 
-{{ Doxygen.source_file_header_end(__context__, file_info) }}
+/*  @}*/
 
 /* -------------------------------  EOF  ------------------------------------ */
-{%- endblock -%}

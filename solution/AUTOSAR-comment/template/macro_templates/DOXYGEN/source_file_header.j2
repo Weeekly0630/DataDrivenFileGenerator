@@ -1,0 +1,15 @@
+{# add to group #}
+
+{%- macro source_file_header_start(__context__, file_info) -%}
+/**
+*   @file       {{ file_info.file | expr_filter(__context__) }}
+*   @brief      {{ file_info.brief | expr_filter(__context__) }}
+*   @version    {{ file_info.version | expr_filter(__context__) }}
+*   @addtogroup {{ file_info.group_name | expr_filter(__context__) }}
+*   @{{ "{" }}
+*/
+{%- endmacro -%}
+
+{%- macro source_file_header_end(__context__, file_info=none) -%}
+/*  @{{ "}" }}*/
+{%- endmacro -%}

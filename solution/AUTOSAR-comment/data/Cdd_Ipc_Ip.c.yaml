@@ -3,14 +3,108 @@ TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c"
 CHILDREN_PATH: []
 
 ### User Data
-Imp: 
-PROJECT: 
+file_info:
+  file: {
+      # {{ Imp }}_Ip.c
+      type: function,
+      args:
+        [
+          string:join,
+          "",
+          {
+            type: function,
+            args: [dataNode:get_attr, "./common/common_info.yaml", "Imp"],
+          },
+          "_Ip.c",
+        ],
+    }
+  brief:
+  version: {
+      # x.y.z
+      type: function,
+      args:
+        [
+          string:join,
+          ".",
+          {
+            type: function,
+            args: [dataNode:get_attr, "./common/common_info.yaml", "x"],
+          },
+          {
+            type: function,
+            args: [dataNode:get_attr, "./common/common_info.yaml", "y"],
+          },
+          {
+            type: function,
+            args: [dataNode:get_attr, "./common/common_info.yaml", "z"],
+          },
+        ],
+    }
+  group_name:
+    {
+      type: function,
+      args: [dataNode:get_attr, "./common/common_info.yaml", "group_name"],
+    }
+
+Imp:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "Imp"],
+  }
+  
+PROJECT:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "PROJECT"],
+  }
 x:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "x"],
+  }
 y:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "y"],
+  }
 z:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "z"],
+  }
 vi:
+  {
+    type: function,
+    args: [dataNode:get_attr, "./common/common_info.yaml", "vi"],
+  }
 
 AR_RELEASE_MAJOR_VERSION_C:
+  {
+    type: function,
+    args:
+      [
+        dataNode:get_attr,
+        "./common/common_info.yaml",
+        "AR_RELEASE_MAJOR_VERSION",
+      ],
+  }
 AR_RELEASE_MINOR_VERSION_C:
-AR_RELEASE_REVISION_VERSION_C: 
-
+  {
+    type: function,
+    args:
+      [
+        dataNode:get_attr,
+        "./common/common_info.yaml",
+        "AR_RELEASE_MINOR_VERSION",
+      ],
+  }
+AR_RELEASE_REVISION_VERSION_C:
+  {
+    type: function,
+    args:
+      [
+        dataNode:get_attr,
+        "./common/common_info.yaml",
+        "AR_RELEASE_REVISION_VERSION",
+      ],
+  }
