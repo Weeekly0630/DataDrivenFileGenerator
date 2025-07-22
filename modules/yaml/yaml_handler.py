@@ -206,11 +206,11 @@ class YamlDataTreeHandler(DataHandler):
             raise YamlStructureError.max_depth_exceeded(
                 self.config.max_depth, file_node.name
             )
-            
+
         file_system_path: str = str(
             self.config.root_path
         ) + file_node.get_absolute_path(slice_range=(1, None))
-        
+
         data = _YamlFileHandler._load_yaml_file(file_system_path)
         if data:
             # 创建数据节点并存入映射
@@ -226,7 +226,7 @@ class YamlDataTreeHandler(DataHandler):
 
             # 处理子节点
             children_path = data_node.data[self.preserved_children_key]
-            
+
             if children_path == "":  # 空字符串视为空列表
                 children_path = []
             if children_path:
@@ -251,6 +251,7 @@ class YamlDataTreeHandler(DataHandler):
                         )
                     # 处理每个模式
                     current_group_number = 0
+                    group_member_set = set()  # 用于跟踪组成员
                     for pattern in patterns:
                         if not pattern:  # 跳过空模式
                             continue
@@ -260,6 +261,11 @@ class YamlDataTreeHandler(DataHandler):
                             ).find_nodes_by_path(pattern)
                             for matching_file in matching_files:
                                 if isinstance(matching_file, FileNode):
+                                    if matching_file in group_member_set:
+                                        # 如果已经处理过这个文件，跳过
+                                        continue
+                                    group_member_set.add(matching_file)
+                                    # 创建子节点
                                     try:
                                         child_node = self._data_node_create(
                                             matching_file, depth + 1
@@ -274,7 +280,7 @@ class YamlDataTreeHandler(DataHandler):
                                             str(matching_file.get_absolute_path()),
                                         ) from e
                     data_node.children_group_number.append(current_group_number)
-                                        
+
         else:
             raise YamlLoadError(f"Failed to load data", file_system_path)
         return data_node
@@ -320,12 +326,14 @@ class YamlDataTreeHandler(DataHandler):
         file_node = self._file_node_mapping.get(root, None)
         if file_node is None:
             return ""
-        
+
         result = [" " * indent + file_node.get_absolute_path() + "/"]
 
         for child in root.children:
             if isinstance(child, DirectoryNode):
-                result.append(self.serialize_data_tree(cast(DataNode, child), indent + 2))
+                result.append(
+                    self.serialize_data_tree(cast(DataNode, child), indent + 2)
+                )
             else:
                 result.append(" " * (indent + 2) + child.name)
 

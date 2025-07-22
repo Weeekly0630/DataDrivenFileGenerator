@@ -1,0 +1,16 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c"
+CHILDREN_PATH: []
+
+### User Data
+Imp: 
+PROJECT: 
+x:
+y:
+z:
+vi:
+
+AR_RELEASE_MAJOR_VERSION_C:
+AR_RELEASE_MINOR_VERSION_C:
+AR_RELEASE_REVISION_VERSION_C: 
+

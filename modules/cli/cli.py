@@ -88,14 +88,48 @@ def save_output(output_dir: str, results: Dict[str, str], file_extension: str) -
         output_dir: 输出目录
         results: 渲染结果字典，键为文件名，值为内容
     """
+
+    def name_extension(file_path: str, extension: str) -> str:
+        """
+        移除文件路径的一个后缀名，并添加指定的扩展名
+
+        参数:
+            file_path: 原始文件路径
+            extension: 要添加的新扩展名（带或不带点均可，空字符串表示只移除不添加）
+
+        返回:
+            处理后的新文件路径
+        """
+
+        # 分离目录路径和文件名
+        dir_name, file_name = os.path.split(file_path)
+
+        # 处理文件名部分
+        if "." in file_name:
+            # 只移除一个后缀名（最后一个点之后的部分）
+            base_name = file_name.rsplit(".", 1)[0]
+        else:
+            # 没有后缀名则保持原样
+            base_name = file_name
+
+        # 处理扩展名
+        if extension:
+            # 确保扩展名以点开头
+            if not extension.startswith("."):
+                extension = "." + extension
+            new_filename = base_name + extension
+        else:
+            # 扩展名为空字符串，只移除后缀名
+            new_filename = base_name
+
+        # 重新组合完整路径
+        return os.path.join(dir_name, new_filename)
+
     out_path = Path(output_dir)
     out_path.mkdir(parents=True, exist_ok=True)
 
     for name, content in results.items():
-        if file_extension != "":
-            file_path = out_path / f"{name}.{file_extension}"
-        else:
-            file_path = out_path / f"{name}"
+        file_path = out_path / name_extension(name, file_extension)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"Generated: {file_path}")

@@ -1,0 +1,15 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: ""
+CHILDREN_PATH: []
+
+Imp: Cdd_Ipc
+PROJECT: BS9523XX
+# Software Version x.y.z
+x: 1
+y: 1
+z: 0
+vi: 255 # Vender ID
+# AUTOSAR Version x.y.z
+AR_RELEASE_MAJOR_VERSION: 4
+AR_RELEASE_MINOR_VERSION: 4
+AR_RELEASE_REVISION_VERSION: 0
