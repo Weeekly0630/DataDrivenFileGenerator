@@ -1,0 +1,28 @@
+<group0>
+    <node name="children0", value="100">
+    </node>
+
+    <expr>
+        /root.yaml/ch0.yaml
+    </expr>
+</group0>
+<group1>
+    <node name="children1", value="200">
+    </node>
+
+    <expr>
+        /root.yaml/ch1.yaml
+    </expr>
+</group1>
+
+<path_value path=".\children_0\ch0.yaml">
+    <value> 100 </value>
+</path_value>
+
+<path_value path=".\children_1\ch1.yaml">
+    <value> 200 </value>
+</path_value>
+
+<expr>
+    /root.yaml
+</expr>

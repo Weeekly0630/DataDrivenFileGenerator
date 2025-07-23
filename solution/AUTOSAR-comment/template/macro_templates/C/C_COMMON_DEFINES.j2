@@ -1,0 +1,4 @@
+{% import "macro_templates/C/include.j2" as Include %}
+{%- macro include(file_name) -%}
+{{- Include.include(file_name) -}}
+{%- endmacro -%}

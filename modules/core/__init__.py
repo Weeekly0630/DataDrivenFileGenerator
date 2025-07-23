@@ -74,6 +74,14 @@ class DataHandler(Protocol):
         """
         ...
 
+    def preprocess_expr(self, data_node: DataNode) -> None:
+        """预处理表达式
+
+        Args:
+            data_node: 数据节点
+        """
+        ...
+
     def serialize_data_tree(self, root: DataNode, indent: int = 0) -> str:
         """序列化数据树为字符串
 

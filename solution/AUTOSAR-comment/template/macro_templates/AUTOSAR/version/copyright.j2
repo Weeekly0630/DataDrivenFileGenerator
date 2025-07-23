@@ -1,0 +1,11 @@
+{%- macro copyright(__context__, copyright_info) -%}
+/*==============================================================================
+*   Autosar Version      : {{ copyright_info.autosar_version | expr_filter(__context__)}}
+*   Autosar Revision     : {{ copyright_info.autosar_revision | expr_filter(__context__)}}
+*   Autosar Conf.Variant :
+*   SW Version           : {{ copyright_info.sw_version | expr_filter(__context__)}}
+
+*   Copyright (C) 2022 Byd
+*   All Rights Reserved.
+ =============================================================================*/
+{%- endmacro -%}

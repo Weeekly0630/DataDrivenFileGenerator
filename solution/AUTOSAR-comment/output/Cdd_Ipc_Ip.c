@@ -1,20 +1,20 @@
 /**
-*   @file       Cdd_Ipc_Ip.c
-*   @brief      None
-*   @version    1.1.1
+*   @file       Cdd_Ipc
+*   @brief      CDD Ipc Ip layer C source file
+*   @version    1.1.0
 *   @addtogroup CDD_IPC_MODULE
 *   @{
 */
 
 /*==============================================================================
 *   Autosar Version      : 4.4.0
-*   Autosar Revision     : ASR_REL_4_4_REV_110
+*   Autosar Revision     : 
 *   Autosar Conf.Variant :
 *   SW Version           : 1.1.0
 
 *   Copyright (C) 2022 Byd
 *   All Rights Reserved.
-==============================================================================*/
+ =============================================================================*/
 
 #ifdef __cplusplus
 extern "C"{
@@ -23,18 +23,18 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-#include "Cdd_Ipc_Ip.h"
+#include "Cdd_Ipc.h"
 
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-#define CDD_IPC_IP_VENDOR_ID_C                        255
-#define CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION_C         4
-#define CDD_IPC_IP_AR_RELEASE_MINOR_VERSION_C         4
-#define CDD_IPC_IP_AR_RELEASE_REVISION_VERSION_C      0
-#define CDD_IPC_IP_SW_MAJOR_VERSION_C                 1
-#define CDD_IPC_IP_SW_MINOR_VERSION_C                 1
-#define CDD_IPC_IP_SW_PATCH_VERSION_C                 0
+#define CDD_IPC_VENDOR_IDC                          255
+#define CDD_IPC_AR_RELEASE_MAJOR_VERSIONC           4
+#define CDD_IPC_AR_RELEASE_MINOR_VERSIONC           4
+#define CDD_IPC_AR_RELEASE_REVISION_VERSIONC        0
+#define CDD_IPC_SW_MAJOR_VERSIONC                   1
+#define CDD_IPC_SW_MINOR_VERSIONC                   1
+#define CDD_IPC_SW_PATCH_VERSIONC                   0
 
 /*==============================================================================
 *                              FILE VERSION CHECKS

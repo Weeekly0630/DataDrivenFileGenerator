@@ -90,7 +90,7 @@ class DataDrivenGenerator:
             )
 
         return results
-
+    
     def _process_node(self, node: DataNode) -> None:
         """处理单个节点及其子节点
 
@@ -107,6 +107,9 @@ class DataDrivenGenerator:
         # 2. 验证数据
         validate_data_context(node.data, self.data_handler.preserved_template_key)
 
+        # 2.1 预处理节点上下文
+        self.data_handler.preprocess_expr(node)
+        
         # 3. 准备渲染上下文
         data = node.data
 

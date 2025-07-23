@@ -1,5 +1,5 @@
 ### Preserved Key for DataDrivenGenerator
-TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c"
+TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c.j2"
 CHILDREN_PATH: []
 
 ### User Data
@@ -14,10 +14,4 @@ AR_RELEASE_MAJOR_VERSION_C:
 AR_RELEASE_MINOR_VERSION_C:
 AR_RELEASE_REVISION_VERSION_C: 
 
-file_info:
-  file: 
-  brief:
-  version:
-  group_name:
-copyright_info:
-  autosar_version:
+include_files:

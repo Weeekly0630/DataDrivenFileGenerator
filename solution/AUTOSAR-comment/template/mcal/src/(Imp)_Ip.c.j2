@@ -1,8 +1,15 @@
 {%- extends "base.j2" -%}
 {%- block content -%}
-{{ Doxygen.source_file_header_start(__context__, file_info) }}
+{% set _sw_version=x + "." + y + "." + z %}
+{% set _autosar_version=AR_RELEASE_MAJOR_VERSION_C+"."+AR_RELEASE_MINOR_VERSION_C+"."+AR_RELEASE_REVISION_VERSION_C %}
+{{ Doxygen.header_start(__context__, {"file": Imp, "brief": file_brief, "version": _sw_version, "group_name": group_name}) }}
 
-{{ Autosar.source_file_copyright(__context__, copyright_info) }}
+{{ Autosar.copyright(__context__, {
+    "autosar_version": _autosar_version,
+    "autosar_revision": "",
+    "sw_version": _sw_version 
+    })
+}}
 
 #ifdef __cplusplus
 extern "C"{
@@ -11,12 +18,27 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-#include "{{ Imp | expr_filter(__context__) }}_Ip.h"
+{% for file_name in include_files %}
+{{ C.include(file_name) }}
+{% endfor %}
 
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-{{ Autosar.source_file_version_info(__context__, Imp | expr_filter(__context__) | upper, version_info, suffix="C") }}
+{{ Autosar.version_info(
+    __context__, 
+    Imp | upper, 
+    {
+        "vender_id":vi,
+        "ar_release_major_version": AR_RELEASE_MAJOR_VERSION_C,
+        "ar_release_minor_version": AR_RELEASE_MINOR_VERSION_C,
+        "ar_release_revision_version": AR_RELEASE_REVISION_VERSION_C,
+        "sw_major_version": x,
+        "sw_minor_version": y,
+        "sw_revision_version": z,
+    }, 
+    suffix="_C") 
+}}
 
 /*==============================================================================
 *                              FILE VERSION CHECKS
@@ -95,7 +117,7 @@ extern "C"{
 }
 #endif
 
-{{ Doxygen.source_file_header_end(__context__, file_info) }}
+{{ Doxygen.header_end(__context__, file_info) }}
 
 /* -------------------------------  EOF  ------------------------------------ */
 {%- endblock -%}
