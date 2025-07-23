@@ -1,4 +1,19 @@
-{% import "macro_templates/C/include.j2" as Include %}
-{%- macro include(file_name) -%}
-{{- Include.include(file_name) -}}
+{% import "macro_templates/C/macro/include.j2" as Include %}
+{%- macro macro_include(info) -%}
+{{- Include.macro_include(info) -}}
+{%- endmacro -%}
+
+{% import "macro_templates/C/macro/if.j2" as If %}
+{%- macro macro_if(info) -%}
+{{- If.macro_if(info) -}}
+{%- endmacro -%}
+
+{% import "macro_templates/C/macro/define.j2" as Define %}
+{%- macro macro_define(info) -%}
+{{- Define.macro_define(info) -}}
+{%- endmacro -%}
+
+{% import "macro_templates/C/macro/conditional_include.j2" as ConditionalInclude %}
+{%- macro macro_conditional_include(info) -%}
+{{- ConditionalInclude.macro_conditional_include(info) -}}
 {%- endmacro -%}

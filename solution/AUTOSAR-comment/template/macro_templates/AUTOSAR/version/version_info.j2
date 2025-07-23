@@ -1,9 +1,11 @@
-{%- macro version_info(__context__, IMP, version_info, suffix) -%}
-#define {{IMP|upper}}_VENDOR_ID{{suffix|upper}}                          {{ version_info.vender_id | expr_filter(__context__) }}
-#define {{IMP|upper}}_AR_RELEASE_MAJOR_VERSION{{suffix|upper}}           {{ version_info.ar_release_major_version | expr_filter(__context__) }}
-#define {{IMP|upper}}_AR_RELEASE_MINOR_VERSION{{suffix|upper}}           {{ version_info.ar_release_minor_version | expr_filter(__context__) }}
-#define {{IMP|upper}}_AR_RELEASE_REVISION_VERSION{{suffix|upper}}        {{ version_info.ar_release_revision_version | expr_filter(__context__) }}
-#define {{IMP|upper}}_SW_MAJOR_VERSION{{suffix|upper}}                   {{ version_info.sw_major_version | expr_filter(__context__) }}
-#define {{IMP|upper}}_SW_MINOR_VERSION{{suffix|upper}}                   {{ version_info.sw_minor_version | expr_filter(__context__) }}
-#define {{IMP|upper}}_SW_PATCH_VERSION{{suffix|upper}}                   {{ version_info.sw_revision_version | expr_filter(__context__) }}
+{% import "macro_templates/C/C_COMMON_DEFINES.j2" as C %}
+
+{%- macro version_info(prefix, info, suffix="") -%}
+#define {{prefix|upper}}_VENDOR_ID_{{suffix|upper}}                          {{ info.vender_id }}
+#define {{prefix|upper}}_AR_RELEASE_MAJOR_VERSION_{{suffix|upper}}           {{ info.ar_release_major_version }}
+#define {{prefix|upper}}_AR_RELEASE_MINOR_VERSION_{{suffix|upper}}           {{ info.ar_release_minor_version }}
+#define {{prefix|upper}}_AR_RELEASE_REVISION_VERSION_{{suffix|upper}}        {{ info.ar_release_revision_version }}
+#define {{prefix|upper}}_SW_MAJOR_VERSION_{{suffix|upper}}                   {{ info.sw_major_version }}
+#define {{prefix|upper}}_SW_MINOR_VERSION_{{suffix|upper}}                   {{ info.sw_minor_version }}
+#define {{prefix|upper}}_SW_PATCH_VERSION_{{suffix|upper}}                   {{ info.sw_revision_version }}
 {%- endmacro -%}

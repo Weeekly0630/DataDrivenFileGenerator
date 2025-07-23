@@ -1,0 +1,6 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "C/macro/includes.j2"
+CHILDREN_PATH: # []
+
+### User Data
+includes: # [{"file_name": ""}]

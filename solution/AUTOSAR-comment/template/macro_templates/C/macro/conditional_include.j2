@@ -1,0 +1,16 @@
+{# Mix if and include #}
+{% import "macro_templates/C/macro/include.j2" as Include %}
+{% import "macro_templates/C/macro/if.j2" as If %}
+
+{%- macro macro_conditional_include(info) -%}
+{% set contents %}
+{%- for inc in info.includes %}
+{{ Include.macro_include(inc) }}
+{%- endfor %}
+{% endset %}
+{{ If.macro_if({
+    "conditions": [info.include_condition],
+    "contents": [contents],
+    "else_content": info.else_content
+}) }}
+{%- endmacro -%}

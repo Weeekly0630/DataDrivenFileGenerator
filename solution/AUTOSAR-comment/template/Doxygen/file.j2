@@ -1,0 +1,6 @@
+{%- extends "base.j2" -%}
+{%- block content -%}
+{{ Doxygen.header_start(file_info)}}
+{{ CHILDREN_CONTEXT[0] }}
+{{ Doxygen.header_end(file_info)}}
+{%- endblock -%}

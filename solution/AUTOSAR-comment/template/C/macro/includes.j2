@@ -1,0 +1,7 @@
+{%- extends "base.j2" -%}
+{%- block content -%}
+{# A group of includes #}
+{% for include in includes %}
+{{ C.macro_include(include) }}
+{% endfor %}
+{%- endblock -%}

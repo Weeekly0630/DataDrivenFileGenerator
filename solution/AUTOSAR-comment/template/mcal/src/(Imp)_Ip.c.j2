@@ -2,9 +2,9 @@
 {%- block content -%}
 {% set _sw_version=x + "." + y + "." + z %}
 {% set _autosar_version=AR_RELEASE_MAJOR_VERSION_C+"."+AR_RELEASE_MINOR_VERSION_C+"."+AR_RELEASE_REVISION_VERSION_C %}
-{{ Doxygen.header_start(__context__, {"file": Imp, "brief": file_brief, "version": _sw_version, "group_name": group_name}) }}
 
-{{ Autosar.copyright(__context__, {
+{{ Doxygen.header_start({"file": Imp, "brief": file_brief, "version": _sw_version, "group_name": group_name}) }}
+{{ Autosar.copyright({
     "autosar_version": _autosar_version,
     "autosar_revision": "",
     "sw_version": _sw_version 
@@ -18,15 +18,11 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-{% for file_name in include_files %}
-{{ C.include(file_name) }}
-{% endfor %}
-
+{{ C.macro_conditional_include(conditional_include_info) }}
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
 {{ Autosar.version_info(
-    __context__, 
     Imp | upper, 
     {
         "vender_id":vi,
@@ -117,7 +113,7 @@ extern "C"{
 }
 #endif
 
-{{ Doxygen.header_end(__context__, file_info) }}
+{{ Doxygen.header_end(file_info) }}
 
 /* -------------------------------  EOF  ------------------------------------ */
 {%- endblock -%}

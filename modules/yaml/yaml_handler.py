@@ -222,36 +222,36 @@ class YamlDataTreeHandler(DataHandler):
             # 假设被解析的字典数据一定有type, args字段
             return "type" in data and "args" in data
 
-        def preprocess_data(data) -> str:
+        def preprocess_data(data) -> Any:
             """预处理数据，转换expr字典转换为ExprNode, 并最后转换为字符串替换原有的表达式"""
             if isinstance(data, Dict):
                 if need_to_be_parsed(data):
                     expr_node = parser.parse(data)
                     if expr_node is not None:
                         # 使用ExprPrintVisitor将ExprNode转换为字符串
-                        expr_str = expr_node.accept(ExprPrintVistor(node_resolver))
-                        return str(expr_str)
+                        result_obj = expr_node.accept(ExprPrintVistor(node_resolver))
+                        return result_obj
                     else:
                         raise YamlStructureError.invalid_expression(
                             str(data), self.get_absolute_path(data_node)
                         )
                 else:
                     for key, value in data.items():
-                        expr_str = preprocess_data(value)  # 递归处理子字典
-                        if expr_str != "":
-                            data[key] = expr_str
-                    return ""
+                        result_obj = preprocess_data(value)  # 递归处理子字典
+                        if result_obj != None:
+                            data[key] = result_obj
+                    return data  # 返回处理后的字典
             elif isinstance(data, list):
                 # 处理列表中的每个元素
                 for index, item in enumerate(data):
                     if isinstance(item, dict):
-                        expr_str = preprocess_data(item)
-                        if expr_str != "":
-                            data[index] = expr_str
-                return ""
+                        result_obj = preprocess_data(item)
+                        if result_obj != "":
+                            data[index] = result_obj
+                return data
             else:
                 # 对于其他类型，直接返回原值
-                return str(data)
+                return data
         
         # 预处理数据，转换expr表达式
         preprocess_data(data_node.data)

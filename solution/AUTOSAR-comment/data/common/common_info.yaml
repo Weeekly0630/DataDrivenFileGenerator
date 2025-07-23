@@ -2,7 +2,7 @@
 TEMPLATE_PATH: ""
 CHILDREN_PATH: []
 
-Imp: Cdd_Ipc
+Imp: Ipc
 PROJECT: BS9523XX
 # Software Version x.y.z
 x: 1

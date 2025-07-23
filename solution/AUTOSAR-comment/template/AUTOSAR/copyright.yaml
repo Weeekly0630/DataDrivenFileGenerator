@@ -1,0 +1,6 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c.j2"
+CHILDREN_PATH: []
+
+### User Data
+copyright_info:

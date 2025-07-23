@@ -1,0 +1,7 @@
+{%- extends "base.j2" -%}
+{%- block content -%}
+{# A group of definitions #}
+{% for define in defines %}
+{{ C.macro_define(defines) }}
+{% endfor %}
+{%- endblock -%}

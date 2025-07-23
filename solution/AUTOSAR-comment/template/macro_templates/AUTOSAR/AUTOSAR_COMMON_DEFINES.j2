@@ -1,9 +1,14 @@
 {% import "macro_templates/AUTOSAR/version/copyright.j2" as CopyRight %}
-{%- macro copyright(__context__, copyright_info) -%}
-{{- CopyRight.copyright(__context__, copyright_info) -}}
+{%- macro copyright(info) -%}
+{{- CopyRight.copyright(info) -}}
 {%- endmacro -%}
 
 {% import "macro_templates/AUTOSAR/version/version_info.j2" as VersionInfo %}
-{%- macro version_info(__context__, IMP, version_info, suffix="") -%}
-{{- VersionInfo.version_info(__context__, IMP, version_info, suffix) -}}
+{%- macro version_info(prefix, info, suffix="") -%}
+{{- VersionInfo.version_info(prefix, info, suffix) -}}
+{%- endmacro -%}
+
+{% import "macro_templates/AUTOSAR/version/version_check.j2" as VersionCheck %}
+{%- macro version_info(prefix, info, suffix="") -%}
+{{- VersionInfo.version_info(prefix, info, suffix) -}}
 {%- endmacro -%}

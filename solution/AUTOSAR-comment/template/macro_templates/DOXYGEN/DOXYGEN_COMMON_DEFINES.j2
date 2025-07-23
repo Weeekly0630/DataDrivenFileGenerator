@@ -1,8 +1,8 @@
-{% import "macro_templates/DOXYGEN/group/header.j2" as FileHeader %}
-{%- macro header_start(context, file_info) -%}
-{{- FileHeader.header_start(context, file_info) -}}
+{% import "macro_templates/DOXYGEN/header.j2" as FileHeader %}
+{%- macro header_start(file_info) -%}
+{{- FileHeader.header_start(file_info) -}}
 {%- endmacro -%}
 
-{%- macro header_end(context, file_info) -%}
-{{- FileHeader.header_end(context, file_info) -}}
+{%- macro header_end(file_info) -%}
+{{- FileHeader.header_end(file_info) -}}
 {%- endmacro -%}

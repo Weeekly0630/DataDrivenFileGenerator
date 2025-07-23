@@ -1,11 +1,11 @@
+
 /**
-*   @file       Cdd_Ipc
+*   @file       Ipc
 *   @brief      CDD Ipc Ip layer C source file
 *   @version    1.1.0
 *   @addtogroup CDD_IPC_MODULE
 *   @{
 */
-
 /*==============================================================================
 *   Autosar Version      : 4.4.0
 *   Autosar Revision     : 
@@ -23,37 +23,38 @@ extern "C"{
 /*==============================================================================
 *                                INCLUDE FILES
 ==============================================================================*/
-#include "Cdd_Ipc.h"
-
+#if VERSION == "1.1.1"
+    #include "Cdd_Ipc.h"
+#endif
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-#define CDD_IPC_VENDOR_IDC                          255
-#define CDD_IPC_AR_RELEASE_MAJOR_VERSIONC           4
-#define CDD_IPC_AR_RELEASE_MINOR_VERSIONC           4
-#define CDD_IPC_AR_RELEASE_REVISION_VERSIONC        0
-#define CDD_IPC_SW_MAJOR_VERSIONC                   1
-#define CDD_IPC_SW_MINOR_VERSIONC                   1
-#define CDD_IPC_SW_PATCH_VERSIONC                   0
+#define IPC_VENDOR_ID_C                          255
+#define IPC_AR_RELEASE_MAJOR_VERSION_C           4
+#define IPC_AR_RELEASE_MINOR_VERSION_C           4
+#define IPC_AR_RELEASE_REVISION_VERSION_C        0
+#define IPC_SW_MAJOR_VERSION_C                   1
+#define IPC_SW_MINOR_VERSION_C                   1
+#define IPC_SW_PATCH_VERSION_C                   0
 
 /*==============================================================================
 *                              FILE VERSION CHECKS
 ==============================================================================*/
-/* Check if current file and Cdd_Ipc_Ip.h are of the same vendor */
-#if (CDD_IPC_IP_VENDOR_ID_C != CDD_IPC_IP_VENDOR_ID)
-    #error "Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h have different vendor ids"
+/* Check if current file and Ipc_Ip.h are of the same vendor */
+#if (IPC_IP_VENDOR_ID_C != IPC_IP_VENDOR_ID)
+    #error "Ipc_Ip.c and Ipc_Ip.h have different vendor ids"
 #endif
-/* Check if current file and Cdd_Ipc_Ip.h are of the same Autosar version */
-#if ((CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION_C    != CDD_IPC_IP_AR_RELEASE_MAJOR_VERSION) || \
-     (CDD_IPC_IP_AR_RELEASE_MINOR_VERSION_C    != CDD_IPC_IP_AR_RELEASE_MINOR_VERSION) || \
-     (CDD_IPC_IP_AR_RELEASE_REVISION_VERSION_C != CDD_IPC_IP_AR_RELEASE_REVISION_VERSION))
-    #error "AutoSar version of Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h are different"
+/* Check if current file and Ipc_Ip.h are of the same Autosar version */
+#if ((IPC_IP_AR_RELEASE_MAJOR_VERSION_C    != IPC_IP_AR_RELEASE_MAJOR_VERSION) || \
+     (IPC_IP_AR_RELEASE_MINOR_VERSION_C    != IPC_IP_AR_RELEASE_MINOR_VERSION) || \
+     (IPC_IP_AR_RELEASE_REVISION_VERSION_C != IPC_IP_AR_RELEASE_REVISION_VERSION))
+    #error "AutoSar version of Ipc_Ip.c and Ipc_Ip.h are different"
 #endif
-/* Check if current file and Cdd_Ipc_Ip.h are of the same software version */
-#if ((CDD_IPC_IP_SW_MAJOR_VERSION_C    != CDD_IPC_IP_SW_MAJOR_VERSION) || \
-     (CDD_IPC_IP_SW_MINOR_VERSION_C    != CDD_IPC_IP_SW_MINOR_VERSION) || \
-     (CDD_IPC_IP_SW_REVISION_VERSION_C != CDD_IPC_IP_SW_REVISION_VERSION))
-    #error "Software version of Cdd_Ipc_Ip.c and Cdd_Ipc_Ip.h are different"
+/* Check if current file and Ipc_Ip.h are of the same software version */
+#if ((IPC_IP_SW_MAJOR_VERSION_C    != IPC_IP_SW_MAJOR_VERSION) || \
+     (IPC_IP_SW_MINOR_VERSION_C    != IPC_IP_SW_MINOR_VERSION) || \
+     (IPC_IP_SW_REVISION_VERSION_C != IPC_IP_SW_REVISION_VERSION))
+    #error "Software version of Ipc_Ip.c and Ipc_Ip.h are different"
 #endif
 
 /*==============================================================================

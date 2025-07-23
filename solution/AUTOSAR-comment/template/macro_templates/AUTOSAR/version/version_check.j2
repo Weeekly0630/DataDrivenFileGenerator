@@ -1,0 +1,18 @@
+{%- macro version_check(cur, ref, cur_file, ref_file) -%}
+/* Check vendor */
+#if ({{ cur }}_VENDOR_ID_C != {{ ref }}_VENDOR_ID)
+#error "{{ cur_file }} and {{ ref_file }} have different vendor ids"
+#endif
+/* Check AUTOSAR version */
+#if ( ({{ cur }}_AR_RELEASE_MAJOR_VERSION_C != {{ ref }}_AR_RELEASE_MAJOR_VERSION) || \
+      ({{ cur }}_AR_RELEASE_MINOR_VERSION_C != {{ ref }}_AR_RELEASE_MINOR_VERSION) || \
+      ({{ cur }}_AR_RELEASE_REVISION_VERSION_C != {{ ref }}_AR_RELEASE_REVISION_VERSION) )
+#error "AutoSar Version Numbers of {{ cur_file }} and {{ ref_file }} are different"
+#endif
+/* Check software version */
+#if ( ({{ cur }}_SW_MAJOR_VERSION_C != {{ ref }}_SW_MAJOR_VERSION) || \
+      ({{ cur }}_SW_MINOR_VERSION_C != {{ ref }}_SW_MINOR_VERSION) || \
+      ({{ cur }}_SW_PATCH_VERSION_C != {{ ref }}_SW_PATCH_VERSION) )
+#error "Software Version Numbers of {{ cur_file }} and {{ ref_file }} are different"
+#endif
+{%- endmacro -%}

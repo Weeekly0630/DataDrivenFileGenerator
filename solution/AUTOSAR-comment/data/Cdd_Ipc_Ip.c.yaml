@@ -4,6 +4,11 @@ CHILDREN_PATH: []
 
 ### User Data
 file_brief: CDD Ipc Ip layer C source file
+conditional_include_info:
+  include_condition: 'VERSION == "1.1.1"'
+  includes: [{ "file_name": "Cdd_Ipc.h" }]
+  else_content:
+
 include_files:
   [
     {

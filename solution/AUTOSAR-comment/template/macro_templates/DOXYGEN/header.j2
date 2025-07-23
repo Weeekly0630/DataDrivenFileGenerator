@@ -1,0 +1,15 @@
+{# add to group #}
+
+{%- macro header_start(file_info) -%}
+/**
+*   @file       {{ file_info.file }}
+*   @brief      {{ file_info.brief }}
+*   @version    {{ file_info.version }}
+*   @addtogroup {{ file_info.group_name }}
+*   @{{ "{" }}
+*/
+{%- endmacro -%}
+
+{%- macro header_end(file_info=none) -%}
+/*  @{{ "}" }}*/
+{%- endmacro -%}

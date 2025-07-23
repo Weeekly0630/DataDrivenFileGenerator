@@ -239,10 +239,10 @@ class ExprPrintVistor(ExprASTVisitor):
     def __init__(self, user_function_resolver: UserFunctionResolver):
         self.resolver: UserFunctionResolver = user_function_resolver
 
-    def visit_xpath(self, node: XPathNode) -> str:
+    def visit_xpath(self, node: XPathNode) -> Any:
         return "/".join(part.accept(self) for part in node.parts)
 
-    def visit_function(self, node: FunctionNode) -> str:
+    def visit_function(self, node: FunctionNode) -> Any:
         func_handler = self.resolver.get_handler(node.name)
         if func_handler:
             return func_handler(*[arg.accept(self) for arg in node.args])
@@ -250,10 +250,10 @@ class ExprPrintVistor(ExprASTVisitor):
             args_str = ", ".join(arg.accept(self) for arg in node.args)
             return f"{node.name}({args_str})"
 
-    def visit_expression(self, node: ExpressionNode) -> str:
+    def visit_expression(self, node: ExpressionNode) -> Any:
         return f"({str(node.operator).join(str(op.accept(self)) for op in node.operands)})"
 
-    def visit_literal(self, node: LiteralNode) -> Union[str, int, float, bool]:
+    def visit_literal(self, node: LiteralNode) -> Any:
         # 根据类型决定是否添加引号
         return node.data_type(node.value)
 

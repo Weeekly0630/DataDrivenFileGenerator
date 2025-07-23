@@ -1,0 +1,6 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "C/macro/defines.j2"
+CHILDREN_PATH: # []
+
+### User Data
+defines: # [{ name: "", value: ""}]
