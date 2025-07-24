@@ -2,7 +2,7 @@ from modules.core import DataHandler
 from modules.jinja.user_func.func_handler import UserFunctionInfo, UserFunctionContext
 from modules.jinja.user_func.resolver import FunctionPlugin
 from modules.node.data_node import DataNode
-from typing import List, Callable
+from typing import List, Callable, Any
 
 
 class DataNodePlugin(FunctionPlugin):
@@ -39,11 +39,11 @@ class DataNodePlugin(FunctionPlugin):
                 parts[-1] = target.data.get("name")
             return "/".join(parts)
 
-        def get_attr(context: UserFunctionContext, file_path: str, attr: str) -> str:
+        def get_attr(context: UserFunctionContext, file_path: str, attr: str) -> Any:
             target = DataNodePlugin._get_targets(
                 context.node, context.data_handler, file_path
             )[0]
-            return str(target.data.get(attr))
+            return target.data.get(attr)
 
         """动态数学函数（使用节点上下文）"""
         return [

@@ -1,8 +1,4 @@
 {%- extends "base.j2" -%}
 {%- block content -%}
-{{ C.macro_if({
-    "conditions": conditions,
-    "contents": CHILDREN_CONTEXT,
-    "else_content": else_content if else_content else CHILDREN_CONTEXT[-1]})
-}}
+{{ C.macro_if(data) }}
 {%- endblock -%}

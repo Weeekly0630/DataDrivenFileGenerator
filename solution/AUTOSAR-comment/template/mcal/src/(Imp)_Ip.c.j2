@@ -1,15 +1,16 @@
 {%- extends "base.j2" -%}
 {%- block content -%}
-{% set _sw_version=x + "." + y + "." + z %}
-{% set _autosar_version=AR_RELEASE_MAJOR_VERSION_C+"."+AR_RELEASE_MINOR_VERSION_C+"."+AR_RELEASE_REVISION_VERSION_C %}
 
+{#
 {{ Doxygen.header_start({"file": Imp, "brief": file_brief, "version": _sw_version, "group_name": group_name}) }}
-{{ Autosar.copyright({
+#}
+
+{# {{ Autosar.copyright({
     "autosar_version": _autosar_version,
     "autosar_revision": "",
     "sw_version": _sw_version 
     })
-}}
+}} #}
 
 #ifdef __cplusplus
 extern "C"{
@@ -19,6 +20,7 @@ extern "C"{
 *                                INCLUDE FILES
 ==============================================================================*/
 {{ C.macro_conditional_include(conditional_include_info) }}
+
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/

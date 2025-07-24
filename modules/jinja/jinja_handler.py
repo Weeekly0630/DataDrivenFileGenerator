@@ -124,6 +124,6 @@ class JinjaTemplateHandler:
         template = self.env.get_template(template_path)
         
         # add resolver to context
-        data["__context__"] = {"resolver": node_resolver}
+        # data["__context__"] = {"resolver": node_resolver}
         
         return template.render(**data)

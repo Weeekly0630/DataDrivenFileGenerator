@@ -11,7 +11,6 @@ conditional_include_info:
     - c:macro_conditional_include_info_init
     - - "Cdd_Ipc.h"
     - 'VERSION == "1.1.1"'
-    -
 
 include_files:
   [
@@ -40,28 +39,28 @@ PROJECT:
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "PROJECT"],
   }
-x:
+software_major_version:
   {
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "x"],
   }
-y:
+software_minor_version:
   {
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "y"],
   }
-z:
+software_revision_version:
   {
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "z"],
   }
-vi:
+vender_id:
   {
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "vi"],
   }
 
-AR_RELEASE_MAJOR_VERSION_C:
+autosar_release_major_version:
   {
     type: function,
     args:
@@ -71,7 +70,7 @@ AR_RELEASE_MAJOR_VERSION_C:
         "AR_RELEASE_MAJOR_VERSION",
       ],
   }
-AR_RELEASE_MINOR_VERSION_C:
+autosar_release_minor_version:
   {
     type: function,
     args:
@@ -81,7 +80,7 @@ AR_RELEASE_MINOR_VERSION_C:
         "AR_RELEASE_MINOR_VERSION",
       ],
   }
-AR_RELEASE_REVISION_VERSION_C:
+autosar_release_revision_version:
   {
     type: function,
     args:

@@ -3,4 +3,12 @@ TEMPLATE_PATH: "C/macro/defines.j2"
 CHILDREN_PATH: # []
 
 ### User Data
-defines: # [{ name: "", value: ""}]
+defines: [
+  {
+  type: function,
+  args:
+    - c:macro_define_info_init   # function name
+    - EXAMPLE_MACRO             # macro_name
+    - "42"                      # macro_value
+    }
+  ]

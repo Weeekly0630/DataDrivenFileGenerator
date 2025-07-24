@@ -1,17 +1,21 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "C/macro/if.j2"
-CHILDREN_PATH: # [./include.yaml]
+CHILDREN_PATH: [./include.yaml]
 
 ### User Data
+# conditions: [VERSION == 1]
+# else_content: ""
+
 data: { type: function, args: [
         c:macro_if_info_init,
-        null, # conditions: list,
+        [VERSION == 1], # conditions: list,
         { type: function, args: [
               dataNode:get_attr,
-              null, # Current File Name
-              null, # Attribute Name
+              ./if.yaml, # Current File Name
+              CHILDREN_CONTEXT, # Attribute Name
             ] }, # contents: list,
-        null, # else_content: Any = None,
+        "", # else_content: Any = None,
       ] }
+
 ### 直接指定CHILDREN_CONTEXT
 CHILDREN_CONTEXT: []

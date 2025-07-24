@@ -1,20 +1,4 @@
 
-/**
-*   @file       Ipc
-*   @brief      CDD Ipc Ip layer C source file
-*   @version    1.1.0
-*   @addtogroup CDD_IPC_MODULE
-*   @{
-*/
-/*==============================================================================
-*   Autosar Version      : 4.4.0
-*   Autosar Revision     : 
-*   Autosar Conf.Variant :
-*   SW Version           : 1.1.0
-
-*   Copyright (C) 2022 Byd
-*   All Rights Reserved.
- =============================================================================*/
 
 #ifdef __cplusplus
 extern "C"{
@@ -26,6 +10,7 @@ extern "C"{
 #if VERSION == "1.1.1"
     #include "Cdd_Ipc.h"
 #endif
+
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/

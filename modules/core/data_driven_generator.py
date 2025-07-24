@@ -107,9 +107,6 @@ class DataDrivenGenerator:
         # 2. 验证数据
         validate_data_context(node.data, self.data_handler.preserved_template_key)
 
-        # 2.1 预处理节点上下文
-        self.data_handler.preprocess_expr(node)
-        
         # 3. 准备渲染上下文
         data = node.data
 
@@ -122,7 +119,9 @@ class DataDrivenGenerator:
         # 给子节点编号?
         current_children_index = 0
 
-        data[self.template_handler.preserved_children_key] = []
+        if self.template_handler.preserved_children_key not in data:
+            # 如果没有preserved_children_key，初始化为空列表
+            data[self.template_handler.preserved_children_key] = []
 
         if len(node.children_group_number) == 0:
             # 如果没有子节点，preserved_children_key为空列表
@@ -151,6 +150,9 @@ class DataDrivenGenerator:
                 # 更新当前子节点索引
                 current_children_index += group_number
 
+        # 预处理放在子节点渲染后
+        self.data_handler.preprocess_expr(node)
+        
         try:
             template_path = node.data[self.data_handler.preserved_template_key]
 
