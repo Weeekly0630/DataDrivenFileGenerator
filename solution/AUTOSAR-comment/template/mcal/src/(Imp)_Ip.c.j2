@@ -22,39 +22,19 @@ extern "C"{
 /*==============================================================================
 *                        SOURCE FILE VERSION INFORMATION
 ==============================================================================*/
-{{ Autosar.version_info(
-    Imp | upper, 
-    {
-        "vender_id":vi,
-        "ar_release_major_version": AR_RELEASE_MAJOR_VERSION_C,
-        "ar_release_minor_version": AR_RELEASE_MINOR_VERSION_C,
-        "ar_release_revision_version": AR_RELEASE_REVISION_VERSION_C,
-        "sw_major_version": x,
-        "sw_minor_version": y,
-        "sw_revision_version": z,
-    }, 
-    suffix="_C") 
-}}
+{{ Autosar.version_info(version_info) }}
 
 /*==============================================================================
 *                              FILE VERSION CHECKS
 ==============================================================================*/
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same vendor */
-#if ({{ Imp | expr_filter(__context__) | upper }}_IP_VENDOR_ID_C != {{ Imp | expr_filter(__context__) | upper }}_IP_VENDOR_ID)
-    #error "{{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h have different vendor ids"
-#endif
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same Autosar version */
-#if (({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION_C != {{ Imp | expr_filter(__context__) | upper }}_IP_AR_RELEASE_REVISION_VERSION))
-    #error "AutoSar version of {{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h are different"
-#endif
-/* Check if current file and {{ Imp | expr_filter(__context__) }}_Ip.h are of the same software version */
-#if (({{ Imp | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_MAJOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION_C    != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_MINOR_VERSION) || \
-     ({{ Imp | expr_filter(__context__) | upper }}_IP_SW_REVISION_VERSION_C != {{ Imp | expr_filter(__context__) | upper }}_IP_SW_REVISION_VERSION))
-    #error "Software version of {{ Imp | expr_filter(__context__) }}_Ip.c and {{ Imp | expr_filter(__context__) }}_Ip.h are different"
-#endif
+{{ Autosar.version_check(
+    Imp | upper,
+    (conditional_include_info.includes[0].file_name | replace('.h', '') | upper),
+    Imp,
+    conditional_include_info.includes[0].file_name,
+    cur_suffix="_C",
+    ref_suffix=".c" in conditional_include_info.includes[0].file_name and "_C" or ""
+) }}
 
 /*==============================================================================
 *                              LOCAL TYPEDEFS

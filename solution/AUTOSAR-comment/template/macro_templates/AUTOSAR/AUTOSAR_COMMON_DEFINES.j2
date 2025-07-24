@@ -4,11 +4,15 @@
 {%- endmacro -%}
 
 {% import "macro_templates/AUTOSAR/version/version_info.j2" as VersionInfo %}
+{% import "macro_templates/AUTOSAR/version/version_check.j2" as VersionCheck %}
+{%- macro version_check(cur, ref, cur_file, ref_file, cur_suffix="", ref_suffix="") -%}
+{{ VersionCheck.version_check(cur, ref, cur_file, ref_file, cur_suffix, ref_suffix) }}
+{%- endmacro -%}
 {%- macro version_info(prefix, info, suffix="") -%}
 {{- VersionInfo.version_info(prefix, info, suffix) -}}
 {%- endmacro -%}
 
 {% import "macro_templates/AUTOSAR/version/version_check.j2" as VersionCheck %}
-{%- macro version_info(prefix, info, suffix="") -%}
-{{- VersionInfo.version_info(prefix, info, suffix) -}}
+{%- macro version_info(version_info) -%}
+{{- VersionInfo.version_info(version_info) -}}
 {%- endmacro -%}

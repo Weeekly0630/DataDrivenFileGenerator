@@ -39,8 +39,10 @@ class MathUtilsPlugin(FunctionPlugin):
 
     @classmethod
     def on_plugin_load(cls):
-        print("MathUtilsPlugin loaded")
+        pass
+        # print("MathUtilsPlugin loaded")
 
     @classmethod
     def on_plugin_unload(cls):
-        print("MathUtilsPlugin unloaded")
+        pass
+        # print("MathUtilsPlugin unloaded")

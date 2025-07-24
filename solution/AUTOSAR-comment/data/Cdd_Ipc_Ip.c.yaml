@@ -4,10 +4,15 @@ CHILDREN_PATH: []
 
 ### User Data
 file_brief: CDD Ipc Ip layer C source file
+
 conditional_include_info:
-  include_condition: 'VERSION == "1.1.1"'
-  includes: [{ "file_name": "Cdd_Ipc.h" }]
-  else_content:
+  type: function
+  args:
+    - c:macro_conditional_include_info_init
+    -
+      - { file_name: "Cdd_Ipc.h" }
+    - 'VERSION == "1.1.1"'
+    -
 
 include_files:
   [
@@ -93,3 +98,41 @@ group_name:
     type: function,
     args: [dataNode:get_attr, "./common/common_info.yaml", "group_name"],
   }
+
+# 应当放在vi, x, y, z等属性之后，也许可以保证函数调用的顺序。
+version_info:
+  type: function
+  args:
+    - autosar:version_info_init
+    - Cdd_Ipc_Ip.c
+    - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "vi"] }
+    - {
+        type: function,
+        args:
+          [
+            dataNode:get_attr,
+            "./Cdd_Ipc_Ip.c.yaml",
+            "AR_RELEASE_MAJOR_VERSION_C",
+          ],
+      }
+    - {
+        type: function,
+        args:
+          [
+            dataNode:get_attr,
+            "./Cdd_Ipc_Ip.c.yaml",
+            "AR_RELEASE_MINOR_VERSION_C",
+          ],
+      }
+    - {
+        type: function,
+        args:
+          [
+            dataNode:get_attr,
+            "./Cdd_Ipc_Ip.c.yaml",
+            "AR_RELEASE_REVISION_VERSION_C",
+          ],
+      }
+    - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "x"] }
+    - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "y"] }
+    - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "z"] }

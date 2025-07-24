@@ -1,11 +1,7 @@
 {% import "macro_templates/C/C_COMMON_DEFINES.j2" as C %}
 
-{%- macro version_info(prefix, info, suffix="") -%}
-#define {{prefix|upper}}_VENDOR_ID_{{suffix|upper}}                          {{ info.vender_id }}
-#define {{prefix|upper}}_AR_RELEASE_MAJOR_VERSION_{{suffix|upper}}           {{ info.ar_release_major_version }}
-#define {{prefix|upper}}_AR_RELEASE_MINOR_VERSION_{{suffix|upper}}           {{ info.ar_release_minor_version }}
-#define {{prefix|upper}}_AR_RELEASE_REVISION_VERSION_{{suffix|upper}}        {{ info.ar_release_revision_version }}
-#define {{prefix|upper}}_SW_MAJOR_VERSION_{{suffix|upper}}                   {{ info.sw_major_version }}
-#define {{prefix|upper}}_SW_MINOR_VERSION_{{suffix|upper}}                   {{ info.sw_minor_version }}
-#define {{prefix|upper}}_SW_PATCH_VERSION_{{suffix|upper}}                   {{ info.sw_revision_version }}
+{%- macro version_info(version_info) -%}
+{% for macro in version_info.macros %}
+{{ C.macro_define(macro) }}
+{% endfor %}
 {%- endmacro -%}
