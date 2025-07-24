@@ -169,7 +169,8 @@ class ExprASTParser:
         elif node_type == "literal":
             return self._parse_literal(data)
         else:
-            raise ValueError(f"未知节点类型: {node_type}")
+            # 如果没有匹配的类型，返回原数据
+            return data
 
     def _parse_literal(self, data: Dict) -> LiteralNode:
         """解析字面量节点"""

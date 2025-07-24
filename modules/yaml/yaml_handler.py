@@ -284,11 +284,19 @@ class YamlDataTreeHandler(DataHandler):
     def data_node_to_file_node(self, data_node: DataNode) -> Optional[FileNode]:
         return self._file_node_mapping.get(data_node)
 
-    def _build_data_tree(self, file_node: FileNode) -> DataNode:
-        """构建DataTree, 返回根节点"""
+    def _build_data_tree(self, file_node: FileNode, ancestors=None) -> DataNode:
+        """构建DataTree, 返回根节点（支持递归链路检测循环引用）"""
+        if ancestors is None:
+            ancestors = set()
         data_node = self.file_node_to_data_node(file_node)
-        if data_node == None:
+        if data_node is None:
             raise ValueError(f"{file_node.name}'s data node not found?")
+
+        # 检查递归链路上的循环引用
+        node_id = id(data_node)
+        if node_id in ancestors:
+            raise YamlStructureError.circular_reference(self._get_full_path(file_node))
+        ancestors.add(node_id)
 
         # 处理子节点
         children_path = data_node.data[self.preserved_children_key]
@@ -305,35 +313,76 @@ class YamlDataTreeHandler(DataHandler):
             for paths in children_path:
                 if not paths:  # 跳过空路径
                     continue
-                patterns = []
-                if isinstance(paths, str):
-                    patterns = [paths]
+                # 支持三种情况：str（路径）、dict（inline）、list（混合）
+                if isinstance(paths, dict):
+                    # 直接作为子节点
+                    child_node = DataNode(data=paths, name=paths.get(self.preserved_template_key, "inline_child"))
+                    # 递归处理其子节点
+                    self._build_data_tree_for_inline(child_node, ancestors.copy())
+                    data_node.add_child(child_node)
+                    data_node.children_group_number.append(1)
                 elif isinstance(paths, list):
-                    patterns = paths
-                else:
-                    raise YamlStructureError.invalid_children(
-                        f"Invalid children path specification: {paths}",
-                        self._get_full_path(file_node),
-                    )
-                # 处理每个模式
-                current_group_number = 0
-                group_member_set = set()  # 用于跟踪组成员
-                for pattern in patterns:
-                    if not pattern:  # 跳过空模式
+                    current_group_number = 0
+                    for item in paths:
+                        if isinstance(item, dict):
+                            child_node = DataNode(data=item, name=item.get(self.preserved_template_key, "inline_child"))
+                            self._build_data_tree_for_inline(child_node, ancestors.copy())
+                            data_node.add_child(child_node)
+                            current_group_number += 1
+                        elif isinstance(item, str):
+                            # 兼容原有路径逻辑，支持顺序控制和组内去重
+                            if not item:
+                                continue
+                            group_member_set = set()
+                            if file_node.parent:
+                                matching_files = cast(
+                                    DirectoryNode, file_node.parent
+                                ).find_nodes_by_path(item)
+                                for matching_file in matching_files:
+                                    if isinstance(matching_file, FileNode):
+                                        if matching_file in group_member_set:
+                                            continue
+                                        group_member_set.add(matching_file)
+                                        try:
+                                            child_node = self.file_node_to_data_node(
+                                                matching_file
+                                            )
+                                            if not child_node:
+                                                raise ValueError(
+                                                    f"{self.get_absolute_path}'s data node not found?"
+                                                )
+                                            # 检查递归链路上的循环引用
+                                            if id(child_node) in ancestors:
+                                                raise YamlStructureError.circular_reference(
+                                                    self._get_full_path(matching_file)
+                                                )
+                                            self._build_data_tree(matching_file, ancestors.copy())
+                                            data_node.add_child(child_node)
+                                            current_group_number += 1
+                                        except YamlError as e:
+                                            raise YamlStructureError(
+                                                e.error_type,
+                                                f"Error processing child {matching_file.name}: {str(e)}",
+                                                str(matching_file.get_absolute_path()),
+                                            ) from e
+                        else:
+                            raise YamlStructureError.invalid_children(
+                                f"Invalid children path specification: {item}",
+                                self._get_full_path(file_node),
+                            )
+                    data_node.children_group_number.append(current_group_number)
+                elif isinstance(paths, str):
+                    # 原有单路径逻辑
+                    if not paths:
                         continue
+                    current_group_number = 0
                     if file_node.parent:
                         matching_files = cast(
                             DirectoryNode, file_node.parent
-                        ).find_nodes_by_path(pattern)
+                        ).find_nodes_by_path(paths)
                         for matching_file in matching_files:
                             if isinstance(matching_file, FileNode):
-                                if matching_file in group_member_set:
-                                    # 如果已经处理过这个文件，跳过
-                                    continue
-                                group_member_set.add(matching_file)
-                                # 找到子节点
                                 try:
-                                    # 获取对应的DataNode
                                     child_node = self.file_node_to_data_node(
                                         matching_file
                                     )
@@ -341,25 +390,75 @@ class YamlDataTreeHandler(DataHandler):
                                         raise ValueError(
                                             f"{self.get_absolute_path}'s data node not found?"
                                         )
-                                    # 判断是否有循环子节点路径
-                                    if child_node.parent is not None:
+                                    # 检查递归链路上的循环引用
+                                    if id(child_node) in ancestors:
                                         raise YamlStructureError.circular_reference(
                                             self._get_full_path(matching_file)
                                         )
-                                    # 递归build子节点
-                                    self._build_data_tree(matching_file)
-                                    # 添加child node到当前DataNode
+                                    self._build_data_tree(matching_file, ancestors.copy())
                                     data_node.add_child(child_node)
                                     current_group_number += 1
                                 except YamlError as e:
-                                    # 重新抛出异常，添加子节点处理失败的上下文
                                     raise YamlStructureError(
                                         e.error_type,
                                         f"Error processing child {matching_file.name}: {str(e)}",
                                         str(matching_file.get_absolute_path()),
                                     ) from e
-                data_node.children_group_number.append(current_group_number)
+                    data_node.children_group_number.append(current_group_number)
+                else:
+                    raise YamlStructureError.invalid_children(
+                        f"Invalid children path specification: {paths}",
+                        self._get_full_path(file_node),
+                    )
+
+        ancestors.remove(node_id)
         return data_node
+
+    # 新增辅助方法，递归处理 inline dict 子节点
+    def _build_data_tree_for_inline(self, data_node: DataNode, ancestors=None) -> None:
+        if ancestors is None:
+            ancestors = set()
+        node_id = id(data_node)
+        if node_id in ancestors:
+            raise YamlStructureError.circular_reference(data_node.name)
+        ancestors.add(node_id)
+
+        children_path = data_node.data.get(self.preserved_children_key, [])
+        if children_path == "":
+            children_path = []
+        if children_path:
+            if isinstance(children_path, str):
+                children_path = [children_path]
+            elif isinstance(children_path, list):
+                pass
+            else:
+                raise YamlStructureError.invalid_children(
+                    f"Invalid children path specification: {children_path}",
+                    data_node.name,
+                )
+            for paths in children_path:
+                if not paths:
+                    continue
+                if isinstance(paths, dict):
+                    child_node = DataNode(data=paths, name=paths.get(self.preserved_template_key, "inline_child"))
+                    self._build_data_tree_for_inline(child_node, ancestors.copy())
+                    data_node.add_child(child_node)
+                    data_node.children_group_number.append(1)
+                elif isinstance(paths, list):
+                    current_group_number = 0
+                    for item in paths:
+                        if isinstance(item, dict):
+                            child_node = DataNode(data=item, name=item.get(self.preserved_template_key, "inline_child"))
+                            self._build_data_tree_for_inline(child_node, ancestors.copy())
+                            data_node.add_child(child_node)
+                            current_group_number += 1
+                        else:
+                            continue
+                    data_node.children_group_number.append(current_group_number)
+                else:
+                    continue
+        ancestors.remove(node_id)
+        return
 
     def create_data_tree(self, entry_file_pattern: str) -> List[DataNode]:
         """从文件模式创建数据树

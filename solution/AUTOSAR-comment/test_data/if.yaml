@@ -1,6 +1,17 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "C/macro/if.j2"
-CHILDREN_PATH: [./include.yaml]
+CHILDREN_PATH:
+  [
+    {
+      TEMPLATE_PATH: "C/macro/includes.j2",
+      data:
+        [
+          { type: function, args: [c:macro_include_info_init, stdint.h] },
+          { type: function, args: [c:macro_include_info_init, stdio.h] },
+          { type: function, args: [c:macro_include_info_init, stdlib.h] },
+        ],
+    },
+  ]
 
 ### User Data
 # conditions: [VERSION == 1]
