@@ -42,21 +42,22 @@ extern "C"{
 *                              FILE VERSION CHECKS
 ==============================================================================*/
 /* Check vendor */
-#if (IPC_VENDOR_ID_C != CDD_IPC_VENDOR_ID)
-#error "Ipc and Cdd_Ipc.h have different vendor ids"
+#if (IPC_VENDOR_ID_C != IPC_VENDOR_ID)
+    #error "Ipc.c and Ipc.h have different vendor ids"
 #endif
 /* Check AUTOSAR version */
-#if ( (IPC_AR_RELEASE_MAJOR_VERSION_C != CDD_IPC_AR_RELEASE_MAJOR_VERSION) || \
-      (IPC_AR_RELEASE_MINOR_VERSION_C != CDD_IPC_AR_RELEASE_MINOR_VERSION) || \
-      (IPC_AR_RELEASE_REVISION_VERSION_C != CDD_IPC_AR_RELEASE_REVISION_VERSION) )
-#error "AutoSar Version Numbers of Ipc and Cdd_Ipc.h are different"
+#if (IPC_AR_RELEASE_MAJOR_VERSION_C != IPC_AR_RELEASE_MAJOR_VERSION) || \
+    (IPC_AR_RELEASE_MINOR_VERSION_C != IPC_AR_RELEASE_MINOR_VERSION) || \
+    (IPC_AR_RELEASE_REVISION_VERSION_C != IPC_AR_RELEASE_REVISION_VERSION)
+    #error "AutoSar Version Numbers of Ipc.c and Ipc.h are different"
 #endif
 /* Check software version */
-#if ( (IPC_SW_MAJOR_VERSION_C != CDD_IPC_SW_MAJOR_VERSION) || \
-      (IPC_SW_MINOR_VERSION_C != CDD_IPC_SW_MINOR_VERSION) || \
-      (IPC_SW_PATCH_VERSION_C != CDD_IPC_SW_PATCH_VERSION) )
-#error "Software Version Numbers of Ipc and Cdd_Ipc.h are different"
+#if (IPC_SW_MAJOR_VERSION_C != IPC_SW_MAJOR_VERSION) || \
+    (IPC_SW_MINOR_VERSION_C != IPC_SW_MINOR_VERSION) || \
+    (IPC_SW_PATCH_VERSION_C != IPC_SW_PATCH_VERSION)
+    #error "Software Version Numbers of Ipc.c and Ipc.h are different"
 #endif
+
 
 /*==============================================================================
 *                              LOCAL TYPEDEFS

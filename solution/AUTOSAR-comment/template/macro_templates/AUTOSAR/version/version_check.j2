@@ -1,18 +1,34 @@
-{%- macro version_check(cur, ref, cur_file, ref_file, cur_suffix, ref_suffix) -%}
+{% import "macro_templates/C/macro/if.j2" as If %}
+{%- macro version_check(info) -%}
 /* Check vendor */
-#if ({{ cur }}_VENDOR_ID{{ cur_suffix }} != {{ ref }}_VENDOR_ID{{ ref_suffix }})
+{{ If.macro_if({
+    "conditions": info.vender.conditions,
+    "contents": info.vender.contents,
+    "else_content": info.vender.else_content
+}) }}
+{# #if ({{ cur }}_VENDOR_ID{{ cur_suffix }} != {{ ref }}_VENDOR_ID{{ ref_suffix }})
 #error "{{ cur_file }} and {{ ref_file }} have different vendor ids"
-#endif
+#endif #}
 /* Check AUTOSAR version */
-#if ( ({{ cur }}_AR_RELEASE_MAJOR_VERSION{{ cur_suffix }} != {{ ref }}_AR_RELEASE_MAJOR_VERSION{{ ref_suffix }}) || \
+{{ If.macro_if({
+    "conditions": info.ar.conditions,
+    "contents": info.ar.contents,
+    "else_content": info.ar.else_content
+}) }}
+{# #if ( ({{ cur }}_AR_RELEASE_MAJOR_VERSION{{ cur_suffix }} != {{ ref }}_AR_RELEASE_MAJOR_VERSION{{ ref_suffix }}) || \
       ({{ cur }}_AR_RELEASE_MINOR_VERSION{{ cur_suffix }} != {{ ref }}_AR_RELEASE_MINOR_VERSION{{ ref_suffix }}) || \
       ({{ cur }}_AR_RELEASE_REVISION_VERSION{{ cur_suffix }} != {{ ref }}_AR_RELEASE_REVISION_VERSION{{ ref_suffix }}) )
 #error "AutoSar Version Numbers of {{ cur_file }} and {{ ref_file }} are different"
-#endif
+#endif #}
 /* Check software version */
-#if ( ({{ cur }}_SW_MAJOR_VERSION{{ cur_suffix }} != {{ ref }}_SW_MAJOR_VERSION{{ ref_suffix }}) || \
+{{ If.macro_if({
+    "conditions": info.sw.conditions,
+    "contents": info.sw.contents,
+    "else_content": info.sw.else_content
+}) }}
+{# #if ( ({{ cur }}_SW_MAJOR_VERSION{{ cur_suffix }} != {{ ref }}_SW_MAJOR_VERSION{{ ref_suffix }}) || \
       ({{ cur }}_SW_MINOR_VERSION{{ cur_suffix }} != {{ ref }}_SW_MINOR_VERSION{{ ref_suffix }}) || \
       ({{ cur }}_SW_PATCH_VERSION{{ cur_suffix }} != {{ ref }}_SW_PATCH_VERSION{{ ref_suffix }}) )
 #error "Software Version Numbers of {{ cur_file }} and {{ ref_file }} are different"
-#endif
+#endif #}
 {%- endmacro -%}

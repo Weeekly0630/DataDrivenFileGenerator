@@ -132,7 +132,7 @@ def save_output(output_dir: str, results: Dict[str, str], file_extension: str) -
         file_path = out_path / name_extension(name, file_extension)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
-        print(f"Generated: {file_path}")
+        print(f"Generated: {file_path}\n")
 
 
 def main():

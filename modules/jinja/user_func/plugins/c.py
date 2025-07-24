@@ -49,12 +49,15 @@ class CPlugin(FunctionPlugin):
         include_condition: str = "",
         else_content: Any = None,
     ) -> Any:
-        """初始化C语言条件include信息数据字典，适配macro_conditional_include模板"""
-        return {
-            "includes": includes,
-            "include_condition": include_condition,
-            "else_content": else_content,
-        }
+        """复合C语言条件include信息数据字典"""
+        return CPlugin.macro_if_info_init(
+            context=context,
+            conditions=[include_condition],
+            contents=[
+                CPlugin.macro_include_info_init(context=context, file_name=include)
+                for include in includes
+            ],
+        )
 
     @classmethod
     def functions(cls) -> List[UserFunctionInfo]:

@@ -22,4 +22,14 @@ sum_list_expr:
   type: function
   args:
     - math:sum
-    - [1, 2, 3, 4]
+    - 
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - type: function
+        args:
+          - math:node_value
+          - .\children_1\ch1.yaml

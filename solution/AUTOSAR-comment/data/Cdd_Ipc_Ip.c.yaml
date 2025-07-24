@@ -9,8 +9,7 @@ conditional_include_info:
   type: function
   args:
     - c:macro_conditional_include_info_init
-    -
-      - { file_name: "Cdd_Ipc.h" }
+    - - "Cdd_Ipc.h"
     - 'VERSION == "1.1.1"'
     -
 
@@ -136,3 +135,7 @@ version_info:
     - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "x"] }
     - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "y"] }
     - { type: function, args: [dataNode:get_attr, "./Cdd_Ipc_Ip.c.yaml", "z"] }
+
+version_check_info:
+  type: function
+  args: [autosar:version_check_info_init, Ipc.c, Ipc.h]

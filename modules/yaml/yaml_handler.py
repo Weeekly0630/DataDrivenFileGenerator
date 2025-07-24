@@ -231,7 +231,7 @@ class YamlDataTreeHandler(DataHandler):
                         data[key] = result_obj
                 
                 expr_node = parser.parse(data)
-                if expr_node is not None:
+                if expr_node != data: # 如果解析结果不是原始数据，说明是一个表达式
                     # 使用ExprPrintVisitor将ExprNode转换为字符串
                     result_obj = expr_node.accept(ExprPrintVistor(node_resolver))
                     return result_obj

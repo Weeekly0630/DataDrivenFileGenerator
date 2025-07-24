@@ -60,7 +60,7 @@ class FunctionNode(ExprASTNode):
     """函数调用节点"""
 
     def __init__(
-        self, name: str, args: List[ExprASTNode], source: Optional[Dict] = None
+        self, name: str, args: List[Any], source: Optional[Dict] = None
     ):
         super().__init__(source)
         self.name = name
@@ -99,7 +99,7 @@ class ExpressionNode(ExprASTNode):
     def __init__(
         self,
         operator: ExpressionOperator,
-        operands: List[ExprASTNode],
+        operands: List[Any],
         source: Optional[Dict] = None,
     ):
         super().__init__(source)
@@ -145,7 +145,12 @@ class ExprASTParser:
         解析入口点，处理各种输入类型
         """
         if isinstance(data, dict):
-            return self._parse_dict(data)
+            # 只有包含"type"字段的字典才被视为表达式节点
+            if "type" in data:
+                return self._parse_dict(data)
+            else:
+                # 没有"type"字段的字典保持为原始数据
+                return data
         elif isinstance(data, list):
             return [self.parse(item) for item in data]
         else:
@@ -246,6 +251,9 @@ class ExprPrintVistor(ExprASTVisitor):
         elif isinstance(obj, list):
             # 如果是列表，递归处理每个元素
             return [self._visit_any(item) for item in obj]
+        elif isinstance(obj, dict):
+            # 如果是字典（原始数据），直接返回
+            return obj
         else:
             # 如果是原始值，直接返回
             return obj

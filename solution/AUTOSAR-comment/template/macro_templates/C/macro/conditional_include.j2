@@ -4,12 +4,12 @@
 
 {%- macro macro_conditional_include(info) -%}
 {% set contents %}
-{%- for inc in info.includes %}
+{%- for inc in info.contents %}
 {{ Include.macro_include(inc) }}
 {%- endfor %}
 {% endset %}
 {{ If.macro_if({
-    "conditions": [info.include_condition],
+    "conditions": info.conditions,
     "contents": [contents],
     "else_content": info.else_content
 }) }}

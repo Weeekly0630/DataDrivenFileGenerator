@@ -1,14 +1,13 @@
 {%- macro macro_if(info) -%}
-#if {{ info.conditions[0] }}
-    {{ info.contents[0] }}
-{%- for i in range(1, info.conditions | length) %}
-#elif {{ info.conditions[i] }}
-    {{ info.contents[i] }}
-{%- endfor %}
-{%- if info.else_content %}
+#if {{ info.conditions[0] | indent(4)}}
+    {{ info.contents[0] | indent(4) }}
+{%- for i in range(1, info.conditions | length) -%}
+#elif {{ info.conditions[i] | indent(4)}}
+    {{ info.contents[i] | indent(4) }}
+{%- endfor -%}
+{%- if info.else_content -%}
 #else
-    {{ info.else_content }}
+    {{ info.else_content | indent(4) }}
 {%- endif %}
-
 #endif
 {%- endmacro -%}

@@ -27,14 +27,7 @@ extern "C"{
 /*==============================================================================
 *                              FILE VERSION CHECKS
 ==============================================================================*/
-{{ Autosar.version_check(
-    Imp | upper,
-    (conditional_include_info.includes[0].file_name | replace('.h', '') | upper),
-    Imp,
-    conditional_include_info.includes[0].file_name,
-    cur_suffix="_C",
-    ref_suffix=".c" in conditional_include_info.includes[0].file_name and "_C" or ""
-) }}
+{{ Autosar.version_check(version_check_info) }}
 
 /*==============================================================================
 *                              LOCAL TYPEDEFS
