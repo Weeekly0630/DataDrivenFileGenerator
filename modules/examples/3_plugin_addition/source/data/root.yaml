@@ -17,3 +17,9 @@ expr1:
   type: function
   args:
     - dataNode:get_abs_path
+
+sum_list_expr:
+  type: function
+  args:
+    - math:sum
+    - [1, 2, 3, 4]

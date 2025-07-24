@@ -68,7 +68,7 @@ class _YamlFileHandler:
     """内部使用的YAML文件处理类"""
 
     @staticmethod
-    def _load_yaml_file(yaml_path: str) -> dict:
+    def _load_yaml_file(yaml_path: str) -> Dict:
         """加载YAML文件并返回字典数据
 
         Args:
@@ -85,7 +85,10 @@ class _YamlFileHandler:
                 data = yaml.safe_load(f)
                 if data is None:
                     return {}
-                return dict(data)
+                elif isinstance(data, dict):
+                    return data
+                else:
+                    return {"data": data}  # 如果不是字典，封装为{"data": ...}
         except (IOError, yaml.YAMLError) as e:
             raise YamlLoadError(str(e), yaml_path)
 
@@ -217,30 +220,23 @@ class YamlDataTreeHandler(DataHandler):
         
         node_resolver = self._resolver_factory.create_resolver(data_node, self)
 
-        def need_to_be_parsed(data: Dict) -> bool:
-            """检查数据是否需要解析为ExprNode"""
-            # 假设被解析的字典数据一定有type, args字段
-            return "type" in data and "args" in data
-
         def preprocess_data(data) -> Any:
             """预处理数据，转换expr字典转换为ExprNode, 并最后转换为字符串替换原有的表达式"""
             if isinstance(data, Dict):
-                if need_to_be_parsed(data):
-                    expr_node = parser.parse(data)
-                    if expr_node is not None:
-                        # 使用ExprPrintVisitor将ExprNode转换为字符串
-                        result_obj = expr_node.accept(ExprPrintVistor(node_resolver))
-                        return result_obj
-                    else:
-                        raise YamlStructureError.invalid_expression(
-                            str(data), self.get_absolute_path(data_node)
-                        )
+                # 先递归解析子节点
+                # 检查是否需要解析为ExprNode
+                for key, value in data.items():
+                    result_obj = preprocess_data(value)  # 递归处理子字典
+                    if result_obj != None:
+                        data[key] = result_obj
+                
+                expr_node = parser.parse(data)
+                if expr_node is not None:
+                    # 使用ExprPrintVisitor将ExprNode转换为字符串
+                    result_obj = expr_node.accept(ExprPrintVistor(node_resolver))
+                    return result_obj
                 else:
-                    for key, value in data.items():
-                        result_obj = preprocess_data(value)  # 递归处理子字典
-                        if result_obj != None:
-                            data[key] = result_obj
-                    return data  # 返回处理后的字典
+                    return None
             elif isinstance(data, list):
                 # 处理列表中的每个元素
                 for index, item in enumerate(data):
@@ -250,8 +246,7 @@ class YamlDataTreeHandler(DataHandler):
                             data[index] = result_obj
                 return data
             else:
-                # 对于其他类型，直接返回原值
-                return data
+                return None
         
         # 预处理数据，转换expr表达式
         preprocess_data(data_node.data)

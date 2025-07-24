@@ -22,6 +22,10 @@ class MathUtilsPlugin(FunctionPlugin):
         def children_sum(context: UserFunctionContext) -> str:
             return "sum"
 
+        def sum_list(context: UserFunctionContext, numbers: List[float]) -> float:
+            """计算数字列表的和"""
+            return sum(numbers)
+        
         return [
             UserFunctionInfo(
                 name="math:node_value",
@@ -34,6 +38,12 @@ class MathUtilsPlugin(FunctionPlugin):
                 arg_range=(0, 0),
                 description="Sum values of all child nodes",
                 handler=children_sum,
+            ),
+            UserFunctionInfo(
+                name="math:sum",
+                arg_range=(1, 1),
+                description="Calculate the sum of a list of numbers",
+                handler=sum_list,
             ),
         ]
 

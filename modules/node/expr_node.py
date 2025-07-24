@@ -48,7 +48,7 @@ class ExprASTNode(Protocol):
 class XPathNode(ExprASTNode):
     """XPath表达式节点"""
 
-    def __init__(self, parts: List[ExprASTNode], source: Optional[Dict] = None):
+    def __init__(self, parts: Any, source: Optional[Dict] = None):
         super().__init__(source)
         self.parts = parts  # 可以是字符串或嵌套节点
 
@@ -140,15 +140,14 @@ class LiteralNode(ExprASTNode):
 class ExprASTParser:
     """将字典解析为ExprAST树"""
 
-    def parse(self, data: Union[Dict, list, str, int, float, bool]) -> ExprASTNode:
+    def parse(self, data: Union[Dict, list, str, int, float, bool]) -> Any:
         """
         解析入口点，处理各种输入类型
         """
         if isinstance(data, dict):
             return self._parse_dict(data)
         elif isinstance(data, list):
-            raise ValueError("列表类型数据不支持直接解析为ExprAST节点")
-            # return self._parse_list(data)
+            return [self.parse(item) for item in data]
         else:
             return LiteralNode(data)
 
@@ -239,19 +238,43 @@ class ExprPrintVistor(ExprASTVisitor):
     def __init__(self, user_function_resolver: UserFunctionResolver):
         self.resolver: UserFunctionResolver = user_function_resolver
 
+    def _visit_any(self, obj: Any) -> Any:
+        """处理Any类型的对象，可能是ExprASTNode、列表、或原始值"""
+        if hasattr(obj, 'accept') and callable(getattr(obj, 'accept')):
+            # 如果是ExprASTNode，使用访问者模式
+            return obj.accept(self)
+        elif isinstance(obj, list):
+            # 如果是列表，递归处理每个元素
+            return [self._visit_any(item) for item in obj]
+        else:
+            # 如果是原始值，直接返回
+            return obj
+
     def visit_xpath(self, node: XPathNode) -> Any:
-        return "/".join(part.accept(self) for part in node.parts)
+        processed_parts = []
+        for part in node.parts:
+            processed_part = self._visit_any(part)
+            if isinstance(processed_part, list):
+                # 如果部分是列表，将其展平为字符串
+                processed_parts.extend(str(item) for item in processed_part)
+            else:
+                processed_parts.append(str(processed_part))
+        return "/".join(processed_parts)
 
     def visit_function(self, node: FunctionNode) -> Any:
         func_handler = self.resolver.get_handler(node.name)
+        processed_args = [self._visit_any(arg) for arg in node.args]
+        
         if func_handler:
-            return func_handler(*[arg.accept(self) for arg in node.args])
+            return func_handler(*processed_args)
         else:
-            args_str = ", ".join(arg.accept(self) for arg in node.args)
+            args_str = ", ".join(str(arg) for arg in processed_args)
             return f"{node.name}({args_str})"
 
     def visit_expression(self, node: ExpressionNode) -> Any:
-        return f"({str(node.operator).join(str(op.accept(self)) for op in node.operands)})"
+        processed_operands = [self._visit_any(op) for op in node.operands]
+        operand_strs = [str(op) for op in processed_operands]
+        return f"({str(node.operator).join(operand_strs)})"
 
     def visit_literal(self, node: LiteralNode) -> Any:
         # 根据类型决定是否添加引号
