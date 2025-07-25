@@ -4,15 +4,10 @@ from modules.jinja.user_func.resolver import FunctionPlugin
 from modules.node.data_node import DataNode
 from typing import List, Any, Tuple
 
-from modules.jinja.user_func.plugins.c import CPlugin
-
-
 class AutosarPlugin(FunctionPlugin):
     """Autosar模板插件，提供AUTOSAR相关的Jinja用户函数"""
 
-    # =========================
-    # 版本检查相关静态方法
-    # =========================
+
     @staticmethod
     def version_check_info_init(
         context: UserFunctionContext,
@@ -30,6 +25,7 @@ class AutosarPlugin(FunctionPlugin):
         Returns:
             dict: 包含三组条件和内容的宏结构
         """
+        from modules.jinja.user_func.plugins.c import CPlugin
         current_file_name = context.node.data.get("file_name", current_file_name)
         def _version(file_name: str) -> Tuple[str, str]:
             base, ext = file_name.rsplit(".", 1)
@@ -132,9 +128,7 @@ class AutosarPlugin(FunctionPlugin):
             })
         return results
 
-    # =========================
-    # 版本信息相关静态方法
-    # =========================
+
     @staticmethod
     def version_info_init(
         context: UserFunctionContext,
@@ -164,6 +158,7 @@ class AutosarPlugin(FunctionPlugin):
         Returns:
             dict: 包含所有版本相关宏定义的数据结构
         """
+        from modules.jinja.user_func.plugins.c import CPlugin
         file_name = context.node.data.get("file_name", file_name)
         vender_id = context.node.data.get("vender_id", vender_id)
         autosar_release_major_version = context.node.data.get(
@@ -225,9 +220,7 @@ class AutosarPlugin(FunctionPlugin):
             ],
         }
 
-    # =========================
-    # 注册所有用户函数
-    # =========================
+
     @classmethod
     def functions(cls) -> List[UserFunctionInfo]:
         """

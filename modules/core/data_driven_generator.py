@@ -75,14 +75,14 @@ class DataDrivenGenerator:
             )
         # 1.1 打印数据树
         print("\n==============Serialized Data Tree==============")
-        for tree in trees:
-            print(self.data_handler.serialize_data_tree(tree))
+        for root in trees:
+            print(self.data_handler.serialize_data_tree(root))
 
         # 2. 对每个树进行后序遍历和渲染
-        for tree in trees:
-            self._process_node(tree)
-            key = f"{tree.name}"
-            results[key] = self._rendered_contents[tree]
+        for root in trees:
+            self._process_node(root)
+            key = f"{root.name}"
+            results[key] = self._rendered_contents[root]
 
         if not results:
             raise GeneratorError(
@@ -90,7 +90,7 @@ class DataDrivenGenerator:
             )
 
         return results
-    
+
     def _process_node(self, node: DataNode) -> None:
         """处理单个节点及其子节点
 
@@ -106,53 +106,59 @@ class DataDrivenGenerator:
 
         # 2. 验证数据
         validate_data_context(node.data, self.data_handler.preserved_template_key)
-
-        # 3. 准备渲染上下文
-        data = node.data
-
-        # 4. 收集子节点渲染结果
-
         print(
             f"Processing node: {node.name} with children{node.children_group_number}: {[child.name for child in node.children]}"
         )
 
-        # 给子节点编号?
-        current_children_index = 0
+        def children_content_init(
+            cur_node: DataNode,
+            preserved_key: str,
+            render_content_map: Dict[DataNode, str],
+        ) -> None:
+            """初始化子节点内容"""
+            current_children_index = 0
 
-        if self.template_handler.preserved_children_key not in data:
-            # 如果没有preserved_children_key，初始化为空列表
-            data[self.template_handler.preserved_children_key] = []
+            if preserved_key not in cur_node.data:
+                # 如果没有preserved_children_key，初始化为空列表
+                cur_node.data[preserved_key] = []
 
-        if len(node.children_group_number) == 0:
-            # 如果没有子节点，preserved_children_key为空列表
-            pass
-        else:
-            for group_index, group_number in enumerate(node.children_group_number):
-                children_content: Union[List[str], str] = []
-                print(f"    Processing group {group_index}: {group_number}")
-                # 从children中取number个子节点
-                for child_index in range(
-                    current_children_index, current_children_index + group_number
+            if len(cur_node.children_group_number) == 0:
+                # 如果没有分组信息, 保留数据不动
+                pass
+            else:
+                # 根据分组信息初始化对应组的内容
+                for group_index, group_number in enumerate(
+                    cur_node.children_group_number
                 ):
-                    if child_index < len(node.children):
-                        child = node.children[child_index]
-                        if (
-                            isinstance(child, DataNode)
-                            and child in self._rendered_contents
-                        ):
-                            children_content.append(self._rendered_contents[child])
+                    children_content: Union[List[str], str] = []
+                    print(f"    Processing group {group_index}: {group_number}")
+                    # 从children中取number个子节点
+                    for child_index in range(
+                        current_children_index, current_children_index + group_number
+                    ):
+                        if child_index < len(cur_node.children):
+                            child = cur_node.children[child_index]
+                            if (
+                                isinstance(child, DataNode)
+                                and child in render_content_map
+                            ):
+                                children_content.append(render_content_map[child])
 
-                # 5. 添加子节点内容到上下文
-                data[self.template_handler.preserved_children_key].append(
-                    "\n".join(children_content)
-                )
-                
-                # 更新当前子节点索引
-                current_children_index += group_number
+                    # 5. 添加子节点内容到上下文
+                    if len(children_content) > 0:
+                        cur_node.data[preserved_key].append("\n".join(children_content))
+
+                    # 更新当前子节点索引
+                    current_children_index += group_number
+
+        # Children content initialization
+        children_content_init(
+            node, self.template_handler.preserved_children_key, self._rendered_contents
+        )
 
         # 预处理放在子节点渲染后
         self.data_handler.preprocess_expr(node)
-        
+
         try:
             template_path = node.data[self.data_handler.preserved_template_key]
 
@@ -170,14 +176,3 @@ class DataDrivenGenerator:
                 GeneratorErrorType.RENDER_ERROR,
                 f"Failed to render {template_path}: {str(e)}",
             )
-
-    # def _create_node_resolver(self, node: DataNode) -> UserFunctionResolver:
-    #     """为当前节点创建独立的函数解析器
-
-    #     Args:
-    #         node: 当前处理的节点
-    #     Returns:
-    #         UserFunctionResolver: 节点特定的函数解析器
-    #     """
-
-    #     return self.resolver_factory.create_resolver(node, self.data_handler)

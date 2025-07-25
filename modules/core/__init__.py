@@ -16,19 +16,6 @@ from pathlib import Path
 from ..node.data_node import DataNode
 from modules.node.file_node import DirectoryNode
 
-# from ..jinja.user_func.func_handler import UserFunctionResolver
-
-# @runtime_checkable
-# class UserFunctionResolverGenerator(Protocol):
-#     """Protocol for UserFunctionResolver
-#     当前DataDrivenGenerator所提供的构建Resolver时可以提供的上下文
-#     """
-
-#     def create_resolver(self, node: DataNode) -> UserFunctionResolver:
-#         """DataDrivenGenerator will call this function when itering the data tree"""
-#         ...
-
-
 @runtime_checkable
 class DataHandler(Protocol):
     """Protocol for data handlers
@@ -61,7 +48,7 @@ class DataHandler(Protocol):
         ...
 
     def create_data_tree(self, pattern: str) -> List[DataNode]:
-        """从指定模式创建数据树
+        """通过指定的入口文件pattern, 将他们作为根节点并创建数据树
 
         Args:
             pattern: 文件路径模式，如 "root.yaml" 或 "**/root/*.yaml"

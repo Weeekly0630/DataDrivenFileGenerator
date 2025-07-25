@@ -8,10 +8,10 @@ from enum import Enum
 from typing import Optional, List, Dict, Any, TypeVar, Iterable
 from dataclasses import dataclass
 
-from .file_node import FileType, FileNode, DirectoryNode, T
+from .file_node import FileType, FileNode, DirectoryNode
 
 
-class DataNode(DirectoryNode["DataNode"]):
+class DataNode:
     def __init__(
         self, data: Dict[str, Any], name: str, parent: Optional["DataNode"] = None
     ):
