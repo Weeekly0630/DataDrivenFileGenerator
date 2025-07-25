@@ -46,15 +46,15 @@ class BaseNode:
         self.children: List[BaseNode] = children  # 子节点列表
         self.mapping_obj: Any = obj  # 将当前BaseNode的节点映射到一个对象上
 
-    def post_traversal(self, func: Callable, *args) -> None:
+    def post_traversal(self, func: Callable[..., None], *args, **kwargs) -> None:
         """后续遍历子节点"""
         for child in self.children:
             child.post_traversal(func)
-        func(self.mapping_obj, *args)
+        func(self.mapping_obj, *args, **kwargs)
 
-    def pre_traversal(self, func: Callable, *args) -> None:
+    def pre_traversal(self, func: Callable[..., None], *args, **kwargs) -> None:
         """前序遍历子节点"""
-        func(self.mapping_obj, *args)
+        func(self.mapping_obj, *args, **kwargs)
         for child in self.children:
             child.pre_traversal(func)
 
@@ -87,7 +87,8 @@ class FileTreeHandler:
 
     @staticmethod
     def get_rel_path(
-        node: Union["FileNode", "DirectoryNode"], from_node: Union["FileNode", "DirectoryNode"]
+        node: Union["FileNode", "DirectoryNode"],
+        from_node: Union["FileNode", "DirectoryNode"],
     ) -> str:
         """获取节点相对于from_node的相对路径: from_node -> node
         from_node 可以是 DirectoryNode 或 FileNode
@@ -144,8 +145,8 @@ class FileTreeHandler:
 
 
 class FileNode:
-    def __init__(self, file_name: str, parent: Any) -> None:
-        self._parent: BaseNode = BaseNode(obj=self, parent=parent)
+    def __init__(self, file_name: str, parent: Any, obj: Any = None) -> None:
+        self._parent: BaseNode = BaseNode(obj=obj if obj else self, parent=parent)
         self.meta_data: FildSystemMetaDataNode = FildSystemMetaDataNode(name=file_name)
 
     @property
@@ -159,8 +160,12 @@ class FileNode:
 
 
 class DirectoryNode:
-    def __init__(self, dir_name: str, parent: Any, children: List[Any]) -> None:
-        self._parent: BaseNode = BaseNode(obj=self, parent=parent, children=children)
+    def __init__(
+        self, dir_name: str, parent: Any, obj: Any = None, children: List[Any] = []
+    ) -> None:
+        self._parent: BaseNode = BaseNode(
+            obj=obj if obj else self, parent=parent, children=children
+        )
         self.meta_data = FildSystemMetaDataNode(name=dir_name)
 
     @property

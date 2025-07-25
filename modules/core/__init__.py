@@ -16,128 +16,46 @@ from pathlib import Path
 from ..node.data_node import DataNode
 from modules.node.file_node import DirectoryNode
 
+
 @runtime_checkable
 class DataHandler(Protocol):
     """Protocol for data handlers
-
-    所有的数据处理器必须实现以下方法:
-    - create_data_tree: 从指定模式创建数据树
-    - get_data_nodes: 根据文件路径模式查找数据节点
-    - get_absolute_path: 获取节点的绝对路径
+    一个DataHander需要做到:
+        - 初始化时接收配置
+        - 创建数据字典树
     """
 
-    file_tree: DirectoryNode  # 文件树
-    config: Dict[str, Any]  # 配置
-
-    @property
-    def preserved_template_key(self) -> str:
-        """模板路径的键名
-
-        Returns:
-            str: 用于在数据中标识模板路径的键名
-        """
-        ...
-
-    @property
-    def preserved_children_key(self) -> str:
-        """子节点的键名
-
-        Returns:
-            str: 用于在数据中标识子节点的键名
-        """
-        ...
-
-    def create_data_tree(self, pattern: str) -> List[DataNode]:
-        """通过指定的入口文件pattern, 将他们作为根节点并创建数据树
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize the data handler with configuration
 
         Args:
-            pattern: 文件路径模式，如 "root.yaml" 或 "**/root/*.yaml"
-
-        Returns:
-            List[Any]: 匹配模式的数据树列表
-
-        Raises:
-            错误处理由具体实现定义
+            config: Configuration for the data handler
         """
         ...
 
-    def preprocess_expr(self, data_node: DataNode) -> None:
-        """预处理表达式
-
-        Args:
-            data_node: 数据节点
-        """
-        ...
-
-    def serialize_data_tree(self, root: DataNode, indent: int = 0) -> str:
-        """序列化数据树为字符串
-
-        Args:
-            root: 数据树的根节点
-            indent: 缩进级别
-
-        Returns:
-            str: 序列化后的字符串
-        """
-        ...
-
-    def find_by_file_path(self, node: DataNode, pattern: str) -> List[DataNode]:
-        """根据 文件 路径模式查找数据节点
-
-        Args:
-            pattern: 文件路径模式，如 "*.yaml" 或 "**/config/*.yaml"
-
-        Returns:
-            List[Any]: 匹配的数据节点列表
-        """
-        ...
-
-    def get_absolute_path(self, node: Any) -> str:
-        """获取节点的绝对路径
-
-        Args:
-            node: 数据节点
-
-        Returns:
-            str: 节点的绝对路径
-        """
+    def create_data_tree(self, *args, **kvargs) -> DataNode:
+        """根据输入参数，创建数据字典树, 具体读取数据的方式由具体的处理器决定"""
         ...
 
 
 @runtime_checkable
 class TemplateHandler(Protocol):
-    """Protocol for template handlers"""
+    """Protocol for template handlers
+    一个TemplateHandler需要做到:
+        - 初始化时接收配置
+        - 指定模板并渲染
+    """
 
-    # @property
-    # def preserved_children_key_prefix(self) -> str:
-    #     """子节点的键名前缀, 用于在模板中所使用的标记子节点内容位置
+    def __init__(self, config: Dict[str, Any]) -> None:
+        """Initialize the template handler with configuration
 
-    #     Returns:
-    #         str: 用于在数据中标识子节点的键名
-    #     """
-    #     ...
-
-    @property
-    def preserved_children_key(self) -> str:
-        """子节点的键名, 用于在模板中所使用的标记子节点内容位置
-
-        Returns:
-            str: 用于在数据中标识子节点的键名
+        Args:
+            config: Configuration for the template handler
         """
         ...
 
-    def render_template(
-        self, template_path: str, node: DataNode, data_handler: DataHandler
-    ) -> str:
-        """Render a template with data
-
-        Args:
-            template_path: Path to the template file
-            data: Data to render the template with
-            filters: Used for
-        Returns:
-            str: The rendered template
-        """
+    def render(self, template_path: str) -> str:
+        """Render the template with the given path"""
         ...
 
 

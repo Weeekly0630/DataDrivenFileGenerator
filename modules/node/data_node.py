@@ -5,41 +5,38 @@
 """
 
 from enum import Enum
-from typing import Optional, List, Dict, Any, TypeVar, Iterable
+from typing import Optional, List, Dict, Any, Callable
 from dataclasses import dataclass
 
 from .file_node import FileType, FileNode, DirectoryNode
 
 
 class DataNode:
+    """通用数据节点类，用于表示数据结构中的节点。
+    该类可以包含任意类型的数据，并且可以添加子节点。"""
+
     def __init__(
-        self, data: Dict[str, Any], name: str, parent: Optional["DataNode"] = None
+        self,
+        data: Dict[str, Any],
+        name: str,
+        obj: Any = None,
+        parent: Optional["DataNode"] = None,
     ):
-        super().__init__(name, parent)
-        self.data: Dict[str, Any] = data
-        self.children_group_number: List[int] = [] # 记录子节点组的数量
+        self._parent: DirectoryNode = DirectoryNode(
+            dir_name=name, parent=parent, obj=obj if obj else self
+        )
+        self.data = data
+        self.group_number: List[int] = [] # 组成员个数列表，用来记录每个组的成员数量
         
-    # def serialize_tree(self, indent: int = 0) -> str:
-    #     """序列化目录树为字符串"""
-    #     result = [" " * indent + self.get_absolute_path() + "/"]
+    def append_child(self, child: "DataNode") -> None:
+        """添加子节点"""
+        if not isinstance(child, DataNode):
+            raise TypeError("Child must be an instance of DataNode")
 
-    #     for child in self.children:
-    #         if isinstance(child, DirectoryNode):
-    #             result.append(child.serialize_tree(indent + 2))
-    #         else:
-    #             result.append(" " * (indent + 2) + child.name)
+        self._parent.append_child(self._parent)
 
-    #     return "\n".join(result)
-    
-    def iter_data_nodes(self) -> Iterable["DataNode"]:
-        """深度优先遍历所有数据节点"""
-        for child in self.children:
-            if isinstance(child, DataNode):
-                yield from child.iter_data_nodes()
-        yield self
-
-    def get_data(self) -> Iterable[Dict[str, Any]]:
-        """深度优先遍历，获取所有数据节点的数据"""
-        for node in self.iter_data_nodes():
-            yield node.data
-
+    def post_traverse(self, func: Callable[["DataNode"], None]) -> None:
+        """后序遍历节点，执行给定函数"""
+        self._parent._parent.post_traversal(
+            func,
+        )

@@ -21,7 +21,6 @@ class JinjaConfig:
     template_dir: Path  # 模板目录路径
     encoding: str  # 文件编码
     autoescape: bool  # XML转义开关
-    preserved_children_key: str  # 子节点内容的占位符
 
     @classmethod
     def validate(cls, config: Dict[str, Any]) -> "JinjaConfig":
