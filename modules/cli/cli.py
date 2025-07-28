@@ -81,7 +81,7 @@ def load_config(file_path: str) -> Dict[str, Any]:
         raise ValueError(f"Failed to parse config file: {str(e)}")
 
 
-def save_output(output_dir: str, results: Dict[str, str], file_extension: str) -> None:
+def save_output(output_dir: str, results: (), file_extension: str) -> None:
     """保存渲染结果到文件
 
     Args:
@@ -183,8 +183,11 @@ output_dir: path/to/output
             "data_config",
             "template_type",
             "template_config",
-            "patterns",
+            "pattern",
             "output_dir",
+            "preserved_template_key",
+            "preserved_children_key",
+            "preserved_children_content_key",
         ]
         missing = [f for f in required_fields if f not in config]
         if missing:
@@ -196,23 +199,27 @@ output_dir: path/to/output
             data_config=config["data_config"],
             template_type=TemplateHandlerType(config["template_type"]),
             template_config=config["template_config"],
+            preserved_template_key=config.get("preserved_template_key", "TEMPLATE"),
+            preserved_children_key=config.get("preserved_children_key", "CHILDREN"),
+            preserved_children_content_key=config.get(
+                "preserved_children_content_key", "CHILDREN_CONTENT"
+            ),
         )
 
         # 4. 初始化生成器
         generator = DataDrivenGenerator(gen_config)
-        print("\n==============Serialized File Tree==============")
-        print(generator.data_handler.file_tree.serialize_tree())
-        # 5. 处理每个模式
-        for pattern in config["patterns"]:
-            print(f"\nProcessing pattern: {pattern}")
-            results = generator.render(pattern)
 
-            # 6. 保存结果
-            save_output(
-                config["output_dir"],
-                results,
-                file_extension=config.get("output_file_extension", ""),
-            )
+        # 5. 处理
+        pattern = config.get("pattern", "")
+        print(f"\nProcessing pattern: {pattern}")
+        results = generator.render(pattern)
+
+        # 6. 保存结果
+        save_output(
+            config["output_dir"],
+            results,
+            file_extension=config.get("output_file_extension", ""),
+        )
 
     except (ValueError, GeneratorError) as e:
         print(f"Error: {str(e)}", file=sys.stderr)

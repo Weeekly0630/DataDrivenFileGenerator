@@ -101,7 +101,7 @@ class DataDrivenGenerator:
             pattern = kvargs["pattern"]
             return self.render_by_pattern(pattern)
         else:
-            return ""
+            raise ValueError("Please use pattern in config dict.")
 
     def _process_node(self, root: DataNode) -> None:
         """处理单个节点及其子节点
