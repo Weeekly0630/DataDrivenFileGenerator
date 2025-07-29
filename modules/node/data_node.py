@@ -23,20 +23,35 @@ class DataNode:
         parent: Optional["DataNode"] = None,
     ):
         self._parent: DirectoryNode = DirectoryNode(
-            dir_name=name, parent=parent, obj=obj if obj else self
+            dir_name=name, parent=parent, obj=obj if obj else self, children=[]
         )
         self.data = data
-        self.group_number: List[int] = [] # 组成员个数列表，用来记录每个组的成员数量
-        
+        self.group_number: List[int] = []  # 组成员个数列表，用来记录每个组的成员数量
+
     def append_child(self, child: "DataNode") -> None:
         """添加子节点"""
         if not isinstance(child, DataNode):
             raise TypeError("Child must be an instance of DataNode")
 
-        self._parent.append_child(self._parent)
+        self._parent.append_child(child._parent)
 
     def post_traverse(self, func: Callable[["DataNode"], None]) -> None:
         """后序遍历节点，执行给定函数"""
         self._parent._parent.post_traversal(
             func,
         )
+
+    def serialze(self, indent: int = 0) -> str:
+        """序列化目录树为字符串"""
+        result = []
+
+        def visitor(node: DataNode, depth: int) -> None:
+            # BaseNode Pre-order traversal Callback
+            if not isinstance(node, DataNode):
+                raise TypeError("Node must be an instance of DataNode")
+            # 打印当前节点信息
+            result.append(" " * (depth) + node._parent.meta_data.name)
+
+        self._parent._parent.pre_traversal(visitor)
+
+        return "\n".join(result)

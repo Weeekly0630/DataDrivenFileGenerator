@@ -21,10 +21,12 @@ class YamlConfig:
     def validate(cls, config: Dict[str, Any]) -> "YamlConfig":
         if not isinstance(config, dict):
             raise ValueError("Config must be a dictionary")
-        
-        if "file_root_path" not in config or not isinstance(config["file_root_path"], str):
+
+        if "file_root_path" not in config or not isinstance(
+            config["file_root_path"], str
+        ):
             raise ValueError("Config must contain 'file_root_path' as a string")
-        
+
         return cls(
             file_root_path=config.get("file_root_path", ""),
             file_pattern=config.get("file_pattern", []),
@@ -90,14 +92,16 @@ class YamlDataTreeHandler(DataHandler):
 
         # 初始化文件树
         self.file_tree: DirectoryNode = DirectoryNode(
-            dir_name=self.config.file_root_path,
-            parent=None,
-            obj=self.file_tree,
+            dir_name=self.config.file_root_path
         )
+        # 构建文件树
         self.file_tree.build_tree(self.config.file_root_path, self.config.file_pattern)
-
+        # 打印文件树
+        print("==============Serialized File Tree==============")
+        print(self.file_tree.serialze())
         # 为每一个目标FileNode创建对应的DataNode
-        self._data_node_init(self.file_tree)
+        # self._data_node_init(self.file_tree)
+        # 不在一开始Init, 而是在过程中动态创建DataNode
 
     def _get_mapping(
         self, node: Union[DataNode, FileNode]
@@ -106,7 +110,12 @@ class YamlDataTreeHandler(DataHandler):
         if isinstance(node, DataNode):
             return self._file_node_mapping.get(node)
         elif isinstance(node, FileNode):
-            return self._data_node_mapping.get(node)
+            result = self._data_node_mapping.get(node)
+            if result is None:
+                # 如果没有映射关系，尝试创建DataNode
+                return self._data_node_create(node)
+            else:
+                return result
         else:
             return None
 
@@ -123,8 +132,74 @@ class YamlDataTreeHandler(DataHandler):
         self._file_node_mapping.clear()
         self._data_node_mapping.clear()
 
-    def create_data_tree(self, *args, **kvargs) -> DataNode:
-        """根据输入参数，创建数据字典树, 具体读取数据的方式由具体的处理器决定"""
+    def _build_tree(self, data_node: DataNode, children_key: str) -> None:
+        """构建数据节点树"""
+        # 遍历所有children_key路径
+        patterns = data_node.data.get(children_key)
+        # 处理 patterns 为 None 的情况
+        if patterns == None:
+            return
+
+        def append_child_by_path(data_node: DataNode, pattern: str) -> None:
+            file_node = self._get_mapping(data_node)
+            if isinstance(file_node, FileNode):
+                parent_base_node = file_node._parent.parent
+                if parent_base_node:
+                    dir_node = parent_base_node.mapping_obj
+                    if isinstance(dir_node, DirectoryNode):
+                        matching_files = dir_node.find(pattern)
+                        for matching_file in matching_files:
+                            if isinstance(matching_file, FileNode):
+                                # Get DataNode from mapping
+                                child_data_node = self._get_mapping(matching_file)
+                                if (
+                                    isinstance(child_data_node, DataNode)
+                                    and child_data_node is not None
+                                ):
+                                    data_node.append_child(child_data_node)
+
+        # 遍历每个模式
+        if isinstance(patterns, List):
+            for pattern in patterns:
+                # 支持三种情况：str（路径）、dict（inline）、list（混合）
+                if isinstance(pattern, str):
+                    append_child_by_path(data_node, pattern)
+                elif isinstance(pattern, List):
+                    pass
+        elif isinstance(patterns, str):
+            pass
+        elif isinstance(patterns, Dict):
+            pass
+                    
+    def create_data_tree(self, *args, **kvargs) -> List[DataNode]:
+        """根据预留的pattern作为入口文件，以预留children_key建立文件树"""
+        # Check if required keys are present
+        results: List[DataNode] = []
+
+        keys = ["pattern", "preserved_children_key"]
+        for key in keys:
+            if key not in kvargs:
+                raise ValueError(f"Missing required key: {key}")
+        # Extract parameters
+        pattern = kvargs["pattern"]
+        preserved_children_key = kvargs["preserved_children_key"]
+
+        # 1. Get Entry FileNode
+        entry_file_node = self.file_tree.find(pattern)
+        for file_node in entry_file_node:
+            if isinstance(file_node, FileNode):
+                # 2. Get DataNode from FileNode
+                data_node = self._get_mapping(file_node)
+                if data_node is None:
+                    print(
+                        f"FileNode {file_node.meta_data.name} has no corresponding DataNode."
+                    )
+                elif isinstance(data_node, DataNode):
+                    # 3. Build DataNode tree
+                    self._build_tree(data_node, preserved_children_key)
+                    # 4. Add DataNode to results
+                    results.append(data_node)
+        return results
 
     # def get_absolute_path(self, node: DataNode) -> str:
     #     """获取节点的文件绝对路径
@@ -140,7 +215,6 @@ class YamlDataTreeHandler(DataHandler):
     #         return self._get_full_path(file_node)
     #     else:
     #         return "
-        
 
     # def find_by_file_path(self, node: DataNode, pattern: str) -> List[DataNode]:
     #     """根据文件路径模式查找数据节点
@@ -166,19 +240,19 @@ class YamlDataTreeHandler(DataHandler):
     #                 result.append(data_node)
     #     return result
 
-    def _data_node_init(self, root: DirectoryNode) -> None:
-        """给每一个匹配的FileNode创建对应的DataNode"""
-        for child in root._parent.children:
-            node = child.mapping_obj
-            if isinstance(node, DirectoryNode):
-                self._data_node_init(node)
-            elif isinstance(node, FileNode):
-                self._data_node_create(node)
-                
-    def _data_node_create(self, file_node: FileNode) -> DataNode:
-        """从文件节点创建数据节点"""
+    # def _data_node_init(self, root: DirectoryNode) -> None:
+    #     """给每一个匹配的FileNode创建对应的DataNode"""
+    #     for child in root._parent.children:
+    #         node = child.mapping_obj
+    #         if isinstance(node, DirectoryNode):
+    #             self._data_node_init(node)
+    #         elif isinstance(node, FileNode):
+    #             self._data_node_create(node)
 
-        file_system_path: str = file_node.abs_path
+    def _data_node_create(self, file_node: FileNode) -> DataNode:
+        """从FileNode读取Yaml数据并创建DataNode"""
+
+        file_system_path: str = file_node.get_abs_path()
 
         data = _YamlFileHandler._load_yaml_file(file_system_path)
         if data:
@@ -190,7 +264,7 @@ class YamlDataTreeHandler(DataHandler):
         else:
             raise ValueError(f"Data in file {file_system_path} is empty or invalid")
         return data_node
-    
+
     # def preprocess_expr(self, data_node: DataNode) -> None:
     #     """预处理表达式"""
     #     # 遍历所有DataNode
@@ -234,8 +308,6 @@ class YamlDataTreeHandler(DataHandler):
     #     return str(self.config.root_path) + file_node.get_absolute_path(
     #         slice_range=(1, None)
     #     )
-
-    
 
     # def file_node_to_data_node(self, file_node: FileNode) -> Optional[DataNode]:
     #     return self._data_node_mapping.get(file_node)

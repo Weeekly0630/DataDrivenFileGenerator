@@ -56,11 +56,17 @@ def load_config(file_path: str) -> Dict[str, Any]:
 
         # 处理相对路径
         config_dir = path.parent
+        # 字段映射：将 root_path 映射为 file_root_path，兼容旧配置
         if "data_config" in config:
-            if "root_path" in config["data_config"]:
-                root_path = Path(config["data_config"]["root_path"])
+            data_cfg = config["data_config"]
+            # 字段映射
+            if "root_path" in data_cfg and "file_root_path" not in data_cfg:
+                data_cfg["file_root_path"] = data_cfg.pop("root_path")
+            # 处理相对路径
+            if "file_root_path" in data_cfg:
+                root_path = Path(data_cfg["file_root_path"])
                 if not root_path.is_absolute():
-                    config["data_config"]["root_path"] = str(config_dir / root_path)
+                    data_cfg["file_root_path"] = str(config_dir / root_path)
 
         if "template_config" in config:
             if "template_dir" in config["template_config"]:
@@ -81,7 +87,7 @@ def load_config(file_path: str) -> Dict[str, Any]:
         raise ValueError(f"Failed to parse config file: {str(e)}")
 
 
-def save_output(output_dir: str, results: (), file_extension: str) -> None:
+def save_output(output_dir: str, results: dict, file_extension: str) -> None:
     """保存渲染结果到文件
 
     Args:
@@ -152,8 +158,11 @@ def main():
     "template_config": {
         "template_dir": "path/to/templates"
     },
-    "patterns": ["root.yaml", "**/*.yaml"],
-    "output_dir": "path/to/output"
+    "pattern": ["root.yaml", "**/*.yaml"],
+    "output_dir": "path/to/output",
+    "preserved_template_key": "TEMPLATE",
+    "preserved_children_key": "CHILDREN",
+    "preserved_children_content_key": "CHILDREN_CONTENT"
 }
 
 配置文件格式示例 (YAML):
@@ -164,8 +173,11 @@ data_config:
 template_type: jinja
 template_config:
     template_dir: path/to/templates
-patterns: ["root.yaml", "**/*.yaml"]
+pattern: ["root.yaml", "**/*.yaml"]
 output_dir: path/to/output
+preserved_template_key: TEMPLATE
+preserved_children_key: CHILDREN
+preserved_children_content_key: CHILDREN_CONTENT
 """,
     )
 
@@ -210,9 +222,12 @@ output_dir: path/to/output
         generator = DataDrivenGenerator(gen_config)
 
         # 5. 处理
-        pattern = config.get("pattern", "")
-        print(f"\nProcessing pattern: {pattern}")
-        results = generator.render(pattern)
+        render_param = {}
+        if "pattern" in config:
+            render_param["pattern"] = config["pattern"]
+        # 未来可扩展更多参数
+        print(f"\nProcessing render params: {render_param}")
+        results = generator.render(**render_param)
 
         # 6. 保存结果
         save_output(

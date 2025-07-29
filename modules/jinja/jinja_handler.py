@@ -12,7 +12,7 @@ from pathlib import Path
 from .expr_filter import expr_filter
 from modules.node.data_node import DataNode
 from modules.core import DataHandler
-
+from ..core import TemplateHandler
 
 @dataclass
 class JinjaConfig:
@@ -46,13 +46,10 @@ class JinjaConfig:
             template_dir=template_dir,
             encoding=config.get("encoding", "utf-8"),
             autoescape=config.get("autoescape", False),
-            preserved_children_key=config.get(
-                "preserved_children_key", "CHILDREN_CONTEXT"
-            ),
         )
 
 
-class JinjaTemplateHandler:
+class JinjaTemplateHandler(TemplateHandler):
     """Jinja模板处理器"""
 
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -77,29 +74,18 @@ class JinjaTemplateHandler:
             keep_trailing_newline=True,  # 保留文件末尾的换行
             undefined=StrictUndefined,  # 严格模式，未定义变量会抛出错误
         )
-        from ..jinja.user_func.resolver import UserFunctionResolverFactory
 
-        self.resolver_factory = UserFunctionResolverFactory()
+    # def register_filter(self, name: str, func: Callable) -> None:
+    #     """注册自定义过滤器
 
-        print(self.resolver_factory.show_function_info())
+    #     Args:
+    #         name: 过滤器名称
+    #         func: 过滤器函数
+    #     """
+    #     self.env.filters[name] = func
 
-        self.register_filter("expr_filter", expr_filter)  # 注册默认过滤器
-
-    @property
-    def preserved_children_key(self) -> str:
-        return self.config.preserved_children_key
-
-    def register_filter(self, name: str, func: Callable) -> None:
-        """注册自定义过滤器
-
-        Args:
-            name: 过滤器名称
-            func: 过滤器函数
-        """
-        self.env.filters[name] = func
-
-    def render_template(
-        self, template_path: str, node: DataNode, data_handler: DataHandler
+    def render(
+        self, template_path: str, data: Dict
     ) -> str:
         """渲染模板
 
@@ -115,14 +101,5 @@ class JinjaTemplateHandler:
             jinja2.TemplateNotFound: 如果模板不存在
             jinja2.TemplateError: 如果渲染过程出错
         """
-        node_resolver = self.resolver_factory.create_resolver(node, data_handler)
-        # print(f"Create Resolver: {node_resolver}")
-
-        data = node.data  # 获取节点数据
-
         template = self.env.get_template(template_path)
-        
-        # add resolver to context
-        # data["__context__"] = {"resolver": node_resolver}
-        
-        return template.render(**data)
+        return template.render(data)

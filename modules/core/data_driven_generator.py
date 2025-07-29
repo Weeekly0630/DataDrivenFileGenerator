@@ -56,7 +56,7 @@ class DataDrivenGenerator:
         # 存储渲染结果的映射
         self._rendered_contents: Dict[DataNode, str] = {}
 
-    def render_by_pattern(self, pattern: str) -> str:
+    def render_by_pattern(self, pattern: str) -> Dict[str, str]:
         """Render templates based on the provided pattern
 
         Args:
@@ -68,38 +68,55 @@ class DataDrivenGenerator:
         Raises:
             GeneratorError: If rendering fails or no templates are found
         """
-        # 1. 创建数据树
-        root = self.data_handler.create_data_tree(
-            {
+        result: Dict[str, str] = {}
+        
+        # Prepare param dict
+        if self.config.data_type == DataHandlerType.YAML_HANDLER:
+            kvargs = {
                 "pattern": pattern,
-                "preserved_template_key": self.config.preserved_template_key,
                 "preserved_children_key": self.config.preserved_children_key,
             }
-        )
-        if not root:
+
+        # 1. 创建数据树
+        roots = self.data_handler.create_data_tree(**kvargs)
+        if len(roots) == 0:
             raise GeneratorError(
                 GeneratorErrorType.DATA_INIT_ERROR,
                 f"No data files found matching pattern: {pattern}",
             )
         # 1.1 打印数据树
         print("\n==============Serialized Data Tree==============")
-        print(root._parent.serialze())
+        
+        # 2. 遍历数据树进行渲染
+        for root in roots:
+            if not isinstance(root, DataNode):
+                raise TypeError("Root must be an instance of DataNode")
+            # 2.1 打印数据树
+            print(root.serialze())
 
-        # 2. 后续遍历
-        self._process_node(root)
+            # 2.2 后续遍历
+            self._process_node(root)
 
-        # 3. 取结果
-        result = self._rendered_contents.get(root, "")
+            # 2.3 取结果
+            result[root._parent.meta_data.name] = self._rendered_contents.get(root, "")
 
         return result
 
-    def render(self, *args, **kvargs) -> str:
-        """渲染模板"""
+    def render(self, *args, **kvargs) -> dict:
+        """渲染模板，支持多种渲染参数"""
         # 清空之前的渲染结果
         self._rendered_contents_init()
+        # 支持 pattern 参数对象
         if "pattern" in kvargs:
             pattern = kvargs["pattern"]
-            return self.render_by_pattern(pattern)
+            # 支持 pattern 为字符串或列表
+            patterns = [pattern] if isinstance(pattern, str) else pattern
+            results = {}
+            for pat in patterns:
+                result = self.render_by_pattern(pat)
+                results.update(result)
+            # 返回所有渲染结果
+            return results
         else:
             raise ValueError("Please use pattern in config dict.")
 
@@ -146,7 +163,7 @@ class DataDrivenGenerator:
                     # Update the preserved key with group content
                     node.data[preserved_key].append("\n".join(group_content))
 
-        def visitor(node: DataNode) -> None:
+        def visitor(node: DataNode, *args) -> None:
             """Visitor function to process each node"""
             if not isinstance(node, DataNode):
                 raise TypeError("Node must be an instance of DataNode")
@@ -169,7 +186,7 @@ class DataDrivenGenerator:
             try:
                 template_path = node.data[self.config.preserved_template_key]
                 # 渲染模板
-                result = self.template_handler.render(template_path)
+                result = self.template_handler.render(template_path, node.data)
                 # 验证渲染结果并保存
                 validate_render_result(result, template_path)
                 self._rendered_contents[node] = result

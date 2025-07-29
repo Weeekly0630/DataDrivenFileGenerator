@@ -33,7 +33,7 @@ class DataHandler(Protocol):
         """
         ...
 
-    def create_data_tree(self, *args, **kvargs) -> DataNode:
+    def create_data_tree(self, *args, **kvargs) -> List[DataNode]:
         """根据输入参数，创建数据字典树, 具体读取数据的方式由具体的处理器决定"""
         ...
 
@@ -54,7 +54,7 @@ class TemplateHandler(Protocol):
         """
         ...
 
-    def render(self, template_path: str) -> str:
+    def render(self, template_path: str, data: Dict) -> str:
         """Render the template with the given path"""
         ...
 

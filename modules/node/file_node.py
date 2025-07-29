@@ -40,23 +40,112 @@ class BaseNode:
         self,
         obj: Any,
         parent: Optional["BaseNode"] = None,
-        children: List["BaseNode"] = [],
+        children: Any = None,
     ):
         self.parent: Optional["BaseNode"] = parent  # 父节点
-        self.children: List[BaseNode] = children  # 子节点列表
+        self.children: Any = children
         self.mapping_obj: Any = obj  # 将当前BaseNode的节点映射到一个对象上
 
-    def post_traversal(self, func: Callable[..., None], *args, **kwargs) -> None:
-        """后续遍历子节点"""
-        for child in self.children:
-            child.post_traversal(func)
-        func(self.mapping_obj, *args, **kwargs)
+    """
+    [a, b] -> [a, b]
+    [a, b={a: xxx, b:yyy}] -> [a, xxx, yyy]
+    [[a,b], [b]]-> b, a,b
+    """
 
-    def pre_traversal(self, func: Callable[..., None], *args, **kwargs) -> None:
+    @staticmethod
+    def flatten(children: Any) -> List[Union["BaseNode", List["BaseNode"]]]:
+        """将Any对象铺平"""
+        child_list: List[Union["BaseNode", List["BaseNode"]]] = []
+        """Flatten the node children into a list of BaseNode instances."""
+        if isinstance(children, BaseNode):
+            child_list.append(children)
+        elif isinstance(children, List):
+            for child in children:
+                child_list.extend(children)
+        elif isinstance(children, Dict):
+            for child in children.values():
+                child_list.append(child)
+
+        return child_list
+    
+    @staticmethod
+    def call_queue_flatten(cur_obj: List[Any], cur_level: int) -> List[Tuple["BaseNode", int]]:
+        call_queue: List[Tuple[BaseNode, int]] = []
+        # 记录当前深度
+        level = 1
+
+        # 记录当前层需平铺的对象
+        next_level = [self.children]
+        flattened_children = []
+        
+        for each in cur_obj:
+            flattened_children.extend(BaseNode.flatten(each))
+        
+        return call_queue
+    
+    def post_traversal(self, func: Callable[..., None], *args, **kwargs):
+        """后续遍历子节点, 即先遍历子节点"""
+        # 记录调用顺序
+        call_queue: List[Tuple[BaseNode, int]] = [(self, 0)]
+
+        while len(next_level) != 0:
+            cur_level = []
+            # 平铺当前level
+            for each in next_level:
+                cur_level.extend(BaseNode.flatten(each))
+
+            # 清空next_level
+            next_level = []
+
+            # 遍历当前level
+            for each in cur_level:
+                if isinstance(each, BaseNode):
+                    # 如果平铺后的元素是BaseNode，先放在call stack中
+                    call_queue.append((each, level))
+                else:
+                    # 否则进行下一层的flatten
+                    next_level.append(each)
+            # 深度增加
+            level += 1
+
+        # 逆序
+        call_queue.reverse()
+        for each in call_queue:
+            func(each[0].mapping_obj, each[1], *args, **kwargs)
+
+    def pre_traversal(
+        self, func: Callable[..., None], depth: int = 0, *args, **kwargs
+    ) -> None:
         """前序遍历子节点"""
-        func(self.mapping_obj, *args, **kwargs)
-        for child in self.children:
-            child.pre_traversal(func)
+
+        # 记录当前层需平铺的对象
+        next_level = [self.children]
+        
+        # 先调用自己
+        func(self.mapping_obj, 0, *args, **kwargs)
+        
+        # 记录当前深度
+        level = 1
+
+        while len(next_level) != 0:
+            cur_level = []
+            # 平铺当前level
+            for each in next_level:
+                cur_level.extend(BaseNode.flatten(each))
+
+            # 清空next_level
+            next_level = []
+
+            # 遍历当前level
+            for each in cur_level:
+                if isinstance(each, BaseNode):
+                    # 如果平铺后的元素是BaseNode，进行函数调用
+                    func(each.mapping_obj, level, *args, **kwargs)
+                else:
+                    # 否则进行下一层的flatten
+                    next_level.append(each)
+            # 深度增加
+            level += 1
 
 
 @dataclass
@@ -72,18 +161,21 @@ class FileTreeHandler:
     @staticmethod
     def get_abs_path(node: Union["FileNode", "DirectoryNode"]) -> str:
         """获取节点在文件树中的全路径"""
-        cur_node: Union["FileNode", "DirectoryNode"] = node
+        cur_base_node: Optional[BaseNode] = node._parent
         path_parts = []
 
-        while cur_node._parent.parent:
+        while cur_base_node:
+            cur_node = cast(
+                Union["FileNode", "DirectoryNode"], cur_base_node.mapping_obj
+            )
             path_parts.append(cur_node.meta_data.name)
-            cur_node = cur_node._parent.parent.mapping_obj
+            cur_base_node = cur_base_node.parent
 
         # Reverse the path parts to get the correct order
         path_parts.reverse()
         if not path_parts:
             return "/"
-        return "/" + "/".join(path_parts)
+        return "/".join(path_parts)
 
     @staticmethod
     def get_rel_path(
@@ -149,19 +241,22 @@ class FileNode:
         self._parent: BaseNode = BaseNode(obj=obj if obj else self, parent=parent)
         self.meta_data: FildSystemMetaDataNode = FildSystemMetaDataNode(name=file_name)
 
-    @property
-    def abs_path(self) -> str:
+    def get_abs_path(self) -> str:
         """获取文件的绝对路径"""
         return FileTreeHandler.get_abs_path(self)
 
-    def rel_path(self, from_node: Union["FileNode", "DirectoryNode"]) -> str:
+    def get_rel_path(self, from_node: Union["FileNode", "DirectoryNode"]) -> str:
         """获取文件相对于from_node的相对路径，from_node 可以是目录或文件节点"""
         return FileTreeHandler.get_rel_path(self, from_node)
 
 
 class DirectoryNode:
     def __init__(
-        self, dir_name: str, parent: Any, obj: Any = None, children: List[Any] = []
+        self,
+        dir_name: str,
+        parent: Any = None,
+        obj: Any = None,
+        children: List[Any] = [],
     ) -> None:
         self._parent: BaseNode = BaseNode(
             obj=obj if obj else self, parent=parent, children=children
@@ -256,7 +351,7 @@ class DirectoryNode:
         nodes: List[Union[FileNode, "DirectoryNode"]] = []
         children_group_number_list: List[int] = []
 
-        def visitor(node: Union[FileNode, "DirectoryNode"]) -> None:
+        def visitor(node: Union[FileNode, "DirectoryNode"], *args) -> None:
             # BaseNode Pre-order traversal Callback
             nodes.append(node)
             children_group_number_list.append(len(node._parent.children))
@@ -268,15 +363,13 @@ class DirectoryNode:
     def serialze(self, indent: int = 0) -> str:
         """序列化目录树为字符串"""
         result = []
-        cur_indent = [indent]
 
-        def visitor(node: Union[FileNode, "DirectoryNode"]) -> None:
+        def visitor(node: Union[FileNode, "DirectoryNode"], depth: int) -> None:
             # BaseNode Pre-order traversal Callback
             if isinstance(node, DirectoryNode):
-                cur_indent[0] += 2
-                result.append(" " * (cur_indent[0]) + node.meta_data.name + "/")
+                result.append("  " * depth + node.meta_data.name + "/")
             elif isinstance(node, FileNode):
-                result.append(" " * (cur_indent[0]) + node.meta_data.name)
+                result.append("  " * depth + node.meta_data.name)
             else:
                 raise TypeError(f"Unsupported node type: {type(node)}")
 
