@@ -92,7 +92,7 @@ class YamlDataTreeHandler(DataHandler):
 
         # 初始化文件树
         self.file_tree: DirectoryNode = DirectoryNode(
-            dir_name=self.config.file_root_path
+            dir_name=self.config.file_root_path, parent=None, obj=None, children=[]
         )
         # 构建文件树
         self.file_tree.build_tree(self.config.file_root_path, self.config.file_pattern)
@@ -140,7 +140,9 @@ class YamlDataTreeHandler(DataHandler):
         if patterns == None:
             return
 
-        def append_child_by_path(data_node: DataNode, pattern: str) -> None:
+        def append_child_by_path(data_node: DataNode, pattern: str) -> List:
+            results: List = []
+            # 获取匹配的文件节点
             file_node = self._get_mapping(data_node)
             if isinstance(file_node, FileNode):
                 parent_base_node = file_node._parent.parent
@@ -156,21 +158,32 @@ class YamlDataTreeHandler(DataHandler):
                                     isinstance(child_data_node, DataNode)
                                     and child_data_node is not None
                                 ):
-                                    data_node.append_child(child_data_node)
+                                    # 添加parent
+                                    if child_data_node.add_parent(data_node) is True:
+                                        results.append(child_data_node._parent._parent)
+                                    # 递归处理子节点
+                                    # self._build_tree(child_data_node, children_key)
+            return results
 
         # 遍历每个模式
-        if isinstance(patterns, List):
-            for pattern in patterns:
-                # 支持三种情况：str（路径）、dict（inline）、list（混合）
-                if isinstance(pattern, str):
-                    append_child_by_path(data_node, pattern)
-                elif isinstance(pattern, List):
-                    pass
-        elif isinstance(patterns, str):
-            pass
-        elif isinstance(patterns, Dict):
-            pass
-                    
+        def handle_any(cur_data_node: DataNode, patterns: Any) -> Any:
+            result = None
+
+            if isinstance(patterns, List):
+                # 初始化data_node的base node children为列表
+                result = [None] * len(patterns)
+                for index, pattern in enumerate(patterns):
+                    result[index] = handle_any(cur_data_node, pattern)
+            elif isinstance(patterns, str):
+                result = []
+                result.extend(append_child_by_path(cur_data_node, patterns))
+            elif isinstance(patterns, Dict):
+                result = {}
+
+            return result
+
+        data_node._parent._parent.children = handle_any(data_node, patterns)
+
     def create_data_tree(self, *args, **kvargs) -> List[DataNode]:
         """根据预留的pattern作为入口文件，以预留children_key建立文件树"""
         # Check if required keys are present

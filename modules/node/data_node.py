@@ -34,7 +34,20 @@ class DataNode:
             raise TypeError("Child must be an instance of DataNode")
 
         self._parent.append_child(child._parent)
+    
+    def add_parent(self, parent: "DataNode") -> bool:
+        """添加父节点, 返回是否添加成功"""
+        if not isinstance(parent, DataNode):
+            raise TypeError("Parent must be an instance of DataNode")
 
+        if self._parent._parent.parent is None:
+            self._parent._parent.parent = parent._parent._parent
+            return True
+        else:
+            print(f"Warning: {self._parent.meta_data.name} already has a parent. Do Nothing.")
+            # self._parent._parent.parent = parent._parent._parent
+            return False
+    
     def post_traverse(self, func: Callable[["DataNode"], None]) -> None:
         """后序遍历节点，执行给定函数"""
         self._parent._parent.post_traversal(

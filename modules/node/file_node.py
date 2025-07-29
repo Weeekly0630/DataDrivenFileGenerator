@@ -39,8 +39,8 @@ class BaseNode:
     def __init__(
         self,
         obj: Any,
-        parent: Optional["BaseNode"] = None,
-        children: Any = None,
+        parent: Optional["BaseNode"],
+        children: Any,
     ):
         self.parent: Optional["BaseNode"] = parent  # 父节点
         self.children: Any = children
@@ -53,103 +53,61 @@ class BaseNode:
     """
 
     @staticmethod
-    def flatten(children: Any) -> List[Union["BaseNode", List["BaseNode"]]]:
-        """将Any对象铺平"""
-        child_list: List[Union["BaseNode", List["BaseNode"]]] = []
-        """Flatten the node children into a list of BaseNode instances."""
-        if isinstance(children, BaseNode):
-            child_list.append(children)
-        elif isinstance(children, List):
-            for child in children:
-                child_list.extend(children)
-        elif isinstance(children, Dict):
-            for child in children.values():
-                child_list.append(child)
+    def flatten(children: Any) -> List["BaseNode"]:
+        """将Any对象铺平，完全平铺一个递归的children结构"""
+        child_list: List["BaseNode"] = []
+        if children:
+            """Flatten the node children into a list of BaseNode instances."""
+            if isinstance(children, BaseNode):
+                child_list.append(children)
+            elif isinstance(children, List):
+                for child in children:
+                    child_list.extend(BaseNode.flatten(child))
+            elif isinstance(children, Dict):
+                for child in children.values():
+                    child_list.extend(BaseNode.flatten(child))
+            else:
+                raise TypeError(
+                    f"Unsupported children type: {type(children)}. Expected BaseNode, List, or Dict."
+                )
 
         return child_list
-    
-    @staticmethod
-    def call_queue_flatten(cur_obj: List[Any], cur_level: int) -> List[Tuple["BaseNode", int]]:
-        call_queue: List[Tuple[BaseNode, int]] = []
-        # 记录当前深度
-        level = 1
 
-        # 记录当前层需平铺的对象
-        next_level = [self.children]
-        flattened_children = []
-        
-        for each in cur_obj:
-            flattened_children.extend(BaseNode.flatten(each))
-        
+    def call_queue_create(self) -> List[Tuple["BaseNode", int]]:
+        """创建调用队列（前序遍历顺序）"""
+        call_queue: List[Tuple["BaseNode", int]] = []
+
+        def dfs(node: "BaseNode", depth: int):
+            call_queue.append((node, depth))
+            for child in BaseNode.flatten(node.children):
+                dfs(child, depth + 1)
+
+        dfs(self, 0)
         return call_queue
-    
+
+    def _traverse(
+        self, func: Callable[..., None], need_reverse: bool, *args, **kwargs
+    ) -> None:
+        """遍历子节点"""
+        call_queue: List[Tuple[BaseNode, int]] = self.call_queue_create()
+        if need_reverse:
+            call_queue.reverse()
+        # 遍历调用队列
+        for node, depth in call_queue:
+            # 调用函数
+            func(node.mapping_obj, depth, *args, **kwargs)
+
     def post_traversal(self, func: Callable[..., None], *args, **kwargs):
         """后续遍历子节点, 即先遍历子节点"""
-        # 记录调用顺序
-        call_queue: List[Tuple[BaseNode, int]] = [(self, 0)]
+        self._traverse(func, need_reverse=True, *args, **kwargs)
 
-        while len(next_level) != 0:
-            cur_level = []
-            # 平铺当前level
-            for each in next_level:
-                cur_level.extend(BaseNode.flatten(each))
-
-            # 清空next_level
-            next_level = []
-
-            # 遍历当前level
-            for each in cur_level:
-                if isinstance(each, BaseNode):
-                    # 如果平铺后的元素是BaseNode，先放在call stack中
-                    call_queue.append((each, level))
-                else:
-                    # 否则进行下一层的flatten
-                    next_level.append(each)
-            # 深度增加
-            level += 1
-
-        # 逆序
-        call_queue.reverse()
-        for each in call_queue:
-            func(each[0].mapping_obj, each[1], *args, **kwargs)
-
-    def pre_traversal(
-        self, func: Callable[..., None], depth: int = 0, *args, **kwargs
-    ) -> None:
+    def pre_traversal(self, func: Callable[..., None], *args, **kwargs) -> None:
         """前序遍历子节点"""
-
-        # 记录当前层需平铺的对象
-        next_level = [self.children]
-        
-        # 先调用自己
-        func(self.mapping_obj, 0, *args, **kwargs)
-        
-        # 记录当前深度
-        level = 1
-
-        while len(next_level) != 0:
-            cur_level = []
-            # 平铺当前level
-            for each in next_level:
-                cur_level.extend(BaseNode.flatten(each))
-
-            # 清空next_level
-            next_level = []
-
-            # 遍历当前level
-            for each in cur_level:
-                if isinstance(each, BaseNode):
-                    # 如果平铺后的元素是BaseNode，进行函数调用
-                    func(each.mapping_obj, level, *args, **kwargs)
-                else:
-                    # 否则进行下一层的flatten
-                    next_level.append(each)
-            # 深度增加
-            level += 1
+        self._traverse(func, need_reverse=False, *args, **kwargs)
 
 
 @dataclass
-class FildSystemMetaDataNode:
+class FileSystemMetaDataNode:
     """文件系统节点元数据"""
 
     name: str  # 节点名称
@@ -237,9 +195,11 @@ class FileTreeHandler:
 
 
 class FileNode:
-    def __init__(self, file_name: str, parent: Any, obj: Any = None) -> None:
-        self._parent: BaseNode = BaseNode(obj=obj if obj else self, parent=parent)
-        self.meta_data: FildSystemMetaDataNode = FildSystemMetaDataNode(name=file_name)
+    def __init__(self, file_name: str, parent: Any, obj: Any) -> None:
+        self._parent: BaseNode = BaseNode(
+            obj=obj if obj else self, parent=parent, children=None
+        )
+        self.meta_data: FileSystemMetaDataNode = FileSystemMetaDataNode(name=file_name)
 
     def get_abs_path(self) -> str:
         """获取文件的绝对路径"""
@@ -254,14 +214,14 @@ class DirectoryNode:
     def __init__(
         self,
         dir_name: str,
-        parent: Any = None,
-        obj: Any = None,
-        children: List[Any] = [],
+        parent: Any,
+        obj: Any,
+        children: List[Any],
     ) -> None:
         self._parent: BaseNode = BaseNode(
             obj=obj if obj else self, parent=parent, children=children
         )
-        self.meta_data = FildSystemMetaDataNode(name=dir_name)
+        self.meta_data = FileSystemMetaDataNode(name=dir_name)
 
     @property
     def abs_path(self) -> str:
@@ -278,20 +238,24 @@ class DirectoryNode:
             raise TypeError("Child must be a FileNode or DirectoryNode instance.")
 
         if child._parent.parent is not None:
-            raise ValueError(f"Child {child.meta_data.name} already has a parent.")
+            print(
+                f"Warning: {child.meta_data.name} already has a parent({child._parent.parent}). Detaching it from the old parent."
+            )
+            return  # 如果子节点已经有父节点，则不添加
+            # raise ValueError(f"Child {child.meta_data.name} already has a parent.")
 
         self._parent.children.append(child._parent)
         child._parent.parent = self._parent
 
     def create_file(self, file_name: str) -> FileNode:
         """创建文件节点并添加到当前目录"""
-        file_node = FileNode(file_name, None)
+        file_node = FileNode(file_name, None, None)
         self.append_child(file_node)
         return file_node
 
     def cretate_directory(self, dir_name: str) -> "DirectoryNode":
         """创建子目录节点并添加到当前目录"""
-        dir_node = DirectoryNode(dir_name, None, [])
+        dir_node = DirectoryNode(dir_name=dir_name, parent=None, obj=None, children=[])
         self.append_child(dir_node)
         return dir_node
 
@@ -330,11 +294,9 @@ class DirectoryNode:
             for dir_name in dirs:
                 # 文件夹不需要过滤
                 normalized_dir_name = FilePathResolver.normalize_path(dir_name)
-                current_directory_node.cretate_directory(normalized_dir_name)
-                # 以绝对路径为键，存储当前目录节点
-                directory_node_map[os.path.join(root, dir_name)] = (
-                    current_directory_node
-                )
+                new_dir = current_directory_node.cretate_directory(normalized_dir_name)
+                # 以绝对路径为键，存储新建的目录节点
+                directory_node_map[os.path.join(root, dir_name)] = new_dir
 
             # 添加文件
             for filename in files:
@@ -448,43 +410,43 @@ class DirectoryNode:
 
 
 """Simple test"""
-if __name__ == "__main__":
-    root = DirectoryNode("root", None, [])
-    sub_dir = root.cretate_directory("subdir")
-    file1 = root.create_file("file1.txt")
-    file2 = sub_dir.create_file("file2.txt")
+# if __name__ == "__main__":
+#     root = DirectoryNode("root", None, [])
+#     sub_dir = root.cretate_directory("subdir")
+#     file1 = root.create_file("file1.txt")
+#     file2 = sub_dir.create_file("file2.txt")
 
-    print(root.serialze())
-    print(sub_dir.serialze())
+#     print(root.serialze())
+#     print(sub_dir.serialze())
 
-    searching_patterns = [
-        "subdir/file2.txt",
-        "file1.txt",
-        "subdir/**",
-        "subdir/*.txt",
-        "**/*.txt",
-        "/**/*.txt",
-    ]
-    for pattern in searching_patterns:
-        result = root.find(pattern)
-        print("Current pattern:", pattern)
-        for node in result:
-            if isinstance(node, FileNode):
-                print(f"  Found file: {node.meta_data.name}")
-            elif isinstance(node, DirectoryNode):
-                print(f"  Found directory: {node.meta_data.name}")
-            else:
-                print("  Unknown node type found.")
+#     searching_patterns = [
+#         "subdir/file2.txt",
+#         "file1.txt",
+#         "subdir/**",
+#         "subdir/*.txt",
+#         "**/*.txt",
+#         "/**/*.txt",
+#     ]
+#     for pattern in searching_patterns:
+#         result = root.find(pattern)
+#         print("Current pattern:", pattern)
+#         for node in result:
+#             if isinstance(node, FileNode):
+#                 print(f"  Found file: {node.meta_data.name}")
+#             elif isinstance(node, DirectoryNode):
+#                 print(f"  Found directory: {node.meta_data.name}")
+#             else:
+#                 print("  Unknown node type found.")
 
-    print("Absolute path of file1:", file1.abs_path)
-    print("Absolute path of file2:", file2.abs_path)
-    print("Absolute path of sub_dir:", sub_dir.abs_path)
-    print("Absolute path of root:", root.abs_path)
+#     print("Absolute path of file1:", file1.abs_path)
+#     print("Absolute path of file2:", file2.abs_path)
+#     print("Absolute path of sub_dir:", sub_dir.abs_path)
+#     print("Absolute path of root:", root.abs_path)
 
-    print("Relative path of file1 from root:", file1.rel_path(root))
-    print("Relative path of file2 from root:", file2.rel_path(root))
-    print("Relative path of sub_dir from root:", sub_dir.rel_path(root))
-    print("Relative path of root from root:", root.rel_path(root))
-    print("Relative path of file1 from sub_dir:", file1.rel_path(sub_dir))
-    print("Relative path of file2 from sub_dir:", file2.rel_path(sub_dir))
-    print("Relative path of file1 from file2:", file1.rel_path(file2))
+#     print("Relative path of file1 from root:", file1.rel_path(root))
+#     print("Relative path of file2 from root:", file2.rel_path(root))
+#     print("Relative path of sub_dir from root:", sub_dir.rel_path(root))
+#     print("Relative path of root from root:", root.rel_path(root))
+#     print("Relative path of file1 from sub_dir:", file1.rel_path(sub_dir))
+#     print("Relative path of file2 from sub_dir:", file2.rel_path(sub_dir))
+#     print("Relative path of file1 from file2:", file1.rel_path(file2))
