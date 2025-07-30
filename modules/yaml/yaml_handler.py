@@ -131,7 +131,7 @@ class YamlDataTreeHandler(DataHandler):
     def _clear_mapping(self) -> None:
         self._file_node_mapping.clear()
         self._data_node_mapping.clear()
-
+    
     def _build_tree(self, data_node: DataNode, children_key: str) -> None:
         """构建数据节点树"""
         # 遍历所有children_key路径
@@ -162,7 +162,7 @@ class YamlDataTreeHandler(DataHandler):
                                     if child_data_node.add_parent(data_node) is True:
                                         results.append(child_data_node._parent._parent)
                                     # 递归处理子节点
-                                    # self._build_tree(child_data_node, children_key)
+                                    self._build_tree(child_data_node, children_key)
             return results
 
         # 遍历每个模式

@@ -30,6 +30,28 @@ class DataDrivenGeneratorConfig:
     preserved_children_content_key: str  # 指定模板中引用子节点数据对象名称
 
 
+class FlexibleChildrenContent:
+    """Auto handle Cildren Content"""
+
+    def __init__(self, children_content: Union[str, List]) -> None:
+        self.children_content = children_content
+
+    def __str__(self) -> str:
+        """Convert to string representation"""
+        if isinstance(self.children_content, list):
+            return "\n".join(str(item) for item in self.children_content)
+        return str(self.children_content)
+
+    def __item__(self, item: Union[str, int]) -> str:
+        """Get item by index or key"""
+        if isinstance(self.children_content, list):
+            return self.children_content[item]
+        elif isinstance(self.children_content, dict):
+            return self.children_content.get(item, "")
+        else:
+            return str(self.children_content)
+        raise TypeError("Children content must be a list or dict")
+
 class DataDrivenGenerator:
     """Data-driven generator class
     This class is responsible for generating data-driven templates based on provided data.
@@ -69,7 +91,7 @@ class DataDrivenGenerator:
             GeneratorError: If rendering fails or no templates are found
         """
         result: Dict[str, str] = {}
-        
+
         # Prepare param dict
         if self.config.data_type == DataHandlerType.YAML_HANDLER:
             kvargs = {
@@ -86,7 +108,7 @@ class DataDrivenGenerator:
             )
         # 1.1 打印数据树
         print("\n==============Serialized Data Tree==============")
-        
+
         # 2. 遍历数据树进行渲染
         for root in roots:
             if not isinstance(root, DataNode):
@@ -139,29 +161,24 @@ class DataDrivenGenerator:
             preserved_key: str,
             rendered_content_map: Dict[DataNode, str],
         ) -> None:
-            """Update children content key in the node data with rendered contents"""
-            if len(node._parent._parent.children) == 0:
-                # No children to update
-                return
-            else:
-                # Current children node index
-                children_index = 0
-                # Get group number from parent
-                for number in node.group_number:
-                    # Initialize group content list
-                    group_content = []
-                    # Get the corresponding child node
-                    for child in node._parent._parent.children[
-                        children_index : children_index + number
-                    ]:
-                        obj = child.mapping_obj
-                        if isinstance(obj, DataNode):
-                            # Get rendered content for the child node
-                            content = rendered_content_map.get(obj, "")
-                            if content != "":
-                                group_content.append(content)
-                    # Update the preserved key with group content
-                    node.data[preserved_key].append("\n".join(group_content))
+            """Update children content key in the node data with rendered contents
+            DataNode.parent.parent.children = Any ==> DataNode.data[preserved_key]
+            """
+
+            def extract_content(children):
+                if children is None:
+                    return ""
+                elif isinstance(children, list):
+                    # Recursively process each element
+                    return [extract_content(child) for child in children]
+                else:
+                    # children is a DataNode wrapper (e.g., FileNode or DataNode itself)
+                    obj = getattr(children, "mapping_obj", None)
+                    if isinstance(obj, DataNode):
+                        return rendered_content_map.get(obj, "")
+                    return ""
+
+            node.data[preserved_key] = extract_content(node._parent._parent.children)
 
         def visitor(node: DataNode, *args) -> None:
             """Visitor function to process each node"""

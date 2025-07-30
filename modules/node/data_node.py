@@ -26,7 +26,7 @@ class DataNode:
             dir_name=name, parent=parent, obj=obj if obj else self, children=[]
         )
         self.data = data
-        self.group_number: List[int] = []  # 组成员个数列表，用来记录每个组的成员数量
+        # self.group_number: List[int] = []  # 组成员个数列表，用来记录每个组的成员数量
 
     def append_child(self, child: "DataNode") -> None:
         """添加子节点"""

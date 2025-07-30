@@ -223,12 +223,11 @@ class DirectoryNode:
         )
         self.meta_data = FileSystemMetaDataNode(name=dir_name)
 
-    @property
-    def abs_path(self) -> str:
+    def get_abs_path(self) -> str:
         """获取文件的绝对路径"""
         return FileTreeHandler.get_abs_path(self)
 
-    def rel_path(self, from_node: Union["FileNode", "DirectoryNode"]) -> str:
+    def get_rel_path(self, from_node: Union["FileNode", "DirectoryNode"]) -> str:
         """获取目录相对于from_node的相对路径，from_node 可以是目录或文件节点"""
         return FileTreeHandler.get_rel_path(self, from_node)
 
