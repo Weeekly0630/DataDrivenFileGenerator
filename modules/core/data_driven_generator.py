@@ -1,6 +1,6 @@
 """Data-driven generator module for Jinja Template"""
 
-from typing import Dict, Any, List, Tuple, Union
+from typing import Dict, Any, List, Tuple, Union, Optional
 from dataclasses import dataclass
 from . import (
     GeneratorError,
@@ -33,7 +33,7 @@ class DataDrivenGeneratorConfig:
 class FlexibleChildrenContent:
     """Auto handle Cildren Content"""
 
-    def __init__(self, children_content: Union[str, List]) -> None:
+    def __init__(self, children_content: Union[str, List, Dict]) -> None:
         self.children_content = children_content
 
     def __str__(self) -> str:
@@ -42,15 +42,23 @@ class FlexibleChildrenContent:
             return "\n".join(str(item) for item in self.children_content)
         return str(self.children_content)
 
-    def __item__(self, item: Union[str, int]) -> str:
+    def __getitem__(self, item: Union[str, int]) -> str:
         """Get item by index or key"""
         if isinstance(self.children_content, list):
-            return self.children_content[item]
+            if isinstance(item, int):
+                return self.children_content[item]
+            else:
+                raise TypeError("List indices must be integers")
         elif isinstance(self.children_content, dict):
             return self.children_content.get(item, "")
+        elif isinstance(self.children_content, str):
+            if isinstance(item, int):
+                return self.children_content[item]
+            else:
+                raise TypeError("String indices must be integers")
         else:
-            return str(self.children_content)
-        raise TypeError("Children content must be a list or dict")
+            raise TypeError("Children content must be a list, dict, or str")
+
 
 class DataDrivenGenerator:
     """Data-driven generator class
@@ -165,18 +173,31 @@ class DataDrivenGenerator:
             DataNode.parent.parent.children = Any ==> DataNode.data[preserved_key]
             """
 
-            def extract_content(children):
+            def extract_content(children) -> FlexibleChildrenContent:
+                result: FlexibleChildrenContent = FlexibleChildrenContent("")
                 if children is None:
-                    return ""
+                    pass  # No children, return empty content
                 elif isinstance(children, list):
-                    # Recursively process each element
-                    return [extract_content(child) for child in children]
+                    # Recursively process each element and wrap the list
+                    result = FlexibleChildrenContent(
+                        [extract_content(child) for child in children]
+                    )
+                elif isinstance(children, dict):
+                    # Recursively process each value and wrap the dict
+                    result = FlexibleChildrenContent(
+                        {k: extract_content(v) for k, v in children.items()}
+                    )
                 else:
                     # children is a DataNode wrapper (e.g., FileNode or DataNode itself)
                     obj = getattr(children, "mapping_obj", None)
                     if isinstance(obj, DataNode):
-                        return rendered_content_map.get(obj, "")
-                    return ""
+                        result = FlexibleChildrenContent(
+                            rendered_content_map.get(obj, "")
+                        )
+                    else:
+                        raise TypeError(f"Unsupported children type: {type(children)}")
+                    
+                return result
 
             node.data[preserved_key] = extract_content(node._parent._parent.children)
 
