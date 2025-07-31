@@ -7,24 +7,3 @@ name: "Web Service"
 type: "http"
 port: 8080
 enabled: true
-
-expr0:
-  type: "function"
-  args: [user:double, 55]
-
-expr1:
-  type: "function"
-  args: [node:name]
-
-expr2:
-  type: "function"
-  args: [node:path]
-
-expr3:
-  type: "function"
-  args:
-    [
-      "node:get_attr",
-      { "type": "function", "args": [node:get_rel, "./database.yaml"] },
-      "name"
-    ]

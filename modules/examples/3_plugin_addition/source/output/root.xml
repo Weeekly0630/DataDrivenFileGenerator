@@ -3,7 +3,7 @@
     </node>
 
     <expr>
-        /root.yaml/ch0.yaml
+        {'type': 'function', 'args': ['dataNode:get_abs_path']}
     </expr>
 </group0>
 <group1>
@@ -11,30 +11,30 @@
     </node>
 
     <expr>
-        /root.yaml/ch1.yaml
+        {'type': 'function', 'args': ['dataNode:get_abs_path']}
     </expr>
 </group1>
 
 <path_value path=".\children_0\ch0.yaml">
-    <value> 100 </value>
+    <value> 0 </value>
 </path_value>
 
 <path_value path=".\children_1\ch1.yaml">
-    <value> 200 </value>
+    <value> 0 </value>
 </path_value>
 
 <expr>
-    /root.yaml
+    {'type': 'function', 'args': ['dataNode:get_abs_path']}
 </expr>
 
 <expr>
-    /root.yaml
+    {'type': 'function', 'args': ['dataNode:get_abs_path']}
 </expr>
 
 <expr>
-    /root.yaml
+    {'type': 'function', 'args': ['dataNode:get_abs_path']}
 </expr>
 
 <sum>
-    221
+    {'type': 'function', 'args': ['math:sum', [1, 2, 3, 4, 5, 6, {'type': 'function', 'args': ['math:node_value', '.\\children_1\\ch1.yaml']}]]}
 </sum>

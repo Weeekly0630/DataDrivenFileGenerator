@@ -6,9 +6,9 @@
         <enabled>{{ enabled }}</enabled>
     </info>
     <endpoints>
-        {{ CHILDREN_CONTEXT[0] | indent(8) }}
+        {{ CHILDREN_CONTEXT[0] | string | indent(8) }}
     </endpoints>
     <children1>
-        {{ CHILDREN_CONTEXT[1] | indent(8) }}
+        {{ CHILDREN_CONTEXT[1] | string | indent(8) }}
     </children1>
 </web-service>

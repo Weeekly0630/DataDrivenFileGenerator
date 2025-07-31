@@ -1,87 +1,170 @@
-# 数据树渲染示例
+# 数据树渲染示例（Tree Render Example）
 
-此文档介绍`DataHandler`如何构建一个字典树，以及`DataDrivenGenerator`如何递归渲染字典树。
+本示例展示如何使用 DataDrivenGenerator 递归渲染多层数据结构，适合需要处理父子节点、分组和多模板场景。
 
-## 1. 简介
+---
 
-- **文件树**：DataHandler通过指定的`root_path`，将构建一个由`DirectoryNode`和`FileNode`组成的[文件树](#21-filenodetree)
-- **字典树**：通过在字典中预留一个键`preserved_children_key`, 构建一个由DataNode组成的[字典树](#22-datanodetree)
+## 1. 示例简介
 
-## 2. 树结构
+- **文件树**：自动扫描数据目录，构建文件与目录的层级关系。
+- **字典树**：通过配置和数据文件中的保留键，自动构建父子节点的数据结构。
+- **多级模板渲染**：支持递归渲染和子节点分组，适合复杂业务场景。
 
-### 2.1 FileNodeTree
+---
 
-通过遍历config中的`root_path`，构建一个文件树
+## 2. 快速开始
 
-```txt
-==============Serialized File Tree==============
-D:\python\code\DataDrivenFileGenerator\modules\examples\3_plugin_addition\source\data/
-  root.yaml
-  children_0/
-    ch0.yaml
-  children_1/
-    ch1.yaml
+### 步骤 1：准备环境
+
+确保已安装依赖（如未安装 Jinja2，可通过 `pip install jinja2` 安装）。
+
+### 步骤 2：运行示例
+
+在命令行中进入本目录，执行：
+
+```bash
+python ../../cli/cli.py ./example_config.yaml
 ```
 
-文件树用来处理文件之间的物理位置关系，包括：
+---
 
-- 获取相对地址, 如从B节点到A节点的相对路径
-- 获取绝对地址，如从根节点到A节点的路径
+## 3. 示例文件说明
 
-### 2.2 DataNodeTree
-
-DataNode通过config中指定的`preserved_children_key`指定当前节点的子节点, 在**YAML**中定义如下：
+### 3.1 配置文件 example_config.yaml
 
 ```yaml
-CHILDREN_PATH: List[ Union[List[str], str] ]
+data_type: yaml
+data_config:
+  root_path: ./source/data
+  file_pattern: ["*.yaml"]
+  preserved_template_key: "TEMPLATE"
+  preserved_children_key: "CHILDREN_PATH"
+  preserved_children_content_key: "CHILDREN_CONTEXT"
+
+template_type: jinja
+template_config:
+  template_dir: ./source/template
+  preserved_children_key: "CHILDREN_CONTEXT"
+  autoescape: false
+
+patterns:
+  - "root.yaml"
+
+output_dir: ./source/output
 ```
+> **说明**：`preserved_children_key` 和 `preserved_children_content_key` 控制数据树和模板中子节点的引用。
 
-#### 2.2.1 通配符
+### 3.2 数据文件结构
 
-str字符串指定子文件的位置，其可以包括`*`和`**`通配符
+- `root.yaml`：根节点，指定子节点分组和模板。
+- `children_0/ch0.yaml`、`children_1/ch1.yaml`：子节点数据。
+- `services/`、`endpoints/` 等：更深层级的子节点。
 
-> \*\.yaml代表当前文件夹下的所有\.yaml为后缀的文件
-> \*\*则表示递归遍历所有子节点，如 \*\*/\*\.yaml表示当前文件夹下的所有yaml及其子目录下的yaml文件
-
-### 2.2.2 子节点分组
-
-在读取完子节点后，将会根据外层List对子节点进行分组，并且在数据中使用`f"{preserved_children_key}{index}"`在数据中进行标记。
-
-例如对于:
+#### 示例 root.yaml
 
 ```yaml
-CHILDREN_PATH: [
-  "endpoints/api1.yaml",
-  "endpoints/api2.yaml",
-]
+TEMPLATE: root.j2
+CHILDREN_PATH:
+  - "services/*.yaml"
+  - "children_0/*.yaml"
+  - "children_1/*.yaml"
+name: Example System
+version: 1.0
+description: 多层数据树渲染示例
 ```
 
-在**preserved_children_key**: "CHILDREN_CONTEXT"的情况下：
-
-- `endpoints/api1.yaml`的渲染结果将保存在`CHILDREN_CONTEXT[0]`中
-- `endpoints/api2.yaml`的渲染结果将保存在`CHILDREN_CONTEXT[1]`中
-
-在模板中可以通过`CHILDREN_CONTEXT[index]`对数据进行引用
+### 3.3 模板文件 root.j2
 
 ```jinja2
-<endpoints>
-        {{ CHILDREN_CONTEXT[0] | indent(8) }}
-</endpoints>
-<children1>
-    {{ CHILDREN_CONTEXT[1] | indent(8) }}
-</children1>
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <info>
+        <name>{{ name }}</name>
+        <version>{{ version }}</version>
+        <description>{{ description }}</description>
+    </info>
+    <services>
+        {{ CHILDREN_CONTEXT[0] | string | indent(8) }}
+    </services>
+    <children0>
+        {{ CHILDREN_CONTEXT[1] | string | indent(8) }}
+    </children0>
+    <children1>
+        {{ CHILDREN_CONTEXT[2] | string | indent(8) }}
+    </children1>
+</system>
+```
+> **说明**：`CHILDREN_CONTEXT[index]` 用于引用每组子节点的渲染结果。
+
+---
+
+## 4. 数据与模板树结构说明
+
+### 4.1 文件树
+
+自动扫描 `root_path` 目录，构建如下结构：
+
+```txt
+root.yaml
+children_0/
+  ch0.yaml
+children_1/
+  ch1.yaml
+services/
+  web.yaml
+  database.yaml
 ```
 
-### 2.2.3 DataNode树
+### 4.2 数据树与分组
+
+- `CHILDREN_PATH` 为列表，每个元素对应一组子节点。
+- 每组子节点渲染结果通过 `CHILDREN_CONTEXT[index]` 在模板中引用。
+
+---
+
+## 5. 渲染流程
 
 ```mermaid
-graph TD;
-    root[root.yaml]
-    root -->|pattrens| root_pattern(services/*.yaml)
-    root_pattern --> web[web.yaml]
-    root_pattern --> database[database.yaml]
-    web -->|pattrens| web_pattern1(endpoints/*.yaml)
-    web -->|pattrens| web_pattern2(../children/*.yaml)
-    web_pattern1 --> api[api.yaml]
-    web_pattern2 --> child1[child1.yaml]
+graph TD
+    cli[CLI] -->|读取配置文件| config[Config]
+    config -->|实例化DataDrivenGenerator| ddg[DataDrivenGenerator]
+    ddg -->|构建文件树| file_tree[FileNodeTree]
+    ddg -->|构建数据树| data_tree[DataNodeTree]
+    data_tree -->|递归渲染| template_processor[Jinja2TemplateHandler]
+    template_processor -->|输出| rendered_template[Rendered Template]
 ```
+
+---
+
+## 6. 输出结果示例
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<system>
+    <info>
+        <name>Example System</name>
+        <version>1.0</version>
+        <description>多层数据树渲染示例</description>
+    </info>
+    <services>
+        ...（服务子节点渲染内容）...
+    </services>
+    <children0>
+        ...（children_0 子节点渲染内容）...
+    </children0>
+    <children1>
+        ...（children_1 子节点渲染内容）...
+    </children1>
+</system>
+```
+
+---
+
+## 7. 常见问题与建议
+
+- 路径请使用相对路径或绝对路径，确保数据和模板文件能被正确找到。
+- 子节点分组顺序与 `CHILDREN_PATH` 列表顺序一致。
+- 模板中可灵活引用各组子节点渲染结果。
+- 输出文件会自动生成在 `output_dir` 指定目录下。
+
+---

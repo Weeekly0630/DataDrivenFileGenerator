@@ -11,6 +11,6 @@
         {% endfor %}
     </subsystems>
     <services>
-        {{ CHILDREN_CONTEXT[0] | indent(8)}}
+        {{ CHILDREN_CONTEXT | string | indent(8)}}
     </services>
 </system>

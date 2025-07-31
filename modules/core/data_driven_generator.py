@@ -169,9 +169,7 @@ class DataDrivenGenerator:
             preserved_key: str,
             rendered_content_map: Dict[DataNode, str],
         ) -> None:
-            """Update children content key in the node data with rendered contents
-            DataNode.parent.parent.children = Any ==> DataNode.data[preserved_key]
-            """
+            """更新当前节点的 children_content"""
 
             def extract_content(children) -> FlexibleChildrenContent:
                 result: FlexibleChildrenContent = FlexibleChildrenContent("")
@@ -196,7 +194,7 @@ class DataDrivenGenerator:
                         )
                     else:
                         raise TypeError(f"Unsupported children type: {type(children)}")
-                    
+
                 return result
 
             node.data[preserved_key] = extract_content(node._parent._parent.children)
