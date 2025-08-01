@@ -1,6 +1,5 @@
 from modules.core import DataHandler
-from modules.jinja.user_func.func_handler import UserFunctionInfo, UserFunctionContext
-from modules.jinja.user_func.resolver import FunctionPlugin
+from modules.core.user_function_resolver import UserFunctionInfo, UserFunctionContext, FunctionPlugin
 from modules.node.data_node import DataNode
 from typing import List, Any, Tuple
 
@@ -25,8 +24,8 @@ class AutosarPlugin(FunctionPlugin):
         Returns:
             dict: 包含三组条件和内容的宏结构
         """
-        from modules.jinja.user_func.plugins.c import CPlugin
-        current_file_name = context.node.data.get("file_name", current_file_name)
+        from modules.plugins.c import CPlugin
+        current_file_name = context.cur_node.data.get("file_name", current_file_name)
         def _version(file_name: str) -> Tuple[str, str]:
             base, ext = file_name.rsplit(".", 1)
             prefix = base.upper()
@@ -158,25 +157,25 @@ class AutosarPlugin(FunctionPlugin):
         Returns:
             dict: 包含所有版本相关宏定义的数据结构
         """
-        from modules.jinja.user_func.plugins.c import CPlugin
-        file_name = context.node.data.get("file_name", file_name)
-        vender_id = context.node.data.get("vender_id", vender_id)
-        autosar_release_major_version = context.node.data.get(
+        from modules.plugins.c import CPlugin
+        file_name = context.cur_node.data.get("file_name", file_name)
+        vender_id = context.cur_node.data.get("vender_id", vender_id)
+        autosar_release_major_version = context.cur_node.data.get(
             "autosar_release_major_version", autosar_release_major_version
         )
-        autosar_release_minor_version = context.node.data.get(
+        autosar_release_minor_version = context.cur_node.data.get(
             "autosar_release_minor_version", autosar_release_minor_version
         )
-        autosar_release_revision_version = context.node.data.get(
+        autosar_release_revision_version = context.cur_node.data.get(
             "autosar_release_revision_version", autosar_release_revision_version
         )
-        software_major_version = context.node.data.get(
+        software_major_version = context.cur_node.data.get(
             "software_major_version", software_major_version
         )
-        software_minor_version = context.node.data.get(
+        software_minor_version = context.cur_node.data.get(
             "software_minor_version", software_minor_version
         )
-        software_revision_version = context.node.data.get(
+        software_revision_version = context.cur_node.data.get(
             "software_revision_version", software_revision_version
         )
         prefix, suffix = file_name.rsplit(".", 1)
@@ -229,13 +228,11 @@ class AutosarPlugin(FunctionPlugin):
         return [
             UserFunctionInfo(
                 name="autosar:version_info_init",
-                arg_range=(0, 8),
                 description="初始化Autosar版本信息数据结构",
                 handler=cls.version_info_init,
             ),
             UserFunctionInfo(
                 name="autosar:version_check_info_init",
-                arg_range=(1, 2),
                 description="初始化Autosar版本检查信息数据结构",
                 handler=cls.version_check_info_init,
             ),

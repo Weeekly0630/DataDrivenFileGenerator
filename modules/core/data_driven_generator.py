@@ -13,7 +13,11 @@ from . import (
 from .handler_factory import HandlerFactory
 from .types import DataHandlerType, TemplateHandlerType
 from ..node.data_node import DataNode
-from ..jinja.user_func.func_handler import UserFunctionInfo, UserFunctionResolver
+from .user_function_resolver import (
+    UserFunctionResolver,
+    UserFunctionInfo,
+    UserFunctionContext,
+)
 
 
 @dataclass
@@ -81,6 +85,17 @@ class DataDrivenGenerator:
             config.template_type, config.template_config
         )
         self.config = config
+
+        # Robustly resolve plugins directory relative to this file
+        import os
+
+        plugins_dir = os.path.join(os.path.dirname(__file__), "../plugins")
+        plugins_dir = os.path.abspath(plugins_dir)
+        self.user_function_resolver = UserFunctionResolver(plugins_dirs=[plugins_dir])
+
+        print("======== User Function Resolver Info ========")
+        print(self.user_function_resolver.show_function_info())
+        print("============================================")
 
     def _rendered_contents_init(self) -> None:
         # 存储渲染结果的映射
@@ -171,7 +186,8 @@ class DataDrivenGenerator:
         ) -> None:
             """更新当前节点的 children_content"""
 
-            def extract_content(children) -> FlexibleChildrenContent:
+            def extract_content(children: Any) -> FlexibleChildrenContent:
+                """Extract content from children and wrap it in FlexibleChildrenContent"""
                 result: FlexibleChildrenContent = FlexibleChildrenContent("")
                 if children is None:
                     pass  # No children, return empty content
@@ -199,6 +215,33 @@ class DataDrivenGenerator:
 
             node.data[preserved_key] = extract_content(node._parent._parent.children)
 
+        def expression_preprocess(node: DataNode) -> None:
+            """Preprocess expressions in the node data dict"""
+            context = UserFunctionContext(
+                cur_node=node,
+                data_handler=self.data_handler,
+                template_handler=self.template_handler,
+            )
+
+            def preprocess_any(value: Any) -> Any:
+                if isinstance(value, str):
+                    result = self.user_function_resolver.parse(value, context)
+                    if result is None:
+                        return value  # 非函数表达式，保持原值
+                    return result
+                elif isinstance(value, dict):
+                    for k, v in value.items():
+                        value[k] = preprocess_any(v)
+                    return value
+                elif isinstance(value, list):
+                    for index, item in enumerate(value):
+                        value[index] = preprocess_any(item)
+                    return value
+                else:
+                    return value
+
+            preprocess_any(node.data)
+
         def visitor(node: DataNode, *args) -> None:
             """Visitor function to process each node"""
             if not isinstance(node, DataNode):
@@ -217,7 +260,7 @@ class DataDrivenGenerator:
                 self._rendered_contents,
             )
             # 预处理复合表达式
-
+            expression_preprocess(node)
             # 进行渲染
             try:
                 template_path = node.data[self.config.preserved_template_key]

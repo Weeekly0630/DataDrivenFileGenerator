@@ -123,9 +123,12 @@ class FileTreeHandler:
         path_parts = []
 
         while cur_base_node:
-            cur_node = cast(
-                Union["FileNode", "DirectoryNode"], cur_base_node.mapping_obj
-            )
+            if isinstance(cur_base_node.mapping_obj, FileNode) or isinstance(cur_base_node.mapping_obj, DirectoryNode):
+                cur_node = cur_base_node.mapping_obj
+            else:
+                raise TypeError(
+                    f"Unsupported node type: {type(cur_base_node.mapping_obj)}. Expected FileNode or DirectoryNode."
+                )
             path_parts.append(cur_node.meta_data.name)
             cur_base_node = cur_base_node.parent
 

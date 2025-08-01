@@ -1,6 +1,5 @@
 from modules.core import DataHandler
-from modules.jinja.user_func.func_handler import UserFunctionInfo, UserFunctionContext
-from modules.jinja.user_func.resolver import FunctionPlugin
+from modules.core.user_function_resolver import UserFunctionInfo, UserFunctionContext, FunctionPlugin
 from modules.node.data_node import DataNode
 from typing import List, Any
 
@@ -124,25 +123,21 @@ class CPlugin(FunctionPlugin):
         return [
             UserFunctionInfo(
                 name="c:macro_define_info_init",
-                arg_range=(2, 2),
                 description="生成C语言宏定义数据结构",
                 handler=cls.macro_define_info_init,
             ),
             UserFunctionInfo(
                 name="c:macro_include_info_init",
-                arg_range=(1, 2),
                 description="生成C语言include信息数据结构",
                 handler=cls.macro_include_info_init,
             ),
             UserFunctionInfo(
                 name="c:macro_if_info_init",
-                arg_range=(2, 3),
                 description="生成C语言if宏信息数据结构",
                 handler=cls.macro_if_info_init,
             ),
             UserFunctionInfo(
                 name="c:macro_conditional_include_info_init",
-                arg_range=(1, 4),
                 description="生成C语言条件include信息数据结构（适配macro_conditional_include模板）",
                 handler=cls.macro_conditional_include_info_init,
             ),

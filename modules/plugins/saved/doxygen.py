@@ -1,5 +1,4 @@
-from modules.jinja.user_func.func_handler import UserFunctionInfo, UserFunctionContext
-from modules.jinja.user_func.resolver import FunctionPlugin
+from modules.core.user_function_resolver import UserFunctionInfo, UserFunctionContext, FunctionPlugin
 from typing import List, Any
 
 class DoxygenPlugin(FunctionPlugin):
@@ -47,7 +46,6 @@ class DoxygenPlugin(FunctionPlugin):
         return [
             UserFunctionInfo(
                 name="doxygen:file_info_init",
-                arg_range=(4, 4),
                 description="生成Doxygen文件头信息数据结构",
                 handler=cls.file_info_init,
             ),

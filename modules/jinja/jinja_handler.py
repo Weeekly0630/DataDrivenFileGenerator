@@ -9,7 +9,6 @@ from typing import Dict, Any, Callable, Optional
 from dataclasses import dataclass
 from pathlib import Path
 
-from .expr_filter import expr_filter
 from modules.node.data_node import DataNode
 from modules.core import DataHandler
 from ..core import TemplateHandler

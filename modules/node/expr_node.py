@@ -1,330 +1,330 @@
-"""
-Expression Node Module
-This module defines the `ExprNode` class, which represents an expression node in a tree structure.
-"""
+# """
+# Expression Node Module
+# This module defines the `ExprNode` class, which represents an expression node in a tree structure.
+# """
 
-# from abc import ABC, abstractmethod
+# # from abc import ABC, abstractmethod
 
-# from curses.ascii import SUB
-from enum import Enum, auto
-from typing import (
-    Optional,
-    List,
-    Dict,
-    Any,
-    Type,
-    TypeVar,
-    Iterable,
-    Union,
-    Protocol,
-    Callable,
-)
-from dataclasses import dataclass
-from ..jinja.user_func.func_handler import UserFunctionResolver
-
-
-class ExprNodeType(Enum):
-    XPATH = auto()  # XPath表达式
-    FUNCTION = auto()  # 函数调用
-    EXPRESSION = auto()  # 复合表达式
-    LITERAL = auto()  # 字面量常数
-    # VARIABLE = auto()  # 变量
+# # from curses.ascii import SUB
+# from enum import Enum, auto
+# from typing import (
+#     Optional,
+#     List,
+#     Dict,
+#     Any,
+#     Type,
+#     TypeVar,
+#     Iterable,
+#     Union,
+#     Protocol,
+#     Callable,
+# )
+# from dataclasses import dataclass
+# from ..jinja.user_func.func_handler import UserFunctionResolver
 
 
-class ExprASTNode(Protocol):
-    """抽象语法树节点基类"""
-
-    source: Optional[Dict]
-
-    def __init__(self, source: Optional[Dict] = None):
-        # 保留原始字典数据用于调试和错误报告
-        self.source: Optional[Dict] = source
-
-    def accept(self, visitor: "ExprASTVisitor") -> Any:
-        """访问者模式接受方法"""
-        pass
+# class ExprNodeType(Enum):
+#     XPATH = auto()  # XPath表达式
+#     FUNCTION = auto()  # 函数调用
+#     EXPRESSION = auto()  # 复合表达式
+#     LITERAL = auto()  # 字面量常数
+#     # VARIABLE = auto()  # 变量
 
 
-class XPathNode(ExprASTNode):
-    """XPath表达式节点"""
+# class ExprASTNode(Protocol):
+#     """抽象语法树节点基类"""
 
-    def __init__(self, parts: Any, source: Optional[Dict] = None):
-        super().__init__(source)
-        self.parts = parts  # 可以是字符串或嵌套节点
+#     source: Optional[Dict]
 
-    def accept(self, visitor: "ExprASTVisitor") -> Any:
-        return visitor.visit_xpath(self)
+#     def __init__(self, source: Optional[Dict] = None):
+#         # 保留原始字典数据用于调试和错误报告
+#         self.source: Optional[Dict] = source
 
-
-class FunctionNode(ExprASTNode):
-    """函数调用节点"""
-
-    def __init__(
-        self, name: str, args: List[Any], source: Optional[Dict] = None
-    ):
-        super().__init__(source)
-        self.name = name
-        self.args = args
-
-    def accept(self, visitor: "ExprASTVisitor"):
-        return visitor.visit_function(self)
+#     def accept(self, visitor: "ExprASTVisitor") -> Any:
+#         """访问者模式接受方法"""
+#         pass
 
 
-class ExpressionOperator(Enum):
-    """表达式操作符枚举"""
+# class XPathNode(ExprASTNode):
+#     """XPath表达式节点"""
 
-    ADD = "+"
-    SUB = "-"
-    MUL = "*"
-    DIV = "/"
-    MOD = "%"
-    AND = "&&"
-    OR = "||"
-    NOT = "!"
-    EQ = "=="
-    NEQ = "!="
-    LT = "<"
-    GT = ">"
-    LE = "<="
-    GE = ">="
+#     def __init__(self, parts: Any, source: Optional[Dict] = None):
+#         super().__init__(source)
+#         self.parts = parts  # 可以是字符串或嵌套节点
+
+#     def accept(self, visitor: "ExprASTVisitor") -> Any:
+#         return visitor.visit_xpath(self)
 
 
-    def __str__(self):
-        """返回操作符的字符串表示"""
-        return self.name.lower()
+# class FunctionNode(ExprASTNode):
+#     """函数调用节点"""
 
-class ExpressionNode(ExprASTNode):
-    """表达式节点"""
+#     def __init__(
+#         self, name: str, args: List[Any], source: Optional[Dict] = None
+#     ):
+#         super().__init__(source)
+#         self.name = name
+#         self.args = args
 
-    def __init__(
-        self,
-        operator: ExpressionOperator,
-        operands: List[Any],
-        source: Optional[Dict] = None,
-    ):
-        super().__init__(source)
-        self.operator = operator
-        self.operands = operands
-
-    def accept(self, visitor: "ExprASTVisitor"):
-        return visitor.visit_expression(self)
+#     def accept(self, visitor: "ExprASTVisitor"):
+#         return visitor.visit_function(self)
 
 
-class LiteralNode(ExprASTNode):
-    """字面量节点（字符串、数字等）"""
+# class ExpressionOperator(Enum):
+#     """表达式操作符枚举"""
 
-    def __init__(
-        self, value: Union[str, int, float, bool], source: Optional[Dict] = None
-    ):
-        super().__init__(source)
-        self.value = value
-        self.data_type: Type = self._infer_type(value)
-
-    def _infer_type(self, value) -> Type:
-        """推断字面量类型"""
-        if isinstance(value, str):
-            return str
-        if isinstance(value, bool):
-            return bool
-        if isinstance(value, int):
-            return int
-        if isinstance(value, float):
-            return float
-        return str
-        # return "unknown"
-
-    def accept(self, visitor: "ExprASTVisitor"):
-        return visitor.visit_literal(self)
+#     ADD = "+"
+#     SUB = "-"
+#     MUL = "*"
+#     DIV = "/"
+#     MOD = "%"
+#     AND = "&&"
+#     OR = "||"
+#     NOT = "!"
+#     EQ = "=="
+#     NEQ = "!="
+#     LT = "<"
+#     GT = ">"
+#     LE = "<="
+#     GE = ">="
 
 
-class ExprASTParser:
-    """将字典解析为ExprAST树"""
+#     def __str__(self):
+#         """返回操作符的字符串表示"""
+#         return self.name.lower()
 
-    def parse(self, data: Union[Dict, list, str, int, float, bool]) -> Any:
-        """
-        解析入口点，处理各种输入类型
-        """
-        if isinstance(data, dict):
-            # 只有包含"type"字段的字典才被视为表达式节点
-            if "type" in data:
-                return self._parse_dict(data)
-            else:
-                # 没有"type"字段的字典保持为原始数据
-                return data
-        elif isinstance(data, list):
-            return [self.parse(item) for item in data]
-        else:
-            return LiteralNode(data)
+# class ExpressionNode(ExprASTNode):
+#     """表达式节点"""
 
-    def _parse_dict(self, data: Dict) -> ExprASTNode:
-        """处理字典类型节点"""
-        node_type = data.get("type")
+#     def __init__(
+#         self,
+#         operator: ExpressionOperator,
+#         operands: List[Any],
+#         source: Optional[Dict] = None,
+#     ):
+#         super().__init__(source)
+#         self.operator = operator
+#         self.operands = operands
 
-        if node_type == "xpath":
-            return self._parse_xpath(data)
-        elif node_type == "function":
-            return self._parse_function(data)
-        elif node_type == "expression":
-            return self._parse_expression(data)
-        elif node_type == "literal":
-            return self._parse_literal(data)
-        else:
-            # 如果没有匹配的类型，返回原数据
-            return data
+#     def accept(self, visitor: "ExprASTVisitor"):
+#         return visitor.visit_expression(self)
 
-    def _parse_literal(self, data: Dict) -> LiteralNode:
-        """解析字面量节点"""
-        value = data.get("args", [None])[0]  # 默认取第一个参数作为值
 
-        if value is None:
-            raise ValueError("字面量节点缺少value字段")
+# class LiteralNode(ExprASTNode):
+#     """字面量节点（字符串、数字等）"""
 
-        # 直接使用字面量值创建节点
-        return LiteralNode(value, source=data)
+#     def __init__(
+#         self, value: Union[str, int, float, bool], source: Optional[Dict] = None
+#     ):
+#         super().__init__(source)
+#         self.value = value
+#         self.data_type: Type = self._infer_type(value)
 
-    def _parse_xpath(self, data: Dict) -> XPathNode:
-        """解析XPath节点"""
-        args = data.get("args", [])
-        parsed_parts = [self.parse(part) for part in args]
-        return XPathNode(parsed_parts, source=data)
+#     def _infer_type(self, value) -> Type:
+#         """推断字面量类型"""
+#         if isinstance(value, str):
+#             return str
+#         if isinstance(value, bool):
+#             return bool
+#         if isinstance(value, int):
+#             return int
+#         if isinstance(value, float):
+#             return float
+#         return str
+#         # return "unknown"
 
-    def _parse_function(self, data: Dict) -> FunctionNode:
-        """解析函数节点"""
-        args = data.get("args", [])
+#     def accept(self, visitor: "ExprASTVisitor"):
+#         return visitor.visit_literal(self)
 
-        if not args:
-            raise ValueError("函数节点必须至少有一个参数（函数名）")
 
-        # 第一个参数是函数名
-        func_name = args[0]
+# class ExprASTParser:
+#     """将字典解析为ExprAST树"""
 
-        # 解析函数参数
-        parsed_args = [self.parse(arg) for arg in args[1:]]
+#     def parse(self, data: Union[Dict, list, str, int, float, bool]) -> Any:
+#         """
+#         解析入口点，处理各种输入类型
+#         """
+#         if isinstance(data, dict):
+#             # 只有包含"type"字段的字典才被视为表达式节点
+#             if "type" in data:
+#                 return self._parse_dict(data)
+#             else:
+#                 # 没有"type"字段的字典保持为原始数据
+#                 return data
+#         elif isinstance(data, list):
+#             return [self.parse(item) for item in data]
+#         else:
+#             return LiteralNode(data)
 
-        return FunctionNode(func_name, parsed_args, source=data)
+#     def _parse_dict(self, data: Dict) -> ExprASTNode:
+#         """处理字典类型节点"""
+#         node_type = data.get("type")
 
-    def _parse_expression(self, data: Dict) -> ExpressionNode:
-        """解析表达式节点"""
-        args = data.get("args", [])
+#         if node_type == "xpath":
+#             return self._parse_xpath(data)
+#         elif node_type == "function":
+#             return self._parse_function(data)
+#         elif node_type == "expression":
+#             return self._parse_expression(data)
+#         elif node_type == "literal":
+#             return self._parse_literal(data)
+#         else:
+#             # 如果没有匹配的类型，返回原数据
+#             return data
 
-        if not args:
-            raise ValueError("表达式节点必须有操作符和操作数")
+#     def _parse_literal(self, data: Dict) -> LiteralNode:
+#         """解析字面量节点"""
+#         value = data.get("args", [None])[0]  # 默认取第一个参数作为值
 
-        # 第一个参数是操作符
-        operator_str = args[0]
-        # 剩余参数是操作数
-        operands = args[1:]
+#         if value is None:
+#             raise ValueError("字面量节点缺少value字段")
+
+#         # 直接使用字面量值创建节点
+#         return LiteralNode(value, source=data)
+
+#     def _parse_xpath(self, data: Dict) -> XPathNode:
+#         """解析XPath节点"""
+#         args = data.get("args", [])
+#         parsed_parts = [self.parse(part) for part in args]
+#         return XPathNode(parsed_parts, source=data)
+
+#     def _parse_function(self, data: Dict) -> FunctionNode:
+#         """解析函数节点"""
+#         args = data.get("args", [])
+
+#         if not args:
+#             raise ValueError("函数节点必须至少有一个参数（函数名）")
+
+#         # 第一个参数是函数名
+#         func_name = args[0]
+
+#         # 解析函数参数
+#         parsed_args = [self.parse(arg) for arg in args[1:]]
+
+#         return FunctionNode(func_name, parsed_args, source=data)
+
+#     def _parse_expression(self, data: Dict) -> ExpressionNode:
+#         """解析表达式节点"""
+#         args = data.get("args", [])
+
+#         if not args:
+#             raise ValueError("表达式节点必须有操作符和操作数")
+
+#         # 第一个参数是操作符
+#         operator_str = args[0]
+#         # 剩余参数是操作数
+#         operands = args[1:]
         
-        return ExpressionNode(
-            operator=operator_str,
-            operands=[self.parse(op) for op in operands],
-            source=data,
-        )
+#         return ExpressionNode(
+#             operator=operator_str,
+#             operands=[self.parse(op) for op in operands],
+#             source=data,
+#         )
 
 
-class ExprASTVisitor(Protocol):
-    """访问者模式基类"""
+# class ExprASTVisitor(Protocol):
+#     """访问者模式基类"""
 
-    def visit_xpath(self, node: XPathNode):
-        pass
+#     def visit_xpath(self, node: XPathNode):
+#         pass
 
-    def visit_function(self, node: FunctionNode):
-        pass
-
-    def visit_expression(self, node: ExpressionNode):
-        pass
-
-    def visit_literal(self, node: LiteralNode):
-        pass
-
-
-class ExprPrintVistor(ExprASTVisitor):
-    """打印ExprAST节点的访问者"""
-
-    def __init__(self, user_function_resolver: UserFunctionResolver):
-        self.resolver: UserFunctionResolver = user_function_resolver
-
-    def _visit_any(self, obj: Any) -> Any:
-        """处理Any类型的对象，可能是ExprASTNode、列表、或原始值"""
-        if hasattr(obj, 'accept') and callable(getattr(obj, 'accept')):
-            # 如果是ExprASTNode，使用访问者模式
-            return obj.accept(self)
-        elif isinstance(obj, list):
-            # 如果是列表，递归处理每个元素
-            return [self._visit_any(item) for item in obj]
-        elif isinstance(obj, dict):
-            # 如果是字典（原始数据），直接返回
-            return obj
-        else:
-            # 如果是原始值，直接返回
-            return obj
-
-    def visit_xpath(self, node: XPathNode) -> Any:
-        processed_parts = []
-        for part in node.parts:
-            processed_part = self._visit_any(part)
-            if isinstance(processed_part, list):
-                # 如果部分是列表，将其展平为字符串
-                processed_parts.extend(str(item) for item in processed_part)
-            else:
-                processed_parts.append(str(processed_part))
-        return "/".join(processed_parts)
-
-    def visit_function(self, node: FunctionNode) -> Any:
-        func_handler = self.resolver.get_handler(node.name)
-        processed_args = [self._visit_any(arg) for arg in node.args]
-        
-        if func_handler:
-            return func_handler(*processed_args)
-        else:
-            args_str = ", ".join(str(arg) for arg in processed_args)
-            return f"{node.name}({args_str})"
-
-    def visit_expression(self, node: ExpressionNode) -> Any:
-        processed_operands = [self._visit_any(op) for op in node.operands]
-        operand_strs = [str(op) for op in processed_operands]
-        return f"({str(node.operator).join(operand_strs)})"
-
-    def visit_literal(self, node: LiteralNode) -> Any:
-        # 根据类型决定是否添加引号
-        return node.data_type(node.value)
-
-
-# class ExprValidater(ExprASTVisitor):
-#     """节点有效性检查器"""
-
-#     def __init__(self):
-#         self.errors = []
-
-#     def visit_xpath(self, node: XPathNode) -> bool:
-#         is_valid: bool = True
-#         for part in node.parts:
-#             if part.accept(self) is False:
-#                 is_valid = False
-#                 break
-#         return is_valid
-
-#     def visit_function(self, node: FunctionNode) -> bool:
-#         # 这里可以添加特定函数的类型检查规则
-#         for arg in node.args:
-#             arg.accept(self)
-
-#         # 示例：检查node:value函数参数数量
-#         if node.name == "node:value" and len(node.args) != 1:
-#             self.errors.append(f"函数 {node.name} 需要1个参数，但得到 {len(node.args)}")
+#     def visit_function(self, node: FunctionNode):
+#         pass
 
 #     def visit_expression(self, node: ExpressionNode):
-#         # 检查操作数类型是否兼容
-#         operand_types = [op.accept(self) for op in node.operands]
+#         pass
 
-#         # 示例：检查比较运算符的操作数类型
-#         if node.operator in ["=", "!=", "<", ">"]:
-#             if len(operand_types) != 2:
-#                 self.errors.append(f"比较运算符 '{node.operator}' 需要2个操作数")
-#             elif operand_types[0] != operand_types[1]:
-#                 self.errors.append(
-#                     f"类型不匹配: {operand_types[0]} 和 {operand_types[1]}"
-#                 )
+#     def visit_literal(self, node: LiteralNode):
+#         pass
 
-#     def visit_literal(self, node: LiteralNode) -> str:
-#         return node.data_type
+
+# class ExprPrintVistor(ExprASTVisitor):
+#     """打印ExprAST节点的访问者"""
+
+#     def __init__(self, user_function_resolver: UserFunctionResolver):
+#         self.resolver: UserFunctionResolver = user_function_resolver
+
+#     def _visit_any(self, obj: Any) -> Any:
+#         """处理Any类型的对象，可能是ExprASTNode、列表、或原始值"""
+#         if hasattr(obj, 'accept') and callable(getattr(obj, 'accept')):
+#             # 如果是ExprASTNode，使用访问者模式
+#             return obj.accept(self)
+#         elif isinstance(obj, list):
+#             # 如果是列表，递归处理每个元素
+#             return [self._visit_any(item) for item in obj]
+#         elif isinstance(obj, dict):
+#             # 如果是字典（原始数据），直接返回
+#             return obj
+#         else:
+#             # 如果是原始值，直接返回
+#             return obj
+
+#     def visit_xpath(self, node: XPathNode) -> Any:
+#         processed_parts = []
+#         for part in node.parts:
+#             processed_part = self._visit_any(part)
+#             if isinstance(processed_part, list):
+#                 # 如果部分是列表，将其展平为字符串
+#                 processed_parts.extend(str(item) for item in processed_part)
+#             else:
+#                 processed_parts.append(str(processed_part))
+#         return "/".join(processed_parts)
+
+#     def visit_function(self, node: FunctionNode) -> Any:
+#         func_handler = self.resolver.get_handler(node.name)
+#         processed_args = [self._visit_any(arg) for arg in node.args]
+        
+#         if func_handler:
+#             return func_handler(*processed_args)
+#         else:
+#             args_str = ", ".join(str(arg) for arg in processed_args)
+#             return f"{node.name}({args_str})"
+
+#     def visit_expression(self, node: ExpressionNode) -> Any:
+#         processed_operands = [self._visit_any(op) for op in node.operands]
+#         operand_strs = [str(op) for op in processed_operands]
+#         return f"({str(node.operator).join(operand_strs)})"
+
+#     def visit_literal(self, node: LiteralNode) -> Any:
+#         # 根据类型决定是否添加引号
+#         return node.data_type(node.value)
+
+
+# # class ExprValidater(ExprASTVisitor):
+# #     """节点有效性检查器"""
+
+# #     def __init__(self):
+# #         self.errors = []
+
+# #     def visit_xpath(self, node: XPathNode) -> bool:
+# #         is_valid: bool = True
+# #         for part in node.parts:
+# #             if part.accept(self) is False:
+# #                 is_valid = False
+# #                 break
+# #         return is_valid
+
+# #     def visit_function(self, node: FunctionNode) -> bool:
+# #         # 这里可以添加特定函数的类型检查规则
+# #         for arg in node.args:
+# #             arg.accept(self)
+
+# #         # 示例：检查node:value函数参数数量
+# #         if node.name == "node:value" and len(node.args) != 1:
+# #             self.errors.append(f"函数 {node.name} 需要1个参数，但得到 {len(node.args)}")
+
+# #     def visit_expression(self, node: ExpressionNode):
+# #         # 检查操作数类型是否兼容
+# #         operand_types = [op.accept(self) for op in node.operands]
+
+# #         # 示例：检查比较运算符的操作数类型
+# #         if node.operator in ["=", "!=", "<", ">"]:
+# #             if len(operand_types) != 2:
+# #                 self.errors.append(f"比较运算符 '{node.operator}' 需要2个操作数")
+# #             elif operand_types[0] != operand_types[1]:
+# #                 self.errors.append(
+# #                     f"类型不匹配: {operand_types[0]} 和 {operand_types[1]}"
+# #                 )
+
+# #     def visit_literal(self, node: LiteralNode) -> str:
+# #         return node.data_type

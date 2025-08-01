@@ -1,6 +1,5 @@
 from modules.core import DataHandler
-from modules.jinja.user_func.func_handler import UserFunctionInfo, UserFunctionContext
-from modules.jinja.user_func.resolver import FunctionPlugin
+from modules.core.user_function_resolver import UserFunctionInfo, UserFunctionContext, FunctionPlugin
 from modules.node.data_node import DataNode
 from typing import List, Callable, Any
 
@@ -26,13 +25,13 @@ class DataNodePlugin(FunctionPlugin):
     ) -> List[UserFunctionInfo]:
         
         def get_abs_path(context: UserFunctionContext) -> str:
-            return context.node.get_absolute_path()
+            return context.cur_node.get_absolute_path()
 
         def get_rel(context: UserFunctionContext, file_path: str) -> str:
             target = DataNodePlugin._get_targets(
-                context.node, context.data_handler, file_path
+                context.cur_node, context.data_handler, file_path
             )[0]
-            rel_path = target.get_relative_path(context.node)
+            rel_path = target.get_relative_path(context.cur_node)
             # 直接将最右侧的 '/' 右侧的名字换成name
             parts = rel_path.rsplit("/")
             if len(parts) > 1:
@@ -41,7 +40,7 @@ class DataNodePlugin(FunctionPlugin):
 
         def get_attr(context: UserFunctionContext, file_path: str, attr: str) -> Any:
             target = DataNodePlugin._get_targets(
-                context.node, context.data_handler, file_path
+                context.cur_node, context.data_handler, file_path
             )[0]
             return target.data.get(attr)
 
@@ -49,19 +48,16 @@ class DataNodePlugin(FunctionPlugin):
         return [
             UserFunctionInfo(
                 name="dataNode:get_rel_path",
-                arg_range=(1, 1),
                 description="dataNode:get_rel_path(file_path: str): Get relative path using file path pattern and return the datanode path",
                 handler=get_rel,
             ),
             UserFunctionInfo(
                 name="dataNode:get_attr",
-                arg_range=(2, 2),
                 description="dataNode:get_attr(file_path: str, attr: str): Get attribute from a file path",
                 handler=get_attr,
             ),
             UserFunctionInfo(
                 name="dataNode:get_abs_path",
-                arg_range=(0, 0),
                 description="dataNode:get_abs_path(): Get current node absolute path.",
                 handler=get_abs_path,
             ),
