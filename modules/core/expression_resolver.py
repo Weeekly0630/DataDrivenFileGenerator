@@ -1,6 +1,6 @@
 import ast
 from typing import Any
-
+from modules.core.user_function_resolver import UserFunctionContext
 class ExpressionResolver:
     """
     支持f-string风格表达式，将{}内的内容递归调用解析器，其余部分原样拼接。
@@ -9,7 +9,7 @@ class ExpressionResolver:
     def __init__(self, function_resolver):
         self.function_resolver = function_resolver  # 需要传入UserFunctionResolver实例
 
-    def parse(self, expression: str, context: Any) -> Any:
+    def parse(self, expression: str, context: UserFunctionContext) -> Any:
         def eval_ast(node):
             if isinstance(node, ast.Call):
                 func_name = None
@@ -26,7 +26,14 @@ class ExpressionResolver:
             elif isinstance(node, ast.Num):
                 return node.n
             elif isinstance(node, ast.Name):
-                return node.id
+                # 查找 context.cur_node.data 字典
+                if hasattr(context, 'cur_node') and hasattr(context.cur_node, 'data') and isinstance(context.cur_node.data, dict):
+                    if node.id in context.cur_node.data:
+                        return context.cur_node.data[node.id]
+                    else:
+                        raise ValueError(f"Unknown variable: {node.id} in {expression}")
+                else:
+                    raise ValueError(f"Context does not have cur_node.data dict for variable lookup: {node.id}")
             else:
                 raise ValueError(f"Unsupported expression: {ast.dump(node)}")
             

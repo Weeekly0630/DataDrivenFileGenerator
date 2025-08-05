@@ -3,7 +3,9 @@ CHILDREN_PATH: []
 
 user_data_1: "user_data_1"
 user_data_2: "user_data_2"
+
+user_data_3: "aaa"
 function_exprs:
   - "basic string"
   - "node_value(user_data_1)"
-  - "f'{string_join('+++', node_value(user_data_1), node_value(user_data_2), 'static string')}'"
+  - "f'{string_join('+++', node_value(user_data_1), node_value(user_data_2), 'static string', user_data_3)}'"
