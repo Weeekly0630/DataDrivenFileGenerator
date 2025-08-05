@@ -1,132 +1,206 @@
 from enum import Enum, auto
-from dataclasses import dataclass
-from typing import Any, List, Callable, Optional
+from dataclasses import dataclass, field
+from typing import Any, List, Callable, Optional, Protocol, Tuple
+from .event_driven_fsm import *
 
+class FunctionFSM:
+    """Active Object for function parsing."""
 
-@dataclass
-class FsmParser:
-    """Generic recursive Finite State Machine Parser for parsing FSM definitions."""
+    class FunctionFSMSignal(Enum):
+        """Signals for FunctionFSM custom actions (e.g., set function name, add argument)."""
 
-    state: Optional[Callable[..., "ReturnType"]]  # The current state function to call
-    children: Optional["FsmParser"]
+        # SET_FUNCTION_NAME = auto()
+        # ADD_ARGUMENT = auto()
+        ADD_IDENTIFIER = auto()
 
-    class ReturnType(Enum):
-        """Enum to represent the return type of the FSM parser."""
+    @dataclass
+    class FunctionFSMState:
+        """State data for FunctionFSM, storing function name and argument list."""
 
-        UNHANDLED = (
-            auto()
-        )  # Current Fsm Parser did not handle the input and further processing is needed
-        HANDLED = (
-            auto()
-        )  # Current Fsm Parser handled the input and no further processing is needed
+        function_name: str = ""
+        args: List[Any] = field(default_factory=list)
 
-    def drive(self, *args, **kwargs) -> None:
-        # post visit the current state
-        fsm_stack: List[FsmParser] = [self]
-        cur_fsm: Optional["FsmParser"] = self
+    def __init__(self) -> None:
+        self._parent = EventDrivenFsm(self._init_state)
 
-        if cur_fsm.children:
-            fsm_stack.append(cur_fsm.children)
+    @dataclass
+    class FunctionFSMData:
+        """Event data for FunctionFSM, carrying a FunctionFSMSignal and associated value."""
 
-        # reverse the stack to process from the last child to the first
-        fsm_stack.reverse()
+        signal: "FunctionFSM.FunctionFSMSignal"
+        value: Any = None
 
-        # process the FSM stack
-        for fsm in fsm_stack:
-            # call the current state function
-            if fsm.state is None:
-                raise ValueError("FSM state is not set.")
-            result = fsm.state(*args, **kwargs)
-            if result == FsmParser.ReturnType.UNHANDLED:
-                pass
-            elif result == FsmParser.ReturnType.HANDLED:
-                break
+    def _init_state(self, event: EventType) -> EventDrivenFsmReturnType:
+        result: EventDrivenFsmReturnType
+        if event.signal == Signal.ENTRY:
+            # Initialize the state when entering
+            self._state = self.FunctionFSMState()
+            self._parent.transition(self._func_name_state)
+            result = EventDrivenFsmReturnType.HANDLED
+        # 处理自定义事件
+        result = EventDrivenFsmReturnType.HANDLED
+        return result
 
-    def transition(self, new_state: Callable[..., "ReturnType"]) -> None:
-        """Transition to a new state with optional children."""
-        self.state = new_state
+    def _func_name_state(self, event: EventType) -> EventDrivenFsmReturnType:
+        result: EventDrivenFsmReturnType
+        if event.signal == Signal.CUSTOM and isinstance(
+            event.data, self.FunctionFSMData
+        ):
+            if event.data.signal == self.FunctionFSMSignal.ADD_IDENTIFIER:
+                self._state.function_name = event.data.value
+                self._parent.transition(self._arg_list_state)
+        result = EventDrivenFsmReturnType.HANDLED
+        return result
 
-    def add_child(self, child: "FsmParser") -> None:
-        """Add a child FSM parser to the current parser."""
-        if self.children is None:
-            self.children = child
+    def _arg_list_state(self, event: EventType) -> EventDrivenFsmReturnType:
+        result: EventDrivenFsmReturnType
+        if event.signal == Signal.CUSTOM and isinstance(
+            event.data, self.FunctionFSMData
+        ):
+            if event.data.signal == self.FunctionFSMSignal.ADD_IDENTIFIER:
+                self._state.args.append(event.data.value)
+            result = EventDrivenFsmReturnType.HANDLED
+        elif event.signal == Signal.EXIT:
+            if self._parent.parent:
+                self._parent.parent.dispath(
+                    EventType(
+                        signal=Signal.CUSTOM,
+                        data=self.FunctionFSMData(
+                            signal=self.FunctionFSMSignal.ADD_IDENTIFIER,
+                            value=self._state,
+                        ),
+                    )
+                )
+            result = EventDrivenFsmReturnType.HANDLED
         else:
-            raise ValueError(
-                "This FSM parser already has a child. Use a different parser for multiple children."
-            )
+            result = EventDrivenFsmReturnType.HANDLED
+        return result
+
+    @property
+    def state(self):
+        return self._state
 
 
 class FunctionParser:
-    """Parser for function calls in a string."""
+    """函数解析器, 进行分词, 子函数状态机管理."""
 
-    class ParseObjectType(Enum):
-        """Enum to represent the type of parsed object."""
-
-        FUNCTION = auto()  # Function call
-        ARGUMENT = auto()
-
-    @dataclass
-    class ParseObject:
-        """Object to hold the parsed function name and arguments."""
-
-        type: "FunctionParser.ParseObjectType"
-        value: Any
-
-    class ParseState(Enum):
-        INIT = auto()  # Initial state, check special characters
-        FUNC_NAME = auto()  # Parsing function name
-        OPEN_PAREN = auto()  # Expecting '(' after function name
-        ARG = auto()  # Parsing argument value
-        ARG_COMMA = auto()  # After ',', expecting next argument
-        CLOSE_PAREN = auto()  # After ')', end of argument list
-        END = auto()  # Parsing complete
-
-    def __init__(self) -> None:
-        self.fsm = FsmParser(state=None, children=None)
-
-        self.cur_read_string: str = ""  # 当前读到的字符串
-        self.parsed_object_list: List["FunctionParser.ParseObject"] = (
-            []
-        )  # 当前解析的object列表
-        self.expression: str = ""  # 当前解析的表达式
-        self.expression_index: int = 0  # 当前解析的表达式索引
+    def __init__(self):
+        self._wrapper_fsm = EventDrivenFsm(self._wrapper)
+        self._result : Optional[FunctionFSM.FunctionFSMState] = None
         
-    def parse(self, expression: str) -> Any:
-        """Parse the given expression and return the parsed function objects."""
-        self.fsm.transition(self.init_state)
-        self.fsm.drive(expression)
+    def _wrapper(self, event: EventType) -> EventDrivenFsmReturnType:
+        result = EventDrivenFsmReturnType.HANDLED
+        if event.signal == Signal.CUSTOM and isinstance(
+            event.data, FunctionFSM.FunctionFSMData
+        ):
+            if event.data.signal == FunctionFSM.FunctionFSMSignal.ADD_IDENTIFIER:
+                print("Final result:", event.data.value)
+                self._result = event.data.value
+        return result
 
-    @staticmethod
-    def raw_string_check(s: str) -> bool:
-        """Check if a string is a valid raw string."""
-        if s.startswith(("'", '"')) and s.endswith(("'", '"')):
-            return True
-        else:
-            return False
-    
-    def get_next_char(self) -> str:
-        """Get the next character in the expression, handling escape sequences."""
-        return self.expression[self.expression_index] if self.expression_index < len(self.expression) else ""
-        
-    def init_state(self, expression: str) -> FsmParser.ReturnType:
-        """Initial state of the FSM parser."""
-        self.expression = expression
-        self.expression_index = 0
-        self.parsed_object_list.clear()
-        self.cur_read_string: str = ""  # 当前读到的字符串        
-        if FunctionParser.raw_string_check(self.expression) == True:
-            # end
-            self.fsm.transition(self.end_state)
-        else:
-            self.fsm.transition(self.func_name_state)
-        return FsmParser.ReturnType.HANDLED
+    """function1(abc, (1,2,3), function2(x, y))"""
 
-    def func_name_state(self) -> FsmParser.ReturnType:
-        """State for parsing function name."""
-        cur_char = self.get_next_char()
-        if cur_char == "":
-            # end of expression
-        
-    def end_state(self) -> FsmParser.ReturnType:
-        """End state of the FSM parser."""
-        return FsmParser.ReturnType.HANDLED
+    def parse(self, expr: str) -> Optional[FunctionFSM.FunctionFSMState]:
+        tokens = self._tokenize(expr)
+
+        # 1. 初始化根 FSM
+        leaf_fsm: Optional[EventDrivenFsm] = self._wrapper_fsm
+
+        identifier_list = []
+
+        # 2. 处理每个 token
+        for index, token in enumerate(tokens):
+            if token == "(":
+                # Create 1 leaf FSM for the function
+                new_leaf = FunctionFSM()._parent
+                if leaf_fsm:
+                    leaf_fsm._add_child(new_leaf)
+                leaf_fsm = new_leaf
+                # Add function name
+                if identifier_list:
+                    func_name = identifier_list.pop()
+                    leaf_fsm.dispath(
+                        EventType(
+                            signal=Signal.CUSTOM,
+                            data=FunctionFSM.FunctionFSMData(
+                                signal=FunctionFSM.FunctionFSMSignal.ADD_IDENTIFIER,
+                                value=func_name,
+                            ),
+                        )
+                    )
+                else:
+                    raise SyntaxError("Function name expected before '('")
+            elif token == ")":
+                if leaf_fsm:
+                    # Add last argument if exists
+                    if identifier_list:
+                        arg = identifier_list.pop()
+                        leaf_fsm.dispath(
+                            EventType(
+                                signal=Signal.CUSTOM,
+                                data=FunctionFSM.FunctionFSMData(
+                                    signal=FunctionFSM.FunctionFSMSignal.ADD_IDENTIFIER,
+                                    value=arg,
+                                ),
+                            )
+                        )
+                    # End the current leaf FSM
+                    leaf_fsm.dispath(EventType(signal=Signal.EXIT))
+
+                    leaf_fsm = leaf_fsm.parent  # Move up to parent FSM
+                else:
+                    raise SyntaxError("Unmatched closing parenthesis")
+            elif token == ",":
+                # Add argument left to ","
+                if identifier_list:
+                    arg = identifier_list.pop()
+                    if leaf_fsm:
+                        leaf_fsm.dispath(
+                            EventType(
+                                signal=Signal.CUSTOM,
+                                data=FunctionFSM.FunctionFSMData(
+                                    signal=FunctionFSM.FunctionFSMSignal.ADD_IDENTIFIER,
+                                    value=arg,
+                                ),
+                            )
+                        )
+            else:
+                identifier_list.append(token)
+        self._wrapper_fsm._drive()
+        return self._result
+
+    def _tokenize(self, expr: str) -> List[str]:
+        # 简单分词器，支持数字、标识符、括号、逗号
+        tokens = []
+        buf = ""
+        i = 0
+        while i < len(expr):
+            char = expr[i]
+            if char.isspace():
+                # 跳过空白
+                if buf:
+                    tokens.append(buf)
+                    buf = ""
+                i += 1
+                continue
+            elif char in "(),":
+                if buf:
+                    tokens.append(buf)
+                    buf = ""
+                tokens.append(char)
+                i += 1
+            else:
+                buf += char
+                i += 1
+        if buf:
+            tokens.append(buf)
+        return tokens
+
+
+if __name__ == "__main__":
+    # 测试用例
+    function_parser = FunctionParser()
+    test_expr = "func(a, b, c)"
+    test_expr1 = "func1(a, func2(b, c), d)"
+    print("Parsed tokens:", function_parser.parse(test_expr))
+    print("Parsed tokens:", function_parser.parse(test_expr1))

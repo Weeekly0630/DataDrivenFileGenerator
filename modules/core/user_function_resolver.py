@@ -123,288 +123,27 @@ class UserFunctionResolver:
 
     def parse(self, expression: str, context: "UserFunctionContext") -> Any:
         """
-        FSM-based parser for single-layer function calls: func(arg1, arg2)
-        Uses Enum for states and provides detailed descriptions for each state.
+        FSM-based parser for function calls, supports nested calls.
         Returns the result of the function call, or None if not valid.
         """
-        class ParseState(Enum):
-            INIT = auto()  # Initial state, check special characters
-            FUNC_NAME = auto()  # Parsing function name
-            OPEN_PAREN = auto()  # Expecting '(' after function name
-            ARG = auto()  # Parsing argument value
-            ARG_COMMA = auto()  # After ',', expecting next argument
-            CLOSE_PAREN = auto()  # After ')', end of argument list
-            END = auto()  # Parsing complete
+        from modules.core.fsm_parser import FunctionParser, FunctionFSM
 
-       
-        def validate_function_name(name: str) -> bool:
-            """Validate function name against regex."""
-            import re
-            return bool(re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name))
-        
-        state = ParseState.INIT
-        result = None
+        def eval_fsm_state(fsm_state):
+            # 递归解析 FunctionFSMState
+            if not isinstance(fsm_state, FunctionFSM.FunctionFSMState):
+                return fsm_state
+            func_name = fsm_state.function_name
+            args = [eval_fsm_state(arg) for arg in fsm_state.args]
+            return self._resolve(func_name, context, *args)
 
-        """
-        add(1, 2)
-        add0(add1(1,2), 3) 先解析add1(1,2)，再解析add0(add1(1,2), 3)
-        """
-        parse_object_list: List[ParseObject] = []  # 用于存储解析的函数和参数
-        def parse_object_list_reset() -> None:
-            """Reset the parse object list."""
-            nonlocal parse_object_list
-            parse_object_list = []
-        def parse_object_list_append(obj: ParseObject) -> None:
-            """Append a parse object to the list."""
-            nonlocal parse_object_list
-            if not isinstance(obj, ParseObject):
-                raise TypeError(f"Expected ParseObject, got {type(obj)}")
-            parse_object_list.append(obj)
-        def parse_object_list_pop() -> ParseObject:
-            """Pop the last parse object from the list."""
-            nonlocal parse_object_list
-            if parse_object_list:
-                return parse_object_list.pop()
-            else:
-                raise IndexError("Parse object list is empty.")
-            
-        def parse_function_object_resolve() -> tuple[str, List[Any], Any]:
-            """Resolve the last function object in the parse object list."""
-            nonlocal parse_object_list
-            if not parse_object_list:
-                raise ValueError("Parse object list is empty.")
-            # find last function object
-            for i in range(len(parse_object_list) - 1, -1, -1):
-                if parse_object_list[i].type == ParseObjectType.FUNCTION:
-                    func_obj = parse_object_list[i]
-                    break
-            # if not found, raise error
-            if not func_obj:
-                raise ValueError("No function object found in parse object list.")
-            # get args
-            args = []
-            for j in range(i + 1, len(parse_object_list)):
-                if parse_object_list[j].type == ParseObjectType.ARGUMENT:
-                    args.append(parse_object_list[j].value)
-            # remove function object and args from list
-            parse_object_list = parse_object_list[:i]
-            # resolve function
-            result = self.resolve(func_obj.value, context, *args)
-            # append result to parse object list
-            parse_object_list_append(ParseObject(type=ParseObjectType.ARGUMENT, value=result))
-
-            return func_obj.value, args, result
-        # # 函数名栈
-        # function_name_list: List[str] = []
-        # def function_name_list_reset() -> None:
-        #     """Reset the function name list."""
-        #     nonlocal function_name_list
-        #     function_name_list = []
-        # def function_name_list_append(name: str) -> None:
-        #     """Append a function name to the list."""
-        #     nonlocal function_name_list
-        #     if not validate_function_name(name):
-        #         raise ValueError(f"Invalid function name: {name}")
-        #     function_name_list.append(name)
-        # def function_name_list_pop() -> str:
-        #     """Pop the last function name from the list."""
-        #     nonlocal function_name_list
-        #     if function_name_list:
-        #         return function_name_list.pop()
-        #     else:
-        #         raise IndexError("Function name list is empty.")
-            
-        # arg_list: List[Any] = []  # 用于存储每个函数的参数列表
-        # def arg_list_reset() -> None:
-        #     """Reset the argument list."""
-        #     nonlocal arg_list
-        #     arg_list = []
-        # def arg_list_append(arg: Any) -> None:
-        #     """Append an argument to the argument list."""
-        #     nonlocal arg_list
-        #     if raw_string_check(arg):
-        #         arg = arg[1:-1]  # Remove quotes from raw strings
-        #     arg_list.append(arg)
-        # def arg_list_pop() -> Any:
-        #     """Pop the last argument from the argument list."""
-        #     nonlocal arg_list
-        #     if arg_list:
-        #         return arg_list.pop()
-            
-        cur_char_index = 0
-        char_index_max = len(expression)
+        function_parser = FunctionParser()
+        result: Optional[FunctionFSM.FunctionFSMState] = function_parser.parse(expression)
+        if result is None:
+            raise ValueError(f"Failed to parse expression: {expression}")
+        else:
+            return eval_fsm_state(result)
         
-        cur_read_string: str = "" # 记录当前读到的字符串
-        def cur_read_string_reset() -> None:
-            """Reset the current read string."""
-            nonlocal cur_read_string
-            cur_read_string = ""
-        def cur_read_string_append(c: str) -> None:
-            """Append a character to the current read string."""
-            nonlocal cur_read_string
-            cur_read_string += c
-        def cur_read_string_get() -> str:
-            """Get the current read string."""
-            nonlocal cur_read_string
-            return cur_read_string
-        def get_next_char() -> str:
-            """Get the next character from the expression."""
-            nonlocal cur_char_index
-            nonlocal char_index_max
-            nonlocal expression
-        
-            cur_char = expression[cur_char_index] if cur_char_index < char_index_max else ""
-            cur_char_index += 1
-            return cur_char
-        
-        def transfer_state_by_char(cur_char: str) -> None:
-            """Transfer state based on the current character."""
-            nonlocal state
-            if cur_char == "(":
-                state = ParseState.OPEN_PAREN
-            elif cur_char == ")":
-                state = ParseState.CLOSE_PAREN
-            
-        while state != ParseState.END:
-            if state == ParseState.INIT:
-                if raw_string_check(expression):
-                    state = ParseState.END
-                    expression = expression[1:-1]  # Remove quotes
-                    result = expression
-                else:
-                    cur_read_string_reset()
-                    state = ParseState.FUNC_NAME
-            else:
-                if state == ParseState.FUNC_NAME:
-                    cur_char = get_next_char()
-                    if cur_char == "":
-                        state = ParseState.END
-                    else:
-                        if cur_char == "(":
-                            # End of function name, move to next state
-                            f_name = cur_read_string_get().strip()
-                            parse_object_list_append(ParseObject(type=ParseObjectType.FUNCTION, value=f_name))
-                            cur_read_string_reset()
-                            state = ParseState.OPEN_PAREN
-                        else:
-                            cur_read_string_append(cur_char)
-                            
-                elif state == ParseState.OPEN_PAREN:
-                    cur_char = get_next_char()
-                    if cur_char == "":
-                        state = ParseState.END
-                    else:
-                        if cur_char == ")" or cur_char == ",":
-                            # Comma, expect next argument
-                            arg = cur_read_string_get()
-                            arg = arg.strip()
-                            parse_object_list_append(ParseObject(type=ParseObjectType.ARGUMENT, value=arg))
-                            cur_read_string_reset()
-                            if cur_char == ")":
-                                state = ParseState.CLOSE_PAREN
-                        elif cur_char == "(":
-                            # Nested function call, do the same as FUNC_NAME
-                            f_name = cur_read_string_get().strip()
-                            parse_object_list_append(ParseObject(type=ParseObjectType.FUNCTION, value=f_name))
-                            cur_read_string_reset()
-                        else:
-                            cur_read_string_append(cur_char)
-                elif state == ParseState.CLOSE_PAREN:
-                    # call 1 function
-                    f_n, f_args, f_result = parse_function_object_resolve() 
-                    print(f"Function name: {f_n}, Args: {f_args}, Result: {f_result}")
-                    # Start a new function call
-                    cur_read_string_append(f_result)
-                    state = ParseState.FUNC_NAME
-                elif state == ParseState.END:
-                    break
-        return result
-        # func_name = ""
-        # args = []
-        # cur_arg = ""
-        # i = 0
-        # n = len(expression)
-        # while i < n:
-        #     c = expression[i]
-        #     # INIT: Skip whitespace, look for start of function name
-        #     if state == ParseState.INIT:
-        #         if c.isspace():
-        #             i += 1
-        #             continue
-        #         elif c.isalpha() or c == "_":
-        #             func_name += c
-        #             state = ParseState.FUNC_NAME
-        #         else:
-        #             return None
-        #     # FUNC_NAME: Collect valid function name characters, look for '('
-        #     elif state == ParseState.FUNC_NAME:
-        #         if c.isalnum() or c == "_":
-        #             func_name += c
-        #         elif c == "(":
-        #             state = ParseState.OPEN_PAREN
-        #         elif c.isspace():
-        #             pass
-        #         else:
-        #             return None
-        #     # OPEN_PAREN: Skip whitespace, look for arguments or ')'
-        #     elif state == ParseState.OPEN_PAREN:
-        #         if c.isspace():
-        #             pass
-        #         elif c == ")":
-        #             state = ParseState.CLOSE_PAREN
-        #         else:
-        #             cur_arg += c
-        #             state = ParseState.ARG
-        #     # ARG: Collect argument characters until ',' or ')'
-        #     elif state == ParseState.ARG:
-        #         if c == ",":
-        #             args.append(cur_arg.strip())
-        #             cur_arg = ""
-        #             state = ParseState.ARG_COMMA
-        #         elif c == ")":
-        #             args.append(cur_arg.strip())
-        #             cur_arg = ""
-        #             state = ParseState.CLOSE_PAREN
-        #         else:
-        #             cur_arg += c
-        #     # ARG_COMMA: Skip whitespace, expect next argument
-        #     elif state == ParseState.ARG_COMMA:
-        #         if c.isspace():
-        #             pass
-        #         else:
-        #             cur_arg += c
-        #             state = ParseState.ARG
-        #     # CLOSE_PAREN: Skip whitespace, parsing complete
-        #     elif state == ParseState.CLOSE_PAREN:
-        #         if c.isspace():
-        #             pass
-        #         else:
-        #             state = ParseState.END
-        #     if state == ParseState.END:
-        #         break
-        #     i += 1
-        # if state not in [ParseState.CLOSE_PAREN, ParseState.END] or not func_name:
-        #     return None
-        # # Parse arguments to int/float if possible
-        # parsed_args = []
-        # for arg in args:
-        #     arg = arg.strip()
-        #     if not arg:
-        #         continue
-        #     try:
-        #         if "." in arg:
-        #             parsed_args.append(float(arg))
-        #         else:
-        #             parsed_args.append(int(arg))
-        #     except ValueError:
-        #         # Remove quotes if present
-        #         if (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
-        #             parsed_args.append(arg[1:-1])
-        #         else:
-        #             parsed_args.append(arg)
-        # return self.resolve(func_name, context, *parsed_args)
-
-    def resolve(
+    def _resolve(
         self, func_name: str, context: UserFunctionContext, *args, **kwargs
     ) -> Any:
         """
@@ -546,7 +285,7 @@ if __name__ == "__main__":
                 UserFunctionInfo(
                     name="mul",
                     description="Multiply two numbers",
-                    handler=lambda ctx, *args: args[0] * args[1],
+                    handler=lambda ctx, *args: int(args[0]) * int(args[1]),
                     validator=validator,
                 ),
             ]
