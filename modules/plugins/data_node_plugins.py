@@ -5,7 +5,7 @@ from modules.core.user_function_resolver import (
     UserFunctionValidator,
 )
 from typing import List, Dict, Any
-
+from modules.node.data_node import DataNode
 
 class DataNodePlugin(FunctionPlugin):
     """模板插件，用于处理模板相关的用户函数"""
@@ -21,6 +21,21 @@ class DataNodePlugin(FunctionPlugin):
         validator.add_param_check_validator(1, 1)
         return validator
 
+    @staticmethod
+    def find_node_by_file_path(
+        context: UserFunctionContext, file_path: str
+    ) -> List[DataNode]:
+        """根据文件路径查找数据节点"""
+        from modules.yaml.yaml_handler import YamlDataTreeHandler
+        
+        if not isinstance(context.data_handler, YamlDataTreeHandler):
+            raise ValueError("Unsupported data handler for file path lookup")
+
+        # 使用数据处理器的查找方法
+        return context.data_handler.find_node_by_path(context.cur_node, file_path)
+    
+    
+        
     @classmethod
     def functions(cls) -> List["UserFunctionInfo"]:
         """返回插件提供的函数列表"""
@@ -30,7 +45,12 @@ class DataNodePlugin(FunctionPlugin):
                 description="Get the value of a data node by its key",
                 handler=cls.node_value,
                 validator=cls.node_value_validator(),
-            )
+            ),
+            UserFunctionInfo(
+                name="find_node_by_file_path",
+                description="Find a data node by its file path",
+                handler=cls.find_node_by_file_path,
+            ),
         ]
 
     @classmethod

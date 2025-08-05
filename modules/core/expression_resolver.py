@@ -1,11 +1,14 @@
 import ast
-from typing import Any
+from typing import Any, Optional
 from modules.core.user_function_resolver import UserFunctionContext
+
+
 class ExpressionResolver:
     """
     支持f-string风格表达式，将{}内的内容递归调用解析器，其余部分原样拼接。
     其余表达式用ast解析。
     """
+
     def __init__(self, function_resolver):
         self.function_resolver = function_resolver  # 需要传入UserFunctionResolver实例
 
@@ -26,38 +29,78 @@ class ExpressionResolver:
             elif isinstance(node, ast.Num):
                 return node.n
             elif isinstance(node, ast.Name):
-                # 查找 context.cur_node.data 字典
-                if hasattr(context, 'cur_node') and hasattr(context.cur_node, 'data') and isinstance(context.cur_node.data, dict):
-                    if node.id in context.cur_node.data:
-                        return context.cur_node.data[node.id]
-                    else:
-                        raise ValueError(f"Unknown variable: {node.id} in {expression}")
+                # 支持作用域链，向上查找 cur_node 的父节点
+                from modules.node.data_node import DataNode
+                from modules.node.file_node import BaseNode
+
+                def lookup_variable(cur_node: Optional[DataNode], varname: str) -> Any:
+                    """在当前节点及其父节点中查找变量"""
+                    while cur_node is not None:
+                        if varname in cur_node.data:
+                            return cur_node.data[varname]
+                        parent_base_node: Optional[BaseNode] = (
+                            cur_node._parent._parent.parent
+                        )
+                        if parent_base_node:
+                            cur_node = parent_base_node.mapping_obj
+                        else:
+                            cur_node = None
+
+                    raise ValueError(f"Unknown variable: {varname} in {expression}")
+
+                if hasattr(context, "cur_node"):
+                    return lookup_variable(context.cur_node, node.id)
                 else:
-                    raise ValueError(f"Context does not have cur_node.data dict for variable lookup: {node.id}")
+                    raise ValueError(
+                        f"Context does not have cur_node for variable lookup: {node.id}"
+                    )
+            elif isinstance(node, ast.Attribute):
+                # 支持 define.name 这种多层变量引用
+                value = eval_ast(node.value)
+                if isinstance(value, dict) and node.attr in value:
+                    return value[node.attr]
+                elif hasattr(value, node.attr):
+                    return getattr(value, node.attr)
+                else:
+                    raise ValueError(f"Attribute '{node.attr}' not found in {value}")
+            elif isinstance(node, ast.Subscript):
+                # 支持 include[1]、a['key'] 等下标访问
+                value = eval_ast(node.value)
+                # 兼容 Python 3.8 及更早和 3.9+ 的 slice 表达式
+                slice_node = node.slice
+                # Python <3.9: ast.Index; Python 3.9+: 直接是表达式
+                if hasattr(ast, "Index") and isinstance(slice_node, ast.Index):
+                    index = eval_ast(slice_node.value)
+                else:
+                    # 3.9+ 直接是表达式（如ast.Constant/ast.Name/ast.Num等）
+                    index = eval_ast(slice_node) if isinstance(slice_node, ast.AST) else slice_node
+                return value[index]
             else:
                 raise ValueError(f"Unsupported expression: {ast.dump(node)}")
-            
+
         def parse_fstring(expr: str) -> str:
             result = ""
             i = 0
             n = len(expr)
             while i < n:
-                if expr[i] == '{':
+                if expr[i] == "{":
                     depth = 1
                     j = i + 1
                     while j < n and depth > 0:
-                        if expr[j] == '{':
+                        if expr[j] == "{":
                             depth += 1
-                        elif expr[j] == '}':
+                        elif expr[j] == "}":
                             depth -= 1
                         j += 1
                     if depth != 0:
                         raise ValueError("Unmatched '{' in f-string expression")
-                    inner = expr[i+1:j-1]
+                    inner = expr[i + 1 : j - 1]
                     try:
-                        tree = ast.parse(inner, mode='eval')
+                        tree = ast.parse(inner, mode="eval")
                     except Exception as e:
-                        raise ValueError(f"Invalid expression: {expression}, error: {e}")
+                        raise ValueError(
+                            f"Invalid expression: {expression}, error: {e}"
+                        )
                     value = eval_ast(tree.body)
                     result += str(value)
                     i = j
@@ -68,10 +111,10 @@ class ExpressionResolver:
 
         # 只有f-string括号内的内容才parse，其他情况直接原样返回
         if isinstance(expression, str):
-            if (expression.startswith('f"') and expression.endswith('"')):
+            if expression.startswith('f"') and expression.endswith('"'):
                 expr_body = expression[2:-1]
                 return parse_fstring(expr_body)
-            elif (expression.startswith("f'") and expression.endswith("'")):
+            elif expression.startswith("f'") and expression.endswith("'"):
                 expr_body = expression[2:-1]
                 return parse_fstring(expr_body)
             else:
@@ -80,6 +123,7 @@ class ExpressionResolver:
 
 # --- 简单测试 ---
 if __name__ == "__main__":
+
     class DummyContext:
         pass
 

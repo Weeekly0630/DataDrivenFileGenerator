@@ -6,6 +6,7 @@ user_data_2: "user_data_2"
 
 user_data_3: "aaa"
 function_exprs:
+  - "f'{find_node_by_file_path('./data.yaml')[0].data['meta_data']}'"
   - "basic string"
   - "node_value(user_data_1)"
-  - "f'{string_join('+++', node_value(user_data_1), node_value(user_data_2), 'static string', user_data_3)}'"
+  - "f'{string_join(' +++ ', node_value(user_data_1), node_value(user_data_2), 'static string', user_data_3)}'"

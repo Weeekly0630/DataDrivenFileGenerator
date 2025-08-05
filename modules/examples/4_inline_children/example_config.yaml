@@ -13,7 +13,7 @@ pattern:
   - "root.yaml"
 
 output_dir: .\source\output
-output_file_extension: xml
+output_file_extension: c
 
 preserved_template_key: TEMPLATE_PATH
 preserved_children_key: CHILDREN_PATH

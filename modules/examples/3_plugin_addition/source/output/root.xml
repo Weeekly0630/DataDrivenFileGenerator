@@ -1,3 +1,4 @@
+100
 basic string
 node_value(user_data_1)
-user_data_1+++user_data_2+++static string+++['user_data_3', 'aaa']
+user_data_1 +++ user_data_2 +++ static string +++ aaa

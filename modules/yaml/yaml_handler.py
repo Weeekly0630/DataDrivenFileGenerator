@@ -2,10 +2,11 @@ import yaml
 from typing import Optional, List, Dict, Any, Iterator, cast, Union
 from dataclasses import dataclass
 from pathlib import Path
+
 # from ..node.expr_node import ExprASTParser, ExprPrintVistor
 
 from ..node.data_node import DataNode
-from ..node.file_node import DirectoryNode, FileNode
+from ..node.file_node import DirectoryNode, FileNode, BaseNode
 from ..core import DataHandler
 
 
@@ -131,6 +132,30 @@ class YamlDataTreeHandler(DataHandler):
     def _clear_mapping(self) -> None:
         self._file_node_mapping.clear()
         self._data_node_mapping.clear()
+
+    def find_node_by_path(self, data_node: DataNode, pattern: str) -> List[DataNode]:
+        """根据路径模式查找数据节点"""
+        results: List[DataNode] = []
+        # 获取匹配的文件节点
+        file_node = self._get_mapping(data_node)
+        if isinstance(file_node, FileNode):
+            parent_base_node = file_node._parent.parent
+            if parent_base_node:
+                dir_node = parent_base_node.mapping_obj
+                if isinstance(dir_node, DirectoryNode):
+                    matching_files = dir_node.find(pattern)
+                    for matching_file in matching_files:
+                        if isinstance(matching_file, FileNode):
+                            # Get DataNode from mapping
+                            child_data_node = self._get_mapping(matching_file)
+                            if (
+                                isinstance(child_data_node, DataNode)
+                                and child_data_node is not None
+                            ):
+                                # 添加parent
+                                if child_data_node.add_parent(data_node) is True:
+                                    results.append(child_data_node)
+        return results
     
     def _build_tree(self, data_node: DataNode, children_key: str) -> None:
         """构建数据节点树"""
@@ -141,33 +166,43 @@ class YamlDataTreeHandler(DataHandler):
             return
 
         def append_child_by_path(data_node: DataNode, pattern: str) -> List:
-            results: List = []
-            # 获取匹配的文件节点
-            file_node = self._get_mapping(data_node)
-            if isinstance(file_node, FileNode):
-                parent_base_node = file_node._parent.parent
-                if parent_base_node:
-                    dir_node = parent_base_node.mapping_obj
-                    if isinstance(dir_node, DirectoryNode):
-                        matching_files = dir_node.find(pattern)
-                        for matching_file in matching_files:
-                            if isinstance(matching_file, FileNode):
-                                # Get DataNode from mapping
-                                child_data_node = self._get_mapping(matching_file)
-                                if (
-                                    isinstance(child_data_node, DataNode)
-                                    and child_data_node is not None
-                                ):
-                                    # 添加parent
-                                    if child_data_node.add_parent(data_node) is True:
-                                        results.append(child_data_node._parent._parent)
-                                    # 递归处理子节点
-                                    self._build_tree(child_data_node, children_key)
+            find_results: List[DataNode] = self.find_node_by_path(data_node, pattern)
+            # Transfer results to BaseNode children
+            results = [each._parent._parent for each in find_results if each is not None]
+            # Recursively build tree for each found node
+            for each in find_results:
+                if isinstance(each, DataNode):
+                    self._build_tree(each, children_key)
+                    
+            # # 获取匹配的文件节点
+            # file_node = self._get_mapping(data_node)
+            # if isinstance(file_node, FileNode):
+            #     parent_base_node = file_node._parent.parent
+            #     if parent_base_node:
+            #         dir_node = parent_base_node.mapping_obj
+            #         if isinstance(dir_node, DirectoryNode):
+            #             matching_files = dir_node.find(pattern)
+            #             for matching_file in matching_files:
+            #                 if isinstance(matching_file, FileNode):
+            #                     # Get DataNode from mapping
+            #                     child_data_node = self._get_mapping(matching_file)
+            #                     if (
+            #                         isinstance(child_data_node, DataNode)
+            #                         and child_data_node is not None
+            #                     ):
+            #                         # 添加parent
+            #                         if child_data_node.add_parent(data_node) is True:
+            #                             results.append(child_data_node._parent._parent)
+            #                         # 递归处理子节点
+            #                         self._build_tree(child_data_node, children_key)
             return results
 
         # 遍历每个模式
-        def handle_any(cur_data_node: DataNode, patterns: Any) -> Any:
-            result = None
+
+        def handle_any(
+            cur_data_node: DataNode, patterns: Any
+        ) -> Union[BaseNode, List, Dict, None]:
+            result: Union[BaseNode, List, Dict, None] = None
 
             if isinstance(patterns, List):
                 # 初始化data_node的base node children为列表
@@ -178,8 +213,16 @@ class YamlDataTreeHandler(DataHandler):
                 result = []
                 result.extend(append_child_by_path(cur_data_node, patterns))
             elif isinstance(patterns, Dict):
-                result = {}
+                # inline dict，创建匿名DataNode并递归处理
+                inline_data_node = DataNode(
+                    data=patterns, name=patterns.get("name", "inline_child")
+                )
 
+                # 添加parent
+                if inline_data_node.add_parent(cur_data_node) is True:
+                    result = inline_data_node._parent._parent
+                # 递归处理子节点
+                self._build_tree(inline_data_node, children_key)
             return result
 
         data_node._parent._parent.children = handle_any(data_node, patterns)

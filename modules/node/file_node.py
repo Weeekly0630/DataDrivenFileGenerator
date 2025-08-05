@@ -40,10 +40,10 @@ class BaseNode:
         self,
         obj: Any,
         parent: Optional["BaseNode"],
-        children: Any,
+        children: Union["BaseNode", List, Dict, None],
     ):
         self.parent: Optional["BaseNode"] = parent  # 父节点
-        self.children: Any = children
+        self.children: Union["BaseNode", List, Dict, None] = children
         self.mapping_obj: Any = obj  # 将当前BaseNode的节点映射到一个对象上
 
     """
