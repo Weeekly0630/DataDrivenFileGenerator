@@ -4,18 +4,19 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from typing import Any, Callable, Dict, List, Union, Optional, Type
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from modules.node.data_node import DataNode
 from modules.core import DataHandler, TemplateHandler
 from pathlib import Path
 import importlib
+from modules.core.fsm_parser import FunctionParser, FunctionFSM
 
 
 @dataclass
 class UserFunctionValidator:
     """A class for validating user-defined functions."""
 
-    validate_function_list: List[Callable[..., bool]]  # List of validation functions
+    validate_function_list: List[Callable[..., bool]] = field(default_factory=list) # List of validation functions
 
     def add_validator(
         self,
@@ -123,25 +124,12 @@ class UserFunctionResolver:
 
     def parse(self, expression: str, context: "UserFunctionContext") -> Any:
         """
-        FSM-based parser for function calls, supports nested calls.
-        Returns the result of the function call, or None if not valid.
+        调用 ExpressionResolver 进行表达式解析。
         """
-        from modules.core.fsm_parser import FunctionParser, FunctionFSM
-
-        def eval_fsm_state(fsm_state):
-            # 递归解析 FunctionFSMState
-            if not isinstance(fsm_state, FunctionFSM.FunctionFSMState):
-                return fsm_state
-            func_name = fsm_state.function_name
-            args = [eval_fsm_state(arg) for arg in fsm_state.args]
-            return self._resolve(func_name, context, *args)
-
-        function_parser = FunctionParser()
-        result: Optional[FunctionFSM.FunctionFSMState] = function_parser.parse(expression)
-        if result is None:
-            raise ValueError(f"Failed to parse expression: {expression}")
-        else:
-            return eval_fsm_state(result)
+        from modules.core.expression_resolver import ExpressionResolver
+        if not hasattr(self, '_expr_resolver'):
+            self._expr_resolver = ExpressionResolver(self)
+        return self._expr_resolver.parse(expression, context)
         
     def _resolve(
         self, func_name: str, context: UserFunctionContext, *args, **kwargs

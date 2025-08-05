@@ -1,30 +1,3 @@
-<group0>
-    {{ CHILDREN_CONTEXT[0] | strings | indent(4) }}
-</group0>
-<group1>
-    {{ CHILDREN_CONTEXT[1] | strings | indent(4) }}
-</group1>
-
-<path_value path=".\children_0\ch0.yaml">
-    <value> {{ ch0_value_expr | int }} </value>
-</path_value>
-
-<path_value path=".\children_1\ch1.yaml">
-    <value> {{ ch1_value_expr | int }} </value>
-</path_value>
-
-<expr>
-    {{ expr1 }}
-</expr>
-
-<expr>
-    {{ expr1 }}
-</expr>
-
-<expr>
-    {{ expr1 }}
-</expr>
-
-<sum>
-    {{ sum_list_expr }}
-</sum>
+{% for expr in function_exprs %}
+{{ expr }}
+{% endfor %}

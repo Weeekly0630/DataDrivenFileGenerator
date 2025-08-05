@@ -7,7 +7,7 @@ class Signal(Enum):
     ENTRY = auto()
     EXIT = auto()
     CUSTOM = auto()
-
+    RETURN_VALUE = auto()  # 子FSM返回值
 
 @dataclass
 class EventType:

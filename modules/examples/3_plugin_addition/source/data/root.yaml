@@ -1,35 +1,9 @@
 TEMPLATE_PATH: "root_template.j2"
-CHILDREN_PATH: ["./children_0/*.yaml", "./children_1/*.yaml"]
+CHILDREN_PATH: []
 
-ch0_value_expr:
-  type: function
-  args:
-    - math:node_value
-    - .\children_0\ch0.yaml
-
-ch1_value_expr:
-  type: function
-  args:
-    - math:node_value
-    - .\children_1\ch1.yaml
-
-expr1:
-  type: function
-  args:
-    - dataNode:get_abs_path
-
-sum_list_expr:
-  type: function
-  args:
-    - math:sum
-    - 
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      - 6
-      - type: function
-        args:
-          - math:node_value
-          - .\children_1\ch1.yaml
+user_data_1: "user_data_1"
+user_data_2: "user_data_2"
+function_exprs:
+  - "basic string"
+  - "node_value(user_data_1)"
+  - "f'{string_join('+++', node_value(user_data_1), node_value(user_data_2), 'static string')}'"

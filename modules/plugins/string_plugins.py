@@ -19,7 +19,7 @@ class TemplatePlugin(FunctionPlugin):
 
     @staticmethod
     def string_join_validator() -> UserFunctionValidator:
-        validator = UserFunctionValidator(validate_function_list=[])
+        validator = UserFunctionValidator()
         validator.add_param_check_validator(1, None)
         return validator
 
