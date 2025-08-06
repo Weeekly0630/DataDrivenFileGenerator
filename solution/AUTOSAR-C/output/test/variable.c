@@ -1,0 +1,1 @@
+static volatile int g_count = 0;

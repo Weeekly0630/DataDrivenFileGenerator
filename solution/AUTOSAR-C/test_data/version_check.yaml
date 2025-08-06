@@ -1,0 +1,13 @@
+TEMPLATE_PATH: "AUTOSAR/version_check.j2"
+CHILDREN_PATH: # []
+
+includes: 
+  - "Cdd_Ipc.h"
+  - "Cdd_Ipc_PBcfg.h"
+
+info: '{
+  autosar_version_check_info_create(
+  "Cdd_Ipc.c",
+  [(each, True, True, True) for each in includes],
+  )
+  }'

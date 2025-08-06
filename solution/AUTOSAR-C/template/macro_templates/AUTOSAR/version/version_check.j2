@@ -1,0 +1,7 @@
+{% import "macro_templates/C/macro/if.j2" as If %}
+{%- macro version_check(info) -%}
+{% for if_macro_info in info %}
+{{ If.macro_if(if_macro_info) }}
+
+{% endfor %}
+{%- endmacro -%}

@@ -1,0 +1,170 @@
+/**
+ * @file       {{ source_file | basename }}
+ * @implements {{ source_file | basename }}_Artifact
+ * @version    1.0.1
+ *
+ * @brief      AUTOSAR {{ module_name }} - {{ brief_description }}
+ * @details    {{ detailed_description }}
+ *
+ * @addtogroup {{ module_name | upper }}_MODULE
+ * @{
+ */
+/*==================================================================================================
+*   Project              : AUTOSAR 4.2 MCAL
+*   Platform             : ARM
+*   Peripheral           : {{ peripheral_name }}
+*   Dependencies         : {{ dependencies | join(', ') }}
+*
+*   Autosar Version      : {{ autosar_version }}
+*   Autosar Revision     : {{ autosar_revision }}
+*   Autosar Conf.Variant :
+*   SW Version           : {{ sw_version }}
+*   Build Version        : {{ build_version }}
+*
+*   (c) Copyright {{ copyright_year }} {{ copyright_holder }}
+*   All Rights Reserved.
+==================================================================================================*/
+
+#ifndef {{ include_guard }}
+#define {{ include_guard }}
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*==================================================================================================
+*                                         INCLUDE FILES
+* 1) system and project includes
+* 2) needed interfaces from external units
+* 3) internal and external interfaces from this unit
+==================================================================================================*/
+{% for include in includes %}
+#include "{{ include.file }}"
+{% endfor %}
+
+/*==================================================================================================
+*                               SOURCE FILE VERSION INFORMATION
+==================================================================================================*/
+/**
+ * @{
+ * @file           {{ source_file | basename }}
+ */
+{% for version_macro in version_macros %}
+#define {{ version_macro.name }}{{ ' ' * (40 - version_macro.name|length) }}{{ version_macro.value }}
+{% endfor %}
+/**@}*/
+
+/*==================================================================================================
+*                                      FILE VERSION CHECKS
+==================================================================================================*/
+{% for version_check in version_checks %}
+{{ version_check }}
+{% endfor %}
+
+/*==================================================================================================
+*                                           CONSTANTS
+==================================================================================================*/
+{% for macro in macros %}
+{% if macro.comment %}
+/** @brief {{ macro.comment }} */
+{% endif %}
+#define {{ macro.name }}{{ ' ' * (30 - macro.name|length) }}{{ macro.definition }}
+{% endfor %}
+
+/*==================================================================================================
+*                                       DEFINES AND MACROS
+==================================================================================================*/
+
+/*==================================================================================================
+*                                              ENUMS
+==================================================================================================*/
+{% for enum in enums %}
+/**
+ * @brief          {{ enum.comment | default("Enumeration definition") }}
+ * @details        {{ enum.detailed_description | default("Detailed description of enumeration") }}
+ */
+typedef enum
+{
+{% for constant in enum.constants %}
+    {{ enum.name | upper }}_{{ constant.name }}{{ ' ' * (20 - constant.name|length) }}= {{ constant.value }}U{% if not loop.last %},{% endif %} /**< @brief {{ constant.comment | default(constant.name) }} */
+{% endfor %}
+} {{ enum.name }};
+
+{% endfor %}
+
+/*==================================================================================================
+*                                  STRUCTURES AND OTHER TYPEDEFS
+==================================================================================================*/
+{% for struct in structures %}
+/**
+ * @brief          {{ struct.comment | default("Structure definition") }}
+ * @details        {{ struct.detailed_description | default("Detailed structure description") }}
+ *
+ * @implements     {{ struct.name }}_struct
+ */
+typedef struct
+{
+{% for field in struct.fields %}
+    /**< @brief {{ field.comment | default(field.name + " field") }} */
+    {{ field.type | autosar_var_macro }}{{ ' ' * (40 - field.type|length) }}{{ field.name }};
+{% endfor %}
+} {{ struct.name }};
+
+{% endfor %}
+
+{% for typedef in typedefs %}
+/**
+ * @brief          {{ typedef.comment | default("Type definition") }}
+ *
+ * @implements     {{ typedef.name }}_typedef
+ */
+typedef {{ typedef.underlying_type | autosar_type_macro }}{{ ' ' * (30 - typedef.underlying_type|length) }}{{ typedef.name }};
+
+{% endfor %}
+
+/*==================================================================================================
+*                                  GLOBAL VARIABLE DECLARATIONS
+==================================================================================================*/
+{% for variable in variables if variable.is_global %}
+{% if variable.comment %}
+/** @brief {{ variable.comment }} */
+{% endif %}
+{{ variable.storage_class | default('EXTERN') }}( {{ variable.type }}, {{ module_name | upper }}_VAR){{ ' ' * (30 - variable.type|length) }}{{ variable.name }};
+{% endfor %}
+
+/*==================================================================================================
+*                                      FUNCTION PROTOTYPES
+==================================================================================================*/
+{% for function in functions %}
+
+/**
+ * @brief          {{ function.comment | default("Function description") }}
+ * @details        {{ function.detailed_description | default("Detailed function description") }}
+ *
+{% for param in function.parameters %}
+ * @param[in]      {{ param.name }}{{ ' ' * (15 - param.name|length) }}{{ param.description | default(param.type + " parameter") }}
+{% endfor %}
+ *
+ * @return         {{ function.return_description | default(function.return_type + " return value") }}
+ *
+ * @api
+ *
+ * @pre            {{ function.precondition | default("None") }}
+ * @post           {{ function.postcondition | default("None") }}
+ *
+ * @implements     {{ function.name }}_Activity
+ */
+{{ function.return_type }} {{ function.name }}(
+{% for param in function.parameters %}
+    {{ param.type }}{{ ' ' * (20 - param.type|length) }}{{ param.name }}{% if not loop.last %},{% endif %}
+{% endfor %}
+);
+{% endfor %}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif    /*{{ include_guard }}*/
+
+/** @} */

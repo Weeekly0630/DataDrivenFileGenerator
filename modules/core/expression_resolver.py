@@ -21,13 +21,46 @@ class ExpressionResolver:
                 else:
                     raise ValueError("Only simple function calls are supported")
                 args = [eval_ast(arg) for arg in node.args]
-                return self.function_resolver._resolve(func_name, context, *args)
+                kwargs = {kw.arg: eval_ast(kw.value) for kw in node.keywords}
+                return self.function_resolver._resolve(func_name, context, *args, **kwargs)
             elif isinstance(node, ast.Constant):
                 return node.value
             elif isinstance(node, ast.Str):
                 return node.s
             elif isinstance(node, ast.Num):
                 return node.n
+            elif isinstance(node, ast.List):
+                return [eval_ast(elt) for elt in node.elts]
+            elif isinstance(node, ast.ListComp):
+                # 只支持一层for的简单推导式
+                if len(node.generators) != 1 or node.generators[0].ifs:
+                    raise ValueError("Only simple list comprehensions are supported")
+                gen = node.generators[0]
+                iter_values = eval_ast(gen.iter)
+                result = []
+                for val in iter_values:
+                    # 构造一个临时作用域
+                    local_vars = {gen.target.id: val}
+                    def eval_with_local(n):
+                        if isinstance(n, ast.Name) and n.id in local_vars:
+                            return local_vars[n.id]
+                        return eval_ast(n)
+                    # 支持元组等复杂结构
+                    def deep_eval(n):
+                        if isinstance(n, ast.Tuple):
+                            return tuple(deep_eval(elt) for elt in n.elts)
+                        elif isinstance(n, ast.List):
+                            return [deep_eval(elt) for elt in n.elts]
+                        elif isinstance(n, ast.Name) and n.id in local_vars:
+                            return local_vars[n.id]
+                        else:
+                            return eval_with_local(n)
+                    result.append(deep_eval(node.elt))
+                return result
+            elif isinstance(node, ast.Tuple):
+                return tuple(eval_ast(elt) for elt in node.elts)
+            elif isinstance(node, ast.Dict):
+                return {eval_ast(k): eval_ast(v) for k, v in zip(node.keys, node.values)}
             elif isinstance(node, ast.Name):
                 # 支持作用域链，向上查找 cur_node 的父节点
                 from modules.node.data_node import DataNode
@@ -111,7 +144,15 @@ class ExpressionResolver:
 
         # 只有f-string括号内的内容才parse，其他情况直接原样返回
         if isinstance(expression, str):
-            if expression.startswith('f"') and expression.endswith('"'):
+            # 新增：如果以{开头且以}结尾，直接解析内容并返回原始对象
+            if expression.startswith('{') and expression.endswith('}'):
+                inner = expression[1:-1].strip()
+                try:
+                    tree = ast.parse(inner, mode="eval")
+                except Exception as e:
+                    raise ValueError(f"Invalid expression: {expression}, error: {e}")
+                return eval_ast(tree.body)
+            elif expression.startswith('f"') and expression.endswith('"'):
                 expr_body = expression[2:-1]
                 return parse_fstring(expr_body)
             elif expression.startswith("f'") and expression.endswith("'"):

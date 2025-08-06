@@ -1,0 +1,15 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "C/decl/variable.j2"
+CHILDREN_PATH: # []
+
+### User Data
+info: "{c_variable_info_create(
+    'g_count',
+    type=node_value(info, './'),
+    storage='static',
+    is_pointer=False,
+    is_array=False,
+    array_size='',
+    init_value='0',
+    qualifiers='volatile'
+  )}"

@@ -1,0 +1,6 @@
+{%- macro macro_define(info) -%}
+#define {{info.name}}
+    {%- if info.args and info.args | length > 0 -%}(
+        {%- for arg in info.args -%}{{arg}}{%- if not loop.last -%}, {% endif -%}{%- endfor -%}
+    ){%- endif %} {{info.value}}
+{%- endmacro -%}

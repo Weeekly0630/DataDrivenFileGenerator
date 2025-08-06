@@ -1,0 +1,14 @@
+TEMPLATE_PATH: "C/macro/if.j2"
+CHILDREN_PATH: 
+
+info:
+  "{
+    c_macro_if_info_create(
+          'TEST_CASE == 1',
+          'printf(\"HelloWorld\")',
+          else_objects=[
+              {'condition': 'TEST_CASE == 2', 'content': 'printf(\"HelloWorld2\")'},
+              {'condition': 'TEST_CASE == 3', 'content': 'printf(\"HelloWorld3\")'},
+          ],
+      )
+  }"

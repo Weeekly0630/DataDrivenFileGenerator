@@ -1,7 +1,0 @@
-{% import "macro_templates/C/C_COMMON_DEFINES.j2" as C %}
-
-{%- macro version_info(version_info) -%}
-{% for macro in version_info.macros %}
-{{ C.macro_define(macro) }}
-{% endfor %}
-{%- endmacro -%}

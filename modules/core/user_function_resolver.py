@@ -11,6 +11,7 @@ from pathlib import Path
 import importlib
 from modules.core.fsm_parser import FunctionParser, FunctionFSM
 
+UserFunctionHandlerType = Callable[..., Any]
 
 @dataclass
 class UserFunctionValidator:
@@ -90,7 +91,7 @@ class UserFunctionInfo:
 
     name: str
     description: str
-    handler: Callable[["UserFunctionContext", Any], Any]
+    handler: UserFunctionHandlerType
     validator: Optional[UserFunctionValidator] = None
 
     def __post_init__(self):
@@ -143,7 +144,7 @@ class UserFunctionResolver:
             raise ValueError(f"Function '{func_name}' not found in resolver.")
         else:
             info = self.functions[func_name]
-            handler: Callable[["UserFunctionContext", Any], Any] = info.handler
+            handler: UserFunctionHandlerType = info.handler
             validator: Optional[UserFunctionValidator] = info.validator
 
             try:

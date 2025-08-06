@@ -1,0 +1,8 @@
+{%- macro variable_decl(info) -%}
+{#- 变量声明宏，info为变量字典 -#}
+{%- if info.storage %}{{ info.storage }} {% endif -%}
+{%- if info.qualifiers %}{{ info.qualifiers }} {% endif -%}
+{{ info.type }}{%- if info.is_pointer %}*{% endif %} {{ info.name }}
+{%- if info.is_array and info.array_size %}[{{ info.array_size }}]{% endif -%}
+{%- if info.init_value %} = {{ info.init_value }}{% endif -%};
+{%- endmacro -%}

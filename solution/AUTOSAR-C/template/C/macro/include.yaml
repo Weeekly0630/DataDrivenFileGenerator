@@ -1,0 +1,4 @@
+TEMPLATE_PATH: "C/macro/include.j2"
+CHILDREN_PATH: # []
+
+info: "{c_include_info_create('stdio.h', True)}"

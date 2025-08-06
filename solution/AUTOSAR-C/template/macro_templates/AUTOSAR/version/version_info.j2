@@ -1,0 +1,18 @@
+{% import "macro_templates/C/C_COMMON_DEFINES.j2" as C %}
+
+{#
+#define I2C_TYPES_VENDOR_ID                         43
+#define I2C_TYPES_MODULE_ID                         255
+#define I2C_TYPES_AR_RELEASE_MAJOR_VERSION          4
+#define I2C_TYPES_AR_RELEASE_MINOR_VERSION          2
+#define I2C_TYPES_AR_RELEASE_REVISION_VERSION       2
+#define I2C_TYPES_SW_MAJOR_VERSION                  1
+#define I2C_TYPES_SW_MINOR_VERSION                  0
+#define I2C_TYPES_SW_PATCH_VERSION                  1
+#}
+
+{%- macro version_info(info) -%}
+{% for macro in info %}
+{{ C.macro_define(macro) }}
+{% endfor %}
+{%- endmacro -%}

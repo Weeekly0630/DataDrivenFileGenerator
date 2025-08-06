@@ -1,0 +1,16 @@
+TEMPLATE_PATH: "AUTOSAR/version_info.j2"
+CHILDREN_PATH: # []
+
+info: '{
+  autosar_version_info_create(
+  "Cdd_Ipc.c",
+  255,
+  2,
+  4,
+  2,
+  2,
+  1,
+  0,
+  1,
+  )
+  }'

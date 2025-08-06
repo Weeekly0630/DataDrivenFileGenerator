@@ -1,0 +1,65 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "mcal/src/(Imp)_Ip.c.j2"
+CHILDREN_PATH:
+  # For Include files inline node
+  - - TEMPLATE_PATH: "C/macro/if.j2"
+      CHILDREN_PATH:
+        - TEMPLATE_PATH: "C/macro/include.j2"
+          CHILDREN_PATH: # []
+          info:
+            is_system: false
+            file_name: "Cdd_Ipc.h"
+      info:
+        condition: "MAX_SIZE > 1024"
+        content: f"{CHILDREN_CONTEXT}"
+        else_objects: []
+
+# MetaData
+autosar_major_version: 4
+autosar_minor_version: 4
+autosar_revision_version: 2
+autosar_version_str: f"{autosar_major_version}.{autosar_minor_version}.{autosar_revision_version}"
+
+sw_major_version: 1
+sw_minor_version: 0
+sw_patch_version: 1
+sw_version_str: f"{sw_major_version}.{sw_minor_version}.{sw_patch_version}"
+
+includes:
+  - "Cdd_Ipc.h"
+  - "Cdd_Ipc_PBcfg.h"
+
+file_name: "Cdd_Ipc.c"
+vender_id: 255
+module_id: 2
+
+# Info
+copyright_info: "{
+  autosar_copy_right_info_create(
+  autosar_version_str,
+  sw_version_str,
+  '0.0.0'
+  )
+  }"
+
+
+version_info: "{
+  autosar_version_info_create(
+  file_name,
+  vender_id,
+  module_id,
+  autosar_major_version,
+  autosar_minor_version,
+  autosar_revision_version,
+  sw_major_version,
+  sw_minor_version,
+  sw_patch_version
+  )
+  }"
+  
+version_check_info: '{
+  autosar_version_check_info_create(
+  file_name,
+  [(each, True, True, True) for each in includes],
+  )
+  }'

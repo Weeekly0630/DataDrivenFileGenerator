@@ -1,0 +1,14 @@
+{%- macro macro_if(info) -%}
+#if {{info.condition}}
+{{ info.content }}
+{% for else_obj in info.else_objects -%}
+{% if else_obj.condition != "" %}
+#elif {{else_obj.condition}}
+{{ else_obj.content }}
+{% elif loop.last %}
+#else
+{{ else_obj.content }}
+{% endif -%}
+{%- endfor %}
+#endif
+{%- endmacro -%}
