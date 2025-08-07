@@ -1,0 +1,437 @@
+# Clang AST Cursor 主要类型与关系说明
+
+Clang 的 AST（抽象语法树）以 Cursor 节点为核心，常见的 C 语言相关 Cursor 类型及其关系如下：
+
+## 1. TRANSLATION_UNIT
+- 整个源文件的根节点。
+- 其子节点为全局声明（typedef、struct、enum、function、variable等）。
+
+## 2. TYPEDEF_DECL
+- 表示 typedef 类型别名声明。
+- 主要字段：name（别名），underlying_type（底层类型）。
+- 可能的子节点：
+  - TYPE_REF：指向被引用的类型（如 typedef uint32_t uint32; 中 uint32_t 的 TYPEDEF_DECL 下有 TYPE_REF 指向 uint32）。
+  - STRUCT_DECL/ENUM_DECL/UNION_DECL：如果 typedef 直接定义结构体/枚举/联合体。
+
+## 3. TYPE_REF
+- 类型引用节点。
+- 用于表达 typedef、变量、函数参数等引用了其他类型声明。
+- 指向的目标可以是 TYPEDEF_DECL、STRUCT_DECL、ENUM_DECL、UNION_DECL 等。
+
+## 4. STRUCT_DECL
+- 结构体类型声明。
+- 可能的子节点：FIELD_DECL（字段）、TYPE_REF（字段类型引用）。
+- 也可被 TYPEDEF_DECL 作为 underlying_type。
+
+## 5. ENUM_DECL
+- 枚举类型声明。
+- 可能的子节点：ENUM_CONSTANT_DECL（枚举常量）。
+- 也可被 TYPEDEF_DECL 作为 underlying_type。
+
+## 6. UNION_DECL
+- 联合体类型声明。
+- 可能的子节点：FIELD_DECL（字段）、TYPE_REF（字段类型引用）。
+- 也可被 TYPEDEF_DECL 作为 underlying_type。
+
+## 7. VAR_DECL
+- 变量声明。
+- 可能的子节点：TYPE_REF（变量类型）、INIT_EXPR（初始化表达式）。
+
+## 8. FUNCTION_DECL
+- 函数声明/定义。
+- 可能的子节点：
+  - PARM_DECL（参数声明，参数类型可有 TYPE_REF）
+  - COMPOUND_STMT（函数体）
+  - TYPE_REF（返回值类型引用）
+
+## 9. PARM_DECL
+- 函数参数声明。
+- 可能的子节点：TYPE_REF（参数类型引用）。
+
+## 10. FIELD_DECL
+- 结构体/联合体字段声明。
+- 可能的子节点：TYPE_REF（字段类型引用）。
+
+## 11. ENUM_CONSTANT_DECL
+- 枚举常量声明。
+
+## 12. COMPOUND_STMT
+- 复合语句块（如函数体、if/while等代码块）。
+- 可能的子节点：语句、表达式等。
+
+---
+
+## 典型关系举例
+- typedef uint32_t uint32;  
+  - TYPEDEF_DECL(uint32_t)
+    - TYPE_REF(uint32)
+- typedef struct Point { int x; int y; } Point_t;
+  - TYPEDEF_DECL(Point_t)
+    - STRUCT_DECL(Point)
+      - FIELD_DECL(x)
+        - TYPE_REF(int)
+      - FIELD_DECL(y)
+        - TYPE_REF(int)
+- int foo(uint32_t a);
+  - FUNCTION_DECL(foo)
+    - PARM_DECL(a)
+      - TYPE_REF(uint32_t)
+    - TYPE_REF(int)  # 返回类型
+
+---
+
+## 说明
+- TYPE_REF 是类型引用的桥梁，连接 typedef、变量、参数、字段等与其真实类型声明。
+- 结构体、枚举、联合体等类型声明可被 typedef、变量、参数等多处引用。
+- AST 遍历时，建议递归解析 TYPE_REF 以获得完整类型链。
+
+如需更详细的 Clang Cursor 类型列表，可参考官方文档：https://clang.llvm.org/doxygen/group__CINDEX__CURSOR__KIND.html
+
+
+# 附录：Clang Cursor类重要属性与常见节点属性表
+
+Clang 的 Cursor 类（如 clang.cindex.Cursor）是所有 AST 节点的统一表示。每个节点类型（Kind）会根据实际情况填充不同的属性。常用的重要属性有：
+
+- **kind**：节点类型（如 VAR_DECL, TYPEDEF_DECL, STRUCT_DECL 等）
+- **spelling**：节点的名称（如变量名、类型名、函数名等）
+- **displayname**：显示名称（通常与 spelling 相同，函数会带参数列表）
+- **type**：节点的数据类型（CursorType 对象，可能是 BuiltinType、TypedefType、RecordType 等）
+- **canonical**：规范化的 Cursor（如 typedef 的底层类型）
+- **location**：源代码中的位置
+- **extent**：节点在源文件中的范围
+- **semantic_parent**：语义父节点
+- **lexical_parent**：词法父节点
+- **is_definition()**：是否为定义（而非声明）
+- **get_children()**：获取子节点
+- **get_arguments()**：获取函数参数（仅对函数有效）
+- **get_result_type()**：获取函数返回类型（仅对函数有效）
+- **get_usr()**：统一符号引用（唯一标识符）
+- **referenced**：被引用的 Cursor（如 TYPE_REF 指向的类型定义）
+- **enum_type**：枚举常量的类型（仅对 ENUM_CONSTANT_DECL 有效）
+
+> 注意：不是所有 Cursor 节点的所有属性都有效。部分属性在无效时会返回 None 或 INVALID。
+
+## 常见节点及其主要属性
+
+| 节点类型（kind）      | 主要属性/变量（常用且有效）                                                                                  |
+|----------------------|----------------------------------------------------------------------------------------------------------|
+| VAR_DECL             | spelling, type, location, extent, semantic_parent, is_definition(), referenced (如有 typedef)             |
+| TYPEDEF_DECL         | spelling, type, canonical, location, extent, underlying_typedef_type（底层类型，type.get_canonical()）     |
+| STRUCT_DECL          | spelling, type, location, extent, is_definition(), get_children()（字段）                                 |
+| UNION_DECL           | spelling, type, location, extent, is_definition(), get_children()（字段）                                 |
+| ENUM_DECL            | spelling, type, location, extent, is_definition(), get_children()（枚举常量）                             |
+| ENUM_CONSTANT_DECL   | spelling, type, location, extent, enum_type, value                                                       |
+| FUNCTION_DECL        | spelling, type, displayname, location, extent, is_definition(), get_arguments(), get_result_type()        |
+| PARM_DECL            | spelling, type, location, extent                                                                         |
+| FIELD_DECL           | spelling, type, location, extent                                                                         |
+| TYPE_REF             | referenced, spelling, type                                                                               |
+| CALL_EXPR            | spelling, type, location, extent, get_children()（参数）                                                 |
+
+## 典型举例
+
+- **VAR_DECL（int g_count1;）**
+  - kind: VAR_DECL
+  - spelling: g_count1
+  - type.spelling: int
+  - canonical: 指向自身
+  - referenced: None
+
+- **VAR_DECL（uint32_t g_count = 0;）**
+  - kind: VAR_DECL
+  - spelling: g_count
+  - type.spelling: uint32_t
+  - canonical: TYPEDEF_DECL: uint32_t
+  - referenced: TYPEDEF_DECL: uint32_t
+
+- **TYPEDEF_DECL（typedef uint32 uint32_t;）**
+  - kind: TYPEDEF_DECL
+  - spelling: uint32_t
+  - type.spelling: uint32_t
+  - canonical: TYPEDEF_DECL: uint32
+  - underlying_typedef_type: uint32
+
+- **STRUCT_DECL**
+  - kind: STRUCT_DECL
+  - spelling: Point
+  - is_definition(): True
+  - get_children(): FIELD_DECL（x, y）
+
+---
+
+这些属性和节点类型的组合，有助于理解 Clang AST 的结构和如何提取类型、变量、函数等信息。
+
+
+```C
+UNEXPOSED_DECL (1)
+STRUCT_DECL (2)
+UNION_DECL (3)
+CLASS_DECL (4)
+ENUM_DECL (5)
+FIELD_DECL (6)
+ENUM_CONSTANT_DECL (7)
+FUNCTION_DECL (8)
+VAR_DECL (9)
+PARM_DECL (10)
+OBJC_INTERFACE_DECL (11)
+OBJC_CATEGORY_DECL (12)
+OBJC_PROTOCOL_DECL (13)
+OBJC_PROPERTY_DECL (14)
+OBJC_IVAR_DECL (15)
+OBJC_INSTANCE_METHOD_DECL (16)
+OBJC_CLASS_METHOD_DECL (17)
+OBJC_IMPLEMENTATION_DECL (18)
+OBJC_CATEGORY_IMPL_DECL (19)
+TYPEDEF_DECL (20)
+CXX_METHOD (21)
+NAMESPACE (22)
+LINKAGE_SPEC (23)
+CONSTRUCTOR (24)
+DESTRUCTOR (25)
+CONVERSION_FUNCTION (26)
+TEMPLATE_TYPE_PARAMETER (27)
+TEMPLATE_NON_TYPE_PARAMETER (28)
+TEMPLATE_TEMPLATE_PARAMETER (29)
+FUNCTION_TEMPLATE (30)
+CLASS_TEMPLATE (31)
+CLASS_TEMPLATE_PARTIAL_SPECIALIZATION (32)
+NAMESPACE_ALIAS (33)
+USING_DIRECTIVE (34)
+USING_DECLARATION (35)
+TYPE_ALIAS_DECL (36)
+OBJC_SYNTHESIZE_DECL (37)
+OBJC_DYNAMIC_DECL (38)
+CXX_ACCESS_SPEC_DECL (39)
+OBJC_SUPER_CLASS_REF (40)
+OBJC_PROTOCOL_REF (41)
+OBJC_CLASS_REF (42)
+TYPE_REF (43)
+CXX_BASE_SPECIFIER (44)
+TEMPLATE_REF (45)
+NAMESPACE_REF (46)
+MEMBER_REF (47)
+LABEL_REF (48)
+OVERLOADED_DECL_REF (49)
+VARIABLE_REF (50)
+INVALID_FILE (70)
+NO_DECL_FOUND (71)
+NOT_IMPLEMENTED (72)
+INVALID_CODE (73)
+UNEXPOSED_EXPR (100)
+DECL_REF_EXPR (101)
+MEMBER_REF_EXPR (102)
+CALL_EXPR (103)
+OBJC_MESSAGE_EXPR (104)
+BLOCK_EXPR (105)
+INTEGER_LITERAL (106)
+FLOATING_LITERAL (107)
+IMAGINARY_LITERAL (108)
+STRING_LITERAL (109)
+CHARACTER_LITERAL (110)
+PAREN_EXPR (111)
+UNARY_OPERATOR (112)
+ARRAY_SUBSCRIPT_EXPR (113)
+BINARY_OPERATOR (114)
+COMPOUND_ASSIGNMENT_OPERATOR (115)
+CONDITIONAL_OPERATOR (116)
+CSTYLE_CAST_EXPR (117)
+COMPOUND_LITERAL_EXPR (118)
+INIT_LIST_EXPR (119)
+ADDR_LABEL_EXPR (120)
+StmtExpr (121)
+GENERIC_SELECTION_EXPR (122)
+GNU_NULL_EXPR (123)
+CXX_STATIC_CAST_EXPR (124)
+CXX_DYNAMIC_CAST_EXPR (125)
+CXX_REINTERPRET_CAST_EXPR (126)
+CXX_CONST_CAST_EXPR (127)
+CXX_FUNCTIONAL_CAST_EXPR (128)
+CXX_TYPEID_EXPR (129)
+CXX_BOOL_LITERAL_EXPR (130)
+CXX_NULL_PTR_LITERAL_EXPR (131)
+CXX_THIS_EXPR (132)
+CXX_THROW_EXPR (133)
+CXX_NEW_EXPR (134)
+CXX_DELETE_EXPR (135)
+CXX_UNARY_EXPR (136)
+OBJC_STRING_LITERAL (137)
+OBJC_ENCODE_EXPR (138)
+OBJC_SELECTOR_EXPR (139)
+OBJC_PROTOCOL_EXPR (140)
+OBJC_BRIDGE_CAST_EXPR (141)
+PACK_EXPANSION_EXPR (142)
+SIZE_OF_PACK_EXPR (143)
+LAMBDA_EXPR (144)
+OBJ_BOOL_LITERAL_EXPR (145)
+OBJ_SELF_EXPR (146)
+OMP_ARRAY_SECTION_EXPR (147)
+OBJC_AVAILABILITY_CHECK_EXPR (148)
+FIXED_POINT_LITERAL (149)
+OMP_ARRAY_SHAPING_EXPR (150)
+OMP_ITERATOR_EXPR (151)
+CXX_ADDRSPACE_CAST_EXPR (152)
+CONCEPT_SPECIALIZATION_EXPR (153)
+REQUIRES_EXPR (154)
+CXX_PAREN_LIST_INIT_EXPR (155)
+PACK_INDEXING_EXPR (156)
+UNEXPOSED_STMT (200)
+LABEL_STMT (201)
+COMPOUND_STMT (202)
+CASE_STMT (203)
+DEFAULT_STMT (204)
+IF_STMT (205)
+SWITCH_STMT (206)
+WHILE_STMT (207)
+DO_STMT (208)
+FOR_STMT (209)
+GOTO_STMT (210)
+INDIRECT_GOTO_STMT (211)
+CONTINUE_STMT (212)
+BREAK_STMT (213)
+RETURN_STMT (214)
+ASM_STMT (215)
+OBJC_AT_TRY_STMT (216)
+OBJC_AT_CATCH_STMT (217)
+OBJC_AT_FINALLY_STMT (218)
+OBJC_AT_THROW_STMT (219)
+OBJC_AT_SYNCHRONIZED_STMT (220)
+OBJC_AUTORELEASE_POOL_STMT (221)
+OBJC_FOR_COLLECTION_STMT (222)
+CXX_CATCH_STMT (223)
+CXX_TRY_STMT (224)
+CXX_FOR_RANGE_STMT (225)
+SEH_TRY_STMT (226)
+SEH_EXCEPT_STMT (227)
+SEH_FINALLY_STMT (228)
+MS_ASM_STMT (229)
+NULL_STMT (230)
+DECL_STMT (231)
+OMP_PARALLEL_DIRECTIVE (232)
+OMP_SIMD_DIRECTIVE (233)
+OMP_FOR_DIRECTIVE (234)
+OMP_SECTIONS_DIRECTIVE (235)
+OMP_SECTION_DIRECTIVE (236)
+OMP_SINGLE_DIRECTIVE (237)
+OMP_PARALLEL_FOR_DIRECTIVE (238)
+OMP_PARALLEL_SECTIONS_DIRECTIVE (239)
+OMP_TASK_DIRECTIVE (240)
+OMP_MASTER_DIRECTIVE (241)
+OMP_CRITICAL_DIRECTIVE (242)
+OMP_TASKYIELD_DIRECTIVE (243)
+OMP_BARRIER_DIRECTIVE (244)
+OMP_TASKWAIT_DIRECTIVE (245)
+OMP_FLUSH_DIRECTIVE (246)
+SEH_LEAVE_STMT (247)
+OMP_ORDERED_DIRECTIVE (248)
+OMP_ATOMIC_DIRECTIVE (249)
+OMP_FOR_SIMD_DIRECTIVE (250)
+OMP_PARALLELFORSIMD_DIRECTIVE (251)
+OMP_TARGET_DIRECTIVE (252)
+OMP_TEAMS_DIRECTIVE (253)
+OMP_TASKGROUP_DIRECTIVE (254)
+OMP_CANCELLATION_POINT_DIRECTIVE (255)
+OMP_CANCEL_DIRECTIVE (256)
+OMP_TARGET_DATA_DIRECTIVE (257)
+OMP_TASK_LOOP_DIRECTIVE (258)
+OMP_TASK_LOOP_SIMD_DIRECTIVE (259)
+OMP_DISTRIBUTE_DIRECTIVE (260)
+OMP_TARGET_ENTER_DATA_DIRECTIVE (261)
+OMP_TARGET_EXIT_DATA_DIRECTIVE (262)
+OMP_TARGET_PARALLEL_DIRECTIVE (263)
+OMP_TARGET_PARALLELFOR_DIRECTIVE (264)
+OMP_TARGET_UPDATE_DIRECTIVE (265)
+OMP_DISTRIBUTE_PARALLELFOR_DIRECTIVE (266)
+OMP_DISTRIBUTE_PARALLEL_FOR_SIMD_DIRECTIVE (267)
+OMP_DISTRIBUTE_SIMD_DIRECTIVE (268)
+OMP_TARGET_PARALLEL_FOR_SIMD_DIRECTIVE (269)
+OMP_TARGET_SIMD_DIRECTIVE (270)
+OMP_TEAMS_DISTRIBUTE_DIRECTIVE (271)
+OMP_TEAMS_DISTRIBUTE_SIMD_DIRECTIVE (272)
+OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_DIRECTIVE (273)
+OMP_TEAMS_DISTRIBUTE_PARALLEL_FOR_DIRECTIVE (274)
+OMP_TARGET_TEAMS_DIRECTIVE (275)
+OMP_TARGET_TEAMS_DISTRIBUTE_DIRECTIVE (276)
+OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_DIRECTIVE (277)
+OMP_TARGET_TEAMS_DISTRIBUTE_PARALLEL_FOR_SIMD_DIRECTIVE (278)
+OMP_TARGET_TEAMS_DISTRIBUTE_SIMD_DIRECTIVE (279)
+BUILTIN_BIT_CAST_EXPR (280)
+OMP_MASTER_TASK_LOOP_DIRECTIVE (281)
+OMP_PARALLEL_MASTER_TASK_LOOP_DIRECTIVE (282)
+OMP_MASTER_TASK_LOOP_SIMD_DIRECTIVE (283)
+OMP_PARALLEL_MASTER_TASK_LOOP_SIMD_DIRECTIVE (284)
+OMP_PARALLEL_MASTER_DIRECTIVE (285)
+OMP_DEPOBJ_DIRECTIVE (286)
+OMP_SCAN_DIRECTIVE (287)
+OMP_TILE_DIRECTIVE (288)
+OMP_CANONICAL_LOOP (289)
+OMP_INTEROP_DIRECTIVE (290)
+OMP_DISPATCH_DIRECTIVE (291)
+OMP_MASKED_DIRECTIVE (292)
+OMP_UNROLL_DIRECTIVE (293)
+OMP_META_DIRECTIVE (294)
+OMP_GENERIC_LOOP_DIRECTIVE (295)
+OMP_TEAMS_GENERIC_LOOP_DIRECTIVE (296)
+OMP_TARGET_TEAMS_GENERIC_LOOP_DIRECTIVE (297)
+OMP_PARALLEL_GENERIC_LOOP_DIRECTIVE (298)
+OMP_TARGET_PARALLEL_GENERIC_LOOP_DIRECTIVE (299)
+OMP_PARALLEL_MASKED_DIRECTIVE (300)
+OMP_MASKED_TASK_LOOP_DIRECTIVE (301)
+OMP_MASKED_TASK_LOOP_SIMD_DIRECTIVE (302)
+OMP_PARALLEL_MASKED_TASK_LOOP_DIRECTIVE (303)
+OMP_PARALLEL_MASKED_TASK_LOOP_SIMD_DIRECTIVE (304)
+OMP_ERROR_DIRECTIVE (305)
+OMP_SCOPE_DIRECTIVE (306)
+OPEN_ACC_COMPUTE_DIRECTIVE (320)
+TRANSLATION_UNIT (350)
+UNEXPOSED_ATTR (400)
+IB_ACTION_ATTR (401)
+IB_OUTLET_ATTR (402)
+IB_OUTLET_COLLECTION_ATTR (403)
+CXX_FINAL_ATTR (404)
+CXX_OVERRIDE_ATTR (405)
+ANNOTATE_ATTR (406)
+ASM_LABEL_ATTR (407)
+PACKED_ATTR (408)
+PURE_ATTR (409)
+CONST_ATTR (410)
+NODUPLICATE_ATTR (411)
+CUDACONSTANT_ATTR (412)
+CUDADEVICE_ATTR (413)
+CUDAGLOBAL_ATTR (414)
+CUDAHOST_ATTR (415)
+CUDASHARED_ATTR (416)
+VISIBILITY_ATTR (417)
+DLLEXPORT_ATTR (418)
+DLLIMPORT_ATTR (419)
+NS_RETURNS_RETAINED (420)
+NS_RETURNS_NOT_RETAINED (421)
+NS_RETURNS_AUTORELEASED (422)
+NS_CONSUMES_SELF (423)
+NS_CONSUMED (424)
+OBJC_EXCEPTION (425)
+OBJC_NSOBJECT (426)
+OBJC_INDEPENDENT_CLASS (427)
+OBJC_PRECISE_LIFETIME (428)
+OBJC_RETURNS_INNER_POINTER (429)
+OBJC_REQUIRES_SUPER (430)
+OBJC_ROOT_CLASS (431)
+OBJC_SUBCLASSING_RESTRICTED (432)
+OBJC_EXPLICIT_PROTOCOL_IMPL (433)
+OBJC_DESIGNATED_INITIALIZER (434)
+OBJC_RUNTIME_VISIBLE (435)
+OBJC_BOXABLE (436)
+FLAG_ENUM (437)
+CONVERGENT_ATTR (438)
+WARN_UNUSED_ATTR (439)
+WARN_UNUSED_RESULT_ATTR (440)
+ALIGNED_ATTR (441)
+PREPROCESSING_DIRECTIVE (500)
+MACRO_DEFINITION (501)
+MACRO_INSTANTIATION (502)
+INCLUSION_DIRECTIVE (503)
+MODULE_IMPORT_DECL (600)
+TYPE_ALIAS_TEMPLATE_DECL (601)
+STATIC_ASSERT (602)
+FRIEND_DECL (603)
+CONCEPT_DECL (604)
+OVERLOAD_CANDIDATE (700)
+```

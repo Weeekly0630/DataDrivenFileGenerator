@@ -1,8 +1,17 @@
 {%- macro variable_decl(info) -%}
-{#- 变量声明宏，info为变量字典 -#}
-{%- if info.storage %}{{ info.storage }} {% endif -%}
-{%- if info.qualifiers %}{{ info.qualifiers }} {% endif -%}
-{{ info.type }}{%- if info.is_pointer %}*{% endif %} {{ info.name }}
-{%- if info.is_array and info.array_size %}[{{ info.array_size }}]{% endif -%}
-{%- if info.init_value %} = {{ info.init_value }}{% endif -%};
+{# 类型限定符 #}
+{{ info.modifier.qualifiers }} 
+{# 类型名 #}
+{{ info.modifier.type }}
+{# 指针修饰 #}
+{%- if info.modifier.is_pointer -%}
+    {%- for i in range(info.modifier.pointer_level) -%}*{%- endfor -%}
+{%- endif -%}
+{# 数组修饰 #}
+{{ " " ~ info.name }}
+{%- if info.modifier.is_array -%}
+    {%- for dim in info.modifier.array_dims -%}[{{ dim }}]{%- endfor -%}
+{%- endif -%}
+{# 初始化表达式 #}
+{%- if info.init_expr is not none %} = {{ info.init_expr }}{% endif %};
 {%- endmacro -%}

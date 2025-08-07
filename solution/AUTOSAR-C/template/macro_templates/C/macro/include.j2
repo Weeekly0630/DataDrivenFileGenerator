@@ -1,7 +1,0 @@
-{%- macro macro_include(info) -%}
-{% if info.is_system %}
-#include <{{info.file_name}}>
-{% else %}
-#include "{{info.file_name}}"
-{% endif %}
-{%- endmacro -%}

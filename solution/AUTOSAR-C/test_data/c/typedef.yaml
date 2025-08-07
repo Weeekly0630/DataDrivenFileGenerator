@@ -1,0 +1,4 @@
+TEMPLATE_PATH: "C/decl/typedef.j2"
+CHILDREN_PATH: # []
+
+info: "{decl_typedef_metadata_create('dai_pai', decl_typeref_metadata_create('unsigned int'))}"

@@ -4,243 +4,149 @@ from modules.core.user_function_resolver import (
     FunctionPlugin,
     UserFunctionValidator,
 )
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional, Callable
 from dataclasses import dataclass, field, asdict
-from modules.plugins.type import MetaBase
+from modules.plugins.type import MetaBase, auto_register_factories
+
+
+class Attr:
+    """C语言属性信息"""
+
+    @dataclass
+    class Base(MetaBase):
+        pass
+
+
+class Expr:
+    """C语言表达式体系的统一基类和命名空间"""
+
+    @dataclass
+    class Base(MetaBase):
+        """C语言表达式的基类"""
+
+        pass
+
+    @dataclass
+    class UnexposedMetaData(MetaBase):
+        """C语言未暴露的表达式信息"""
+
+        value: Any  # 表达式的原始值，可以是任意类型
+
+
+class Decl:
+    """C语言声明体系的统一基类和命名空间"""
+
+    @dataclass
+    class RecordMetaData(MetaBase):
+        """C语言结构体/联合体信息"""
+
+        name: str  # 结构体/联合体名
+        fields: List["Decl.Field.MetaData"] = field(default_factory=list)  # 字段列表
+        attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
+        qualifiers: str = ""  # 结构体/联合体限定符，如const等
+
+    class TypeRef:
+        """C语言类型引用信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言类型引用信息"""
+
+            ref: Union[
+                str,  # 原生类型
+                "Decl.Typedef.MetaData",  # typedef声明
+                "Decl.Struct.MetaData",  # 结构体声明
+                "Decl.Union.MetaData",  # 联合体声明
+            ]
+
+            def __str__(self):
+                if isinstance(self.ref, str):
+                    return self.ref
+                elif isinstance(self.ref, Decl.Typedef.MetaData):
+                    return self.ref.name
+                elif isinstance(self.ref, Decl.Struct.MetaData):
+                    return f"struct {self.ref.record.name}"
+                elif isinstance(self.ref, Decl.Union.MetaData):
+                    return f"union {self.ref.record.name}"
+                else:
+                    raise TypeError(f"Unsupported type reference: {type(self.ref)}")
+
+    class TypeModifier:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言类型修饰符信息"""
+
+            type: "Decl.TypeRef.MetaData"  # 修饰的类型引用
+            qualifiers: str = ""  # 类型限定符，如const/volatile
+            attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
+            is_pointer: bool = False  # 是否为指针
+            pointer_level: int = 0  # 指针层级，如int**为2
+            is_array: bool = False  # 是否为数组
+            array_dims: List[int] = field(default_factory=list)  # 支持多维数组，如[3,4]
+
+    class Variable:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言变量信息"""
+
+            name: str  # 变量名
+            modifier: "Decl.TypeModifier.MetaData"  # 变量类型修饰符
+            init_expr: Optional["Expr.Base"] = None  # 初始化表达式，可能为None
+
+    class Field:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言结构/联合字段信息"""
+
+            name: str  # 字段名（匿名字段可为空字符串）
+            modifier: "Decl.TypeModifier.MetaData"  # 字段类型修饰符
+            bitfield_width: Optional[int] = None  # 位域宽度，非位域为None
+
+    class Typedef:
+        """C语言类型定义声明信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言类型定义信息"""
+
+            name: str
+            typeref: "Decl.TypeRef.MetaData"
+
+    class Struct:
+        """C语言结构体声明信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言结构体信息"""
+
+            record: "Decl.RecordMetaData"
+            fields: List["Decl.Field.MetaData"] = field(default_factory=list)
+
+    class Union:
+        """C语言联合声明信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言联合体信息"""
+
+            record: "Decl.RecordMetaData"
+            fields: List["Decl.Field.MetaData"] = field(default_factory=list)
+
+        @staticmethod
+        def validator() -> Optional[UserFunctionValidator]:
+            return None
+
+
+
 
 
 class CPlugin(FunctionPlugin):
-    class CFunction:
-        @dataclass
-        class MetaData(MetaBase):
-            name: str
-            return_type: Union[str, "CPlugin.CTypeDef.MetaData"]
-            params: List["CPlugin.CVariable.MetaData"] = field(default_factory=list)
-            storage: str = ""
-            qualifiers: str = ""
-            is_inline: bool = False
-            is_static: bool = False
-            is_extern: bool = False
-            body: str = ""
-
-        """C语言函数信息"""
-
-        @staticmethod
-        def c_function_info_create(
-            context: UserFunctionContext,
-            name: str,
-            return_type: Union[str, "CPlugin.CTypeDef.MetaData"],
-            params: List["CPlugin.CVariable.MetaData"] = [],
-            storage: str = "",
-            qualifiers: str = "",
-            is_inline: bool = False,
-            is_static: bool = False,
-            is_extern: bool = False,
-            body: str = "",
-        ) -> "CPlugin.CFunction.MetaData":
-            return CPlugin.CFunction.MetaData(
-                name=name,
-                return_type=return_type,
-                params=params,
-                storage=storage,
-                qualifiers=qualifiers,
-                is_inline=is_inline,
-                is_static=is_static,
-                is_extern=is_extern,
-                body=body,
-            )
-
-    class CVariable:
-        @dataclass
-        class MetaData(MetaBase):
-            name: str
-            type: Union[str, "CPlugin.CTypeDef.MetaData"]
-            storage: str = ""
-            is_pointer: bool = False
-            is_array: bool = False
-            array_size: str = ""
-            init_value: str = ""
-            qualifiers: str = ""
-
-        """C语言变量信息"""
-
-        @staticmethod
-        def c_variable_info_create(
-            context: UserFunctionContext,
-            name: str,
-            type: Union[str, "CPlugin.CTypeDef.MetaData"],
-            storage: str = "",
-            is_pointer: bool = False,
-            is_array: bool = False,
-            array_size: str = "",
-            init_value: str = "",
-            qualifiers: str = "",
-        ) -> "CPlugin.CVariable.MetaData":
-            return CPlugin.CVariable.MetaData(
-                name=name,
-                type=type,
-                storage=storage,
-                is_pointer=is_pointer,
-                is_array=is_array,
-                array_size=array_size,
-                init_value=init_value,
-                qualifiers=qualifiers,
-            )
-
-    class CTypeDef:
-        @dataclass
-        class MetaData(MetaBase):
-            name: str
-            original_type: str
-            is_pointer: bool = False
-            qualifiers: str = ""
-
-            def __str__(self) -> str:
-                return self.name
-            
-        @staticmethod
-        def c_typedef_info_create(
-            context: UserFunctionContext,
-            name: str,
-            original_type: str,
-            is_pointer: bool = False,
-            qualifiers: str = "",
-        ) -> "CPlugin.CTypeDef.MetaData":
-            return CPlugin.CTypeDef.MetaData(
-                name=name,
-                original_type=original_type,
-                is_pointer=is_pointer,
-                qualifiers=qualifiers,
-            )
-
-    class CInclude:
-        @dataclass
-        class MetaData(MetaBase):
-            file_name: str
-            is_system: bool = False
-
-        """C语言头文件信息"""
-
-        @staticmethod
-        def c_include_info_create(
-            context: UserFunctionContext,
-            file_name: str,
-            is_system: bool = False,
-        ) -> "CPlugin.CInclude.MetaData":
-            return CPlugin.CInclude.MetaData(
-                file_name=file_name,
-                is_system=is_system,
-            )
-
-        @staticmethod
-        def c_include_info_validator() -> UserFunctionValidator:
-            validator = UserFunctionValidator()
-            validator.add_param_check_validator(1, 2)
-            return validator
-
-    class CDefine:
-        @dataclass
-        class MetaData(MetaBase):
-            name: str
-            args: list = field(default_factory=list)
-            value: str = ""
-
-        """C语言宏定义信息"""
-
-        @staticmethod
-        def c_define_info_create(
-            context: UserFunctionContext,
-            name: str,
-            args: List[str],
-            value: str,
-        ) -> "CPlugin.CDefine.MetaData":
-            return CPlugin.CDefine.MetaData(
-                name=name,
-                args=args,
-                value=value,
-            )
-
-        @staticmethod
-        def c_define_info_validator() -> UserFunctionValidator:
-            validator = UserFunctionValidator()
-            validator.add_param_check_validator(3, 3)
-            return validator
-
-    class CMacroIf:
-        @dataclass
-        class MetaData(MetaBase):
-            condition: str
-            content: str
-            else_objects: list = field(default_factory=list)
-
-        """C语言条件编译宏信息"""
-
-        @staticmethod
-        def c_macro_if_info_create(
-            context: UserFunctionContext,
-            condition: str,
-            content: str,
-            else_objects: List[Dict[str, str]] = [],
-        ) -> "CPlugin.CMacroIf.MetaData":
-            return CPlugin.CMacroIf.MetaData(
-                condition=condition,
-                content=content,
-                else_objects=else_objects,
-            )
-
-        @staticmethod
-        def c_macro_if_info_validator() -> UserFunctionValidator:
-            validator = UserFunctionValidator()
-            validator.add_param_check_validator(2, 3)
-
-            def check_else_objects(
-                condition: str, content: str, else_objects: List[Dict[str, str]]
-            ) -> bool:
-                if not isinstance(else_objects, list):
-                    raise ValueError("else_objects must be a list")
-                for obj in else_objects:
-                    if not isinstance(obj, dict):
-                        raise ValueError("Each else_object must be a dictionary")
-                    if "content" not in obj or "condition" not in obj:
-                        raise ValueError(
-                            "Each else_object must contain 'content' and 'condition' keys"
-                        )
-
-                return True
-
-            # 添加对 else_objects 的验证
-            validator.add_validator(check_else_objects)
-
-            return validator
 
     @classmethod
     def functions(cls) -> List["UserFunctionInfo"]:
-        """返回插件提供的函数列表"""
-        return [
-            UserFunctionInfo(
-                name="c_define_info_create",
-                description="Create a C define info object",
-                handler=cls.CDefine.c_define_info_create,
-                validator=cls.CDefine.c_define_info_validator(),
-            ),
-            UserFunctionInfo(
-                name="c_include_info_create",
-                description="Create a C include info object",
-                handler=cls.CInclude.c_include_info_create,
-                validator=cls.CInclude.c_include_info_validator(),
-            ),
-            UserFunctionInfo(
-                name="c_macro_if_info_create",
-                description="Create a C macro if info object",
-                handler=cls.CMacroIf.c_macro_if_info_create,
-                validator=cls.CMacroIf.c_macro_if_info_validator(),
-            ),
-            UserFunctionInfo(
-                name="c_variable_info_create",
-                description="Create a C variable info object",
-                handler=cls.CVariable.c_variable_info_create,
-            ),
-        ]
+        info_funcs = auto_register_factories(Decl)
+        # 你还可以合并手写的其它函数
+        return info_funcs
 
     @classmethod
     def on_plugin_load(cls):

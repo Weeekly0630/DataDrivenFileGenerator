@@ -3,13 +3,10 @@ TEMPLATE_PATH: "C/decl/variable.j2"
 CHILDREN_PATH: # []
 
 ### User Data
-info: "{c_variable_info_create(
-    name='g_count',
-    type='int',
-    storage='static',
-    is_pointer=false,
-    is_array=false,
-    array_size='',
-    init_value='0',
-    qualifiers='volatile'
+info: "{decl_variable_metadata_create(
+    'my_var',
+    decl_typemodifier_metadata_create(
+      decl_typeref_metadata_create('int'),
+      
+    )
   )}"

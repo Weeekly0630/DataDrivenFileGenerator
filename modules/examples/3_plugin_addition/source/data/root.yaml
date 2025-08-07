@@ -1,12 +1,12 @@
 TEMPLATE_PATH: "root_template.j2"
 CHILDREN_PATH: []
 
-user_data_1: "user_data_1"
-user_data_2: "user_data_2"
-
+user_data_1: "111"
+user_data_2: "222"
 user_data_3: "aaa"
+
 function_exprs:
-  - "f'{find_node_by_file_path('./data.yaml')[0].data['meta_data']}'"
+  - "f'{node_find_create('./data.yaml').results[0].data['meta_data']}'"
   - "basic string"
-  - "node_value(user_data_1)"
-  - "f'{string_join(' +++ ', node_value(user_data_1), node_value(user_data_2), 'static string', user_data_3)}'"
+  - "{node_value_create('user_data_1').value}"
+  - "f'{string_join(' +++ ', node_value_create('user_data_1').value, node_value_create('user_data_2').value, 'static string', user_data_3)}'"
