@@ -1,0 +1,15 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "example.md"
+CHILDREN_PATH: []
+
+### User data
+name: 基本模版渲染
+description: 使用DataDrivenGenerator进行基本的模版渲染示例
+
+features:
+  - name:
+    description:
+
+input_description:
+
+output_description:

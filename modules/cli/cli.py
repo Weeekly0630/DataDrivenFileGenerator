@@ -125,7 +125,7 @@ def save_output(output_dir: str, results: dict, file_extension: str) -> None:
                 extension = "." + extension
             new_filename = base_name + extension
         else:
-            # 扩展名为空字符串，只移除后缀名
+            # 扩展名为空字符串，保持原文件名
             new_filename = base_name
 
         # 重新组合完整路径

@@ -144,19 +144,21 @@ class ExpressionResolver:
 
         # 只有f-string括号内的内容才parse，其他情况直接原样返回
         if isinstance(expression, str):
+            expr = expression.strip()  # 新增：去除首尾空白字符
+
             # 新增：如果以{开头且以}结尾，直接解析内容并返回原始对象
-            if expression.startswith('{') and expression.endswith('}'):
-                inner = expression[1:-1].strip()
+            if expr.startswith('{') and expr.endswith('}'):
+                inner = expr[1:-1].strip()
                 try:
                     tree = ast.parse(inner, mode="eval")
                 except Exception as e:
                     raise ValueError(f"Invalid expression: {expression}, error: {e}")
                 return eval_ast(tree.body)
-            elif expression.startswith('f"') and expression.endswith('"'):
-                expr_body = expression[2:-1]
+            elif expr.startswith('f"') and expr.endswith('"'):
+                expr_body = expr[2:-1]
                 return parse_fstring(expr_body)
-            elif expression.startswith("f'") and expression.endswith("'"):
-                expr_body = expression[2:-1]
+            elif expr.startswith("f'") and expr.endswith("'"):
+                expr_body = expr[2:-1]
                 return parse_fstring(expr_body)
             else:
                 return expression

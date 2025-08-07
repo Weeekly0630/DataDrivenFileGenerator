@@ -1,0 +1,24 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "tool_readme.md"
+CHILDREN_PATH: []
+
+### User data
+name: ""  # Name of the tool
+description: ""  # Description of the tool
+purpose: ""  # Purpose of the tool
+
+core_concepts:
+  - name: ""  # Name of the core concept
+    description: ""  # Description of the core concept
+
+architectures:
+  - name: ""  # Name of the architecture component
+    description: ""  # Description of the architecture component
+
+features:
+  - name: ""  # Name of the feature
+    description: ""  # Description of the feature
+
+usage: ""  # Usage instructions for the tool
+installation:
+  - ''

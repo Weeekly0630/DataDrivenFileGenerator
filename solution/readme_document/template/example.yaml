@@ -1,0 +1,14 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "example.md"
+CHILDREN_PATH: []
+
+### User data
+name:
+description:
+features:
+  - name:
+    description:
+
+input_description:
+
+output_description:

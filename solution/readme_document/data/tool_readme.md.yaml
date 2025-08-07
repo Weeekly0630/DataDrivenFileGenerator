@@ -1,0 +1,54 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "tool_readme.md"
+CHILDREN_PATH: []
+
+### User data
+name: "数据驱动模版生成器" # Name of the tool
+description: f"`{name}`是一个由数据字典以及模版引擎构成的，支持模版嵌套以及自定义函数插件的工具" # Description of the tool
+purpose: "任意可阅读模版文档的数据驱动生成，前期完成模版的创建，数据模版创建，插件创建。后期只需要进行模版的拼接以及填写即可快速修改文件内容，并通过插件函数自定义数据处理逻辑" # Purpose of the tool
+
+core_concepts:
+  - name: "数据处理器" # Name of the core concept
+    description: f"数据处理器由python脚本实现，核心目标是以任何方式读取一个数据文件到一个python字典，同时这个字典需要使用`preserved_key`来向`{core_concepts[1].name}`指示子模版路径，以及向`{core_concepts[2].name}`指示子模版路径" # Description of the core concept
+  - name: "模版引擎" # Name of the core concept
+    description: f"模版引擎(Jinja)通过python进行调用，核心目标是将一个模版文件与一个数据字典进行渲染，生成一个最终的文档" # Description of the core concept
+  - name: "数据驱动模版核心" # Name of the core concept
+    description: f"由`{core_concepts[0].name}`与`{core_concepts[1].name}`组成，是两者运行之间的桥梁。负责调用各个Handler以及进行数据的处理" # Description of the core concept
+  - name: "文件树" # Name of the core concept
+    description: "文件树是一个数据结构，其包含两个类型: `DirectoryNode`以及`FileNode`。其构建了一个windows文件系统下某一目录的递归文件树。文件树仅在DataHandler为(`YamlHandler`)时被构建" # Description of the core concept
+  - name: "数据树"
+    description: "数据树是一个数据结构，用来存储节点字典数据以及描述节点关系。其包含`DirectoryNode`， 同时包含一个额外的data字典字段。数据节点树由文件树下的`FileNode`生成，且一一对应。可以允许存在匿名数据节点" # Description of the core concept
+  - name: "插件函数"
+    description: "插件函数是一个python脚本，其核心目标是提供一个自定义函数的接口，供`{core_concepts[2].name}`在进行模版渲染前，对数据字典进行预处理。通过在运行时收集modules/plugins/*.py的所有Plugin类提供的函数接口，供预处理时进行函数调用" # Description of the core concept
+
+architectures:
+  - name: "主流程图" # Name of the architecture component
+    description: |
+      f"
+      ```mermaid
+      graph TD
+        A[{core_concepts[2].name}] --实例化--> B[{core_concepts[1].name}]
+        A --实例化--> C[{core_concepts[0].name}]
+        C --初始化--> D[{core_concepts[3].name}]
+        D --构建--> E[{core_concepts[4].name}]
+        A --读取Plugin--> F[插件函数]
+        E --预处理--> F
+        F --预处理数据--> B
+        B --数据树递归渲染--> G[最终文档]
+      ```
+      "
+
+features:
+  - name: "" # Name of the feature
+    description: "" # Description of the feature
+
+usage: |
+  ```shell
+  python module/cli/cli.py <config_file_path>
+  ```
+
+installation:
+  - "安装python"
+  - "安装Jinja2"
+  - "安装Yaml"
+
