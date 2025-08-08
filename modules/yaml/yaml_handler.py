@@ -152,11 +152,9 @@ class YamlDataTreeHandler(DataHandler):
                                 isinstance(child_data_node, DataNode)
                                 and child_data_node is not None
                             ):
-                                # 添加parent
-                                if child_data_node.add_parent(data_node) is True:
-                                    results.append(child_data_node)
+                                results.append(child_data_node)
         return results
-    
+
     def _build_tree(self, data_node: DataNode, children_key: str) -> None:
         """构建数据节点树"""
         # 遍历所有children_key路径
@@ -167,34 +165,19 @@ class YamlDataTreeHandler(DataHandler):
 
         def append_child_by_path(data_node: DataNode, pattern: str) -> List:
             find_results: List[DataNode] = self.find_node_by_path(data_node, pattern)
-            # Transfer results to BaseNode children
-            results = [each._parent._parent for each in find_results if each is not None]
+            results : List[BaseNode] = []
+            for child_data_node in find_results:
+                # 添加parent
+                if child_data_node.add_parent(data_node) is False:
+                    print(f"Warning: Node {child_data_node._parent.meta_data.name} already has a parent.")
+                else:
+                    results.append(child_data_node._parent._parent)
+            
             # Recursively build tree for each found node
             for each in find_results:
                 if isinstance(each, DataNode):
                     self._build_tree(each, children_key)
-                    
-            # # 获取匹配的文件节点
-            # file_node = self._get_mapping(data_node)
-            # if isinstance(file_node, FileNode):
-            #     parent_base_node = file_node._parent.parent
-            #     if parent_base_node:
-            #         dir_node = parent_base_node.mapping_obj
-            #         if isinstance(dir_node, DirectoryNode):
-            #             matching_files = dir_node.find(pattern)
-            #             for matching_file in matching_files:
-            #                 if isinstance(matching_file, FileNode):
-            #                     # Get DataNode from mapping
-            #                     child_data_node = self._get_mapping(matching_file)
-            #                     if (
-            #                         isinstance(child_data_node, DataNode)
-            #                         and child_data_node is not None
-            #                     ):
-            #                         # 添加parent
-            #                         if child_data_node.add_parent(data_node) is True:
-            #                             results.append(child_data_node._parent._parent)
-            #                         # 递归处理子节点
-            #                         self._build_tree(child_data_node, children_key)
+
             return results
 
         # 遍历每个模式

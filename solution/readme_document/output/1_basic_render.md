@@ -1,90 +1,130 @@
-# 1_basic_render
+# DataDrivenGenerator基础渲染示例
 ---
-这是一个基本的模版渲染示例，展示了如何使用数据驱动模版生成器进行简单的模版渲染。
+该文档讲解了数据驱动模版生成器的基本渲染功能，展示了如何使用数据和模板生成文档。包括命令行参数的使用、配置文件构成、文件构成等内容。
 
-## 1.目录结构
+## 特性介绍
 
-```mermaid
-graph TD
-  A[例程根目录 modules/examples/1_basic_render/] --> B[example_config.yaml]
-  A --> C[source/]
-  C --> D[data/]
-  D --> E[data.yaml]
-  C --> F[template/]
-  F --> G[template.j2]
-  C --> H[output/]
-  H --> I[data.xml]
-  A --> L[readme.md]
+数据驱动模板: 由数据处理器及模板引擎构成
+
+## 详细说明
+
+### 数据处理器(Data Handler)
+
+数据处理器是DataDrivenGenerator的一个抽象概念，它负责处理将任意来源的数据读取，转换为`DataNode数据节点`， 并最终提供给DataDrivenGenerator一个完整的数据树。用户可以在入口配置文件中设置`data_handler_type`在支持的数据源中选择(目前只有yaml数据)。
+
+### 模板渲染器(Template Handler)
+
+模板渲染器是DataDrivenGenerator的另一个抽象概念，它负责将数据节点转换为最终的文档内容, 即提供一个接口支持使用某一字典对一个模板进行渲染。 用户可以在入口配置文件中设置`template_type`在支持的模板引擎中选择(目前只有Jinja2模板)。
+
+### 数据驱动模版生成器
+
+进行DataHandler以及TemplateHandler的初始化，流程调度，插件初始化，数据预处理等功能。
+
+
+## 输入说明
+
+- **输入配置文件**: 
+```yaml
+data_type: yaml # 选择数据处理器类型
+# yaml配置
+data_config:
+  file_root_path: .\source\data # 数据文件根目录
+  file_pattern: ["*.yaml"] # 数据文件匹配模式
+  encoding: utf-8 # 数据文件编码
+
+# Jinja配置
+template_type: jinja # 选择模板渲染器类型
+template_config: 
+  template_dir: .\source\template # 模板文件目录
+  autoescape: false # Jinja2模板配置
+
+# 选择需要渲染的入口数据文件
+pattern:
+  - "root.yaml"
+
+output_dir: .\source\output # 输出目录
+output_file_extension: xml # 输出文件扩展名
+
+# 在数据文件中，保留的关键字，用以指示一些特殊的渲染行为
+preserved_template_key: TEMPLATE_PATH # 指示模板文件路径
+preserved_children_key: CHILDREN_PATH # 指示子节点路径
+
+# 在模板文件中，保留的关键字，用以指示一些特殊的渲染行为
+preserved_children_content_key: CHILDREN_CONTEXT # 引用子节点内容
 ```
 
+- **Jinja模板**: Jinja支持在某一文件夹下创建一个环境，后续的所有路径都是相对于该环境的相对路径。即在 yaml中的`preserved_template_key`指示的模板文件路径是相对于template_dir的相对路径。
+- **数据文件**: 数据文件包含指定模板所需的全部属性，同时指示子节点。当前所使用的是通过子节点文件路径来指示子节点的方式。 即在yaml中的`preserved_children_key`指示的子节点路径是相对于当前节点的相对文件路径(Windows file path)。
 
-## 2.配置文件说明
+## 输出说明
 
-- `data_type: yaml`  
-  数据源类型，指定为 YAML 格式。
-- `data_config.file_root_path: .\source\data`  
-  数据文件的根目录。
-- `data_config.file_pattern: ["*.yaml"]`  
-  匹配所有 YAML 数据文件。
-- `data_config.encoding: utf-8`  
-  数据文件编码格式。
-- `template_type: jinja`  
-  模板引擎类型，指定为 Jinja2。
-- `template_config.template_dir: .\source\template`  
-  模板文件所在目录。
-- `template_config.autoescape: false`  
-  关闭自动转义。
-- `pattern: ["*.yaml"]`  
-  需要处理的数据文件模式。
-- `output_dir: .\source\output`  
-  输出文件目录。
-- `output_file_extension: "xml"`  
-  输出文件扩展名。
-- `preserved_template_key: TEMPLATE`  
-  数据中指定模板路径的键名。
-- `preserved_children_key: CHILDREN`  
-  数据中子节点的键名。
-- `preserved_children_content_key: CHILDREN_CONTENT`  
-  模板中引用子节点内容的键名。
+模板渲染最终将指定的入口文档渲染结果保存到output中，并且固定移除一个拓展名，并附加上指定的输出文件扩展名。
 
+## 关键内容展示
 
-## 3.运行
+- **入口配置文件**: 
+```yaml
+data_type: yaml
+data_config:
+  file_root_path: .\source\data
+  file_pattern: ["*.yaml"]
+  encoding: utf-8
 
-1. 进入本例程目录：`cd modules/examples/1_basic_render`
-2. 执行命令：`python ../../cli/cli.py example_config.yaml`
-3. 输出文件将在 `source/output/` 目录下生成
+template_type: jinja
+template_config:
+  template_dir: .\source\template
+  autoescape: false
 
+pattern:
+  - "*.yaml"
 
-## 4.输入数据说明
+output_dir: .\source\output
+output_file_extension: "xml"
 
-- 输入数据位于 `source/data/data.yaml`
-- 数据格式为 YAML，内容为待渲染的数据结构
-- 需包含模板路径（TEMPLATE）、子节点（CHILDREN）等字段
+preserved_template_key: TEMPLATE
+preserved_children_key: CHILDREN
+preserved_children_content_key: CHILDREN_CONTENT
+```
 
+- **输入数据(data.yaml)**: 
+```yaml
+TEMPLATE: template.j2
+CHILDREN: 
 
-## 5.输出数据说明
+paragrahs:
+  - "Paragrah 1"
+  - "Paragrah 2"
+  - "Paragrah 3"
 
-- 输出文件位于 `source/output/` 目录
-- 主要输出为 `data.xml`、`data.yaml.txt`、`data.yaml.xml`
-- 输出内容为模板渲染后的结果
+titles:
+  Title1: This is Title1
+  Title2: This is Title2
+```
 
+- **输入模板(template.j2)**: 
+```jinja2
+<html>
+    {% for paragrah in paragrahs %}
+    <p>{{ paragrah }}</p>
+    {% endfor %}
 
-## 6.关键代码片段
+    {% for key, value in titles.items() %}
+    <h1>{{key}}</h1>
+        <p>{{value}}</p>
+    {% endfor %}
+</html>
+```
 
-```python
-# 关键代码片段（cli 调用）
-from modules.core.data_driven_generator import DataDrivenGenerator, DataDrivenGeneratorConfig
+- **输出结果(output.xml)**: 
+```xml
+<html>
+    <p>Paragrah 1</p>
+    <p>Paragrah 2</p>
+    <p>Paragrah 3</p>
 
-config = DataDrivenGeneratorConfig(
-    data_type="yaml",
-    data_config={"file_root_path": "./source/data", "file_pattern": ["*.yaml"], "encoding": "utf-8"},
-    template_type="jinja",
-    template_config={"template_dir": "./source/template", "autoescape": False},
-    preserved_template_key="TEMPLATE",
-    preserved_children_key="CHILDREN",
-    preserved_children_content_key="CHILDREN_CONTENT"
-)
-generator = DataDrivenGenerator(config)
-results = generator.render(pattern=["*.yaml"])
-# 保存输出略
+    <h1>Title1</h1>
+        <p>This is Title1</p>
+    <h1>Title2</h1>
+        <p>This is Title2</p>
+</html>
 ```

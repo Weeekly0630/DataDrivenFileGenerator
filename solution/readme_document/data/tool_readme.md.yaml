@@ -39,8 +39,14 @@ architectures:
       "
 
 features:
-  - name: "" # Name of the feature
-    description: "" # Description of the feature
+  - name: "数据驱动模板" # Name of the feature
+    description: "由数据处理器及模板引擎构成" # Description of the feature
+  - name: "模板嵌套"
+    description: "支持模板嵌套，数据节点通过指定`children_key`来指示子模板路径，在模板中通过`children_context_key`来引用子模版内容" # Description of the feature
+  - name: "自定义函数插件"
+    description: "支持自定义函数插件，用户可以通过编写python脚本来实现自定义函数，并在数据预处理中调用。" # Description of the feature
+  - name: "匿名数据节点"
+    description: "支持匿名数据节点，用户可以在`children_key`中定义一个完整模板字典来创建匿名数据节点" # Description of the feature
 
 usage: |
   ```shell

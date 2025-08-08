@@ -1,0 +1,79 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "example.md"
+CHILDREN_PATH: []
+
+### User data
+tool_name: f"{node_value_create('name', './tool_readme.md.yaml').value}"
+name: f"{tool_name}内嵌节点"
+
+description: f"该文档讲解了{tool_name}的内嵌节点功能，展示如何在`preserved_children_key`中通过完整的模板字典来指定子节点的内容，可以用来简化简单节点的创建"
+
+features:
+  - name: f"{node_value_create('features', './tool_readme.md.yaml').value[3].name}"
+    description: f"{node_value_create('features', './tool_readme.md.yaml').value[3].description}"
+
+sections:
+  - title: 内嵌节点
+    content: |
+      在`preserved_children_key`中，可以通过完整的模板字典来指定子节点的内容。这样可以简化简单节点的创建，
+      例如在root.yaml:
+      ```yaml
+      TEMPLATE_PATH: "root_template.j2"
+      CHILDREN_PATH:
+        [
+          {
+            "TEMPLATE_PATH": "include.j2",
+            "CHILDREN_PATH": [],
+            "name": "f'{include[0]}'",
+          },
+          {
+            "TEMPLATE_PATH": "include.j2",
+            "CHILDREN_PATH": [],
+            "name": "f'{include[1]}'",
+          },
+          {
+            "TEMPLATE_PATH": "define.j2",
+            "CHILDREN_PATH": [],
+            "name": "f'{define.name}'",
+            "value": "f'{define.value}'",
+          },
+        ]
+      include: ["stdio.h", "stdlib.h"]
+      define:
+        name: "MAX"
+        value: 1000
+
+      function_exprs:
+        - "f'{find_node_by_file_path()}'"
+      ```
+      这样在渲染时，DataDrivenGenerator会将该字典作为一个完整的子节点进行渲染。同时子节点中所引用的内容，可以向上引用父节点的内容，
+      例如子节点中的"name": "f'{include[0]}'",将会引用父节点的`include`列表中的第一个元素。
+
+input_descs:
+  - name: 文件树"
+    description: |
+
+      ```text
+      ==============Serialized File Tree==============
+      u:/users/enlink/documents/code/python/datadrivenfilegenerator/modules/examples/4_inline_children/source/data/
+        define.yaml
+        include.yaml
+        root.yaml
+      ```
+
+  - name: "数据树"
+    description: |
+      构建inline节点的文件树时将会默认以name属性命名
+      ```text
+      ==============Serialized Data Tree==============
+      root.yaml
+        f'{include[0]}'
+        f'{include[1]}'
+        f'{define.name}'
+      ```
+
+output_description: 输出root.yaml的渲染结果。
+
+key_contents: ""
+
+      

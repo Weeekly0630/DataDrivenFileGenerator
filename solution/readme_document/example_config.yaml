@@ -10,7 +10,7 @@ template_config:
   autoescape: false
 
 pattern:
-  - "*.yaml"
+  - "plugin_functions.md.yaml"
 
 output_dir: .\output
 output_file_extension: ""

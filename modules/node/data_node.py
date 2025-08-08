@@ -63,7 +63,7 @@ class DataNode:
             if not isinstance(node, DataNode):
                 raise TypeError("Node must be an instance of DataNode")
             # 打印当前节点信息
-            result.append(" " * (depth) + node._parent.meta_data.name)
+            result.append("  " * (depth) + node._parent.meta_data.name)
 
         self._parent._parent.pre_traversal(visitor)
 

@@ -4,7 +4,10 @@ from modules.core.user_function_resolver import (
     FunctionPlugin,
     UserFunctionValidator,
 )
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union, Optional, Callable
+from dataclasses import dataclass, field, asdict
+from modules.plugins.type import MetaBase, auto_register_factories
+from modules.node.data_node import DataNode
 
 class TemplatePlugin(FunctionPlugin):
     """模板插件，用于处理模板相关的用户函数"""
@@ -21,41 +24,7 @@ class TemplatePlugin(FunctionPlugin):
         """
         info_funcs = []
 
-        def register_create_functions(obj, prefix=cls.__name__.lower() + "_"):
-            for name in dir(obj):
-                if name.startswith("__") and name.endswith("__"):
-                    continue  # 跳过内置属性
-                try:
-                    attr = getattr(obj, name)
-                except Exception:
-                    continue  # 跳过无法 getattr 的属性
-                if callable(attr) and name.endswith("_create"):
-                    validator_name = name.replace("_create", "_validator")
-                    validator = getattr(cls, validator_name, None)
-                    if callable(validator):
-                        validator_instance = validator()
-                    else:
-                        validator_instance = validator
-                    if (
-                        isinstance(validator_instance, UserFunctionValidator)
-                        or validator_instance is None
-                    ):
-                        info_funcs.append(
-                            UserFunctionInfo(
-                                name=f"{prefix}{name}" if prefix else name,
-                                handler=attr,
-                                validator=validator_instance,
-                                description=attr.__doc__ or "",
-                            )
-                        )
-                    else:
-                        raise TypeError(
-                            f"Validator for {prefix}{name} is not a UserFunctionValidator instance or None."
-                        )
-                elif isinstance(attr, type):
-                    register_create_functions(attr, prefix=f"{prefix}{attr.__name__.lower()}_")
-
-        register_create_functions(cls)
+        
         return info_funcs
 
     @classmethod

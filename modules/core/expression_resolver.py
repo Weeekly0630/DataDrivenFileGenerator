@@ -111,7 +111,34 @@ class ExpressionResolver:
             else:
                 raise ValueError(f"Unsupported expression: {ast.dump(node)}")
 
+
+        def preprocess_braces(s: str) -> str:
+            # 先把转义的 \{ 和 \} 替换成特殊标记
+            return s.replace(r'\{', '__LEFT_BRACE__').replace(r'\}', '__RIGHT_BRACE__')
+
+        def postprocess_braces(s: str) -> str:
+            # 处理完表达式后再替换回来
+            return s.replace('__LEFT_BRACE__', '{').replace('__RIGHT_BRACE__', '}')
+
+        def safe_eval_fstring(expr: str) -> str:
+            """
+            尝试将 f-string 表达式安全地解析为字符串。
+            如果解析失败，则警告并返回原始字符串。
+            """
+            # 先处理转义
+            expr = preprocess_braces(expr)
+            try:
+                tree = ast.parse(expr, mode="eval")
+                value = eval_ast(tree.body)
+            except Exception as e:
+                print(f"[警告] Invalid expression: {expr}, error: {e}")
+                value = expr
+            # 还原转义
+            return postprocess_braces(str(value))
+            
         def parse_fstring(expr: str) -> str:
+            # 先处理转义
+            expr = preprocess_braces(expr)
             result = ""
             i = 0
             n = len(expr)
@@ -128,19 +155,14 @@ class ExpressionResolver:
                     if depth != 0:
                         raise ValueError("Unmatched '{' in f-string expression")
                     inner = expr[i + 1 : j - 1]
-                    try:
-                        tree = ast.parse(inner, mode="eval")
-                    except Exception as e:
-                        raise ValueError(
-                            f"Invalid expression: {expression}, error: {e}"
-                        )
-                    value = eval_ast(tree.body)
+                    value = safe_eval_fstring(inner)
                     result += str(value)
                     i = j
                 else:
                     result += expr[i]
                     i += 1
-            return result
+            # 还原转义
+            return postprocess_braces(result)
 
         # 只有f-string括号内的内容才parse，其他情况直接原样返回
         if isinstance(expression, str):

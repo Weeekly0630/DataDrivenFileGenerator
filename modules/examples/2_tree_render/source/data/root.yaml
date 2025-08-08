@@ -1,10 +1,8 @@
 TEMPLATE_PATH: "root.j2"
 CHILDREN_PATH: 
-  - services/*.yaml
   - services/database.yaml
-# [
-#   [services/database.yaml, services/*.yaml]
-# ]
+  - services/*.yaml
+
 
 name: "System Configuration"
 version: "2.0"

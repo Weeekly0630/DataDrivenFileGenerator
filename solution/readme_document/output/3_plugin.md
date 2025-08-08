@@ -1,0 +1,194 @@
+# 数据驱动模版生成器插件拓展
+---
+该文档讲解了数据驱动模版生成器的插件拓展功能，使得用户可以自己编写需要的函数，可以在数据中，通过特定的占位符，由生成器在预处理阶段提供当前节点上下文 并调用函数。可以用来生成结构化数据，等等
+
+## 特性介绍
+
+自定义函数插件: 支持自定义函数插件，用户可以通过编写python脚本来实现自定义函数，并在数据预处理中调用。
+
+## 详细说明
+
+### 插件模板
+
+插件接口类
+```python
+# 插件接口
+class FunctionPlugin:
+    """插件基类"""
+
+    @classmethod
+    def functions(cls) -> List["UserFunctionInfo"]:
+        """返回插件提供的函数列表"""
+        return []
+
+    @classmethod
+    def on_plugin_load(cls):
+        """插件加载时的初始化操作（可选）"""
+        pass
+
+    @classmethod
+    def on_plugin_unload(cls):
+        """插件卸载时的清理操作（可选）"""
+        pass
+```
+
+
+### 插件注册
+
+数据驱动模版生成器会在初始化时，读取插件路径下的所有插件，收集所有函数信息`UserFunctionInfo`，
+并实例化一个UserFunctionResolver对象。
+- UserFunctionInfo:
+```python
+@dataclass
+class UserFunctionInfo:
+    """A class representing user function information."""
+
+    name: str # Function register name
+    description: str # Function brief
+    handler: UserFunctionHandlerType # Function Handler
+    validator: Optional[UserFunctionValidator] = None # Validator  
+
+    def __post_init__(self):
+        import re
+
+        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", self.name):
+            raise ValueError(f"函数名不合法: { self.name } ")
+```
+
+
+### 插件函数执行
+
+在渲染模板前，会对字典数据进行预处理。Resolver将识别字符串数据的特殊起始终止字符, 并将指定内容放入Python ast进行表达式解析。即
+一个`"{ ... }"`括号中的数据将被解析为一个python表达式， 可以进行变量引用，函数调用，以及部分python表达式语法等。
+例如：
+- python fstring类型:
+```python
+f" raw string { variable } raw string "
+```
+这将返回一个str对象。
+```yaml
+date: "2025/08/08"
+date_string: f"Today is {date}."
+```
+最终字典结果为
+```python
+data = {
+  "date": "2025/08/08",
+  "date_string": "Today is 2025/08/08."
+}
+```
+- python对象类型
+```python
+"{ variale }"
+```
+这将会原本地返回变量的类型值
+例如:
+```yaml
+data:
+  k1: test
+  k2: test
+ref: "{ data }"
+```
+结果为
+```python
+data = {
+  "data": {"k1": "test", "k2": "test"},
+  "ref": {"k1": "test", "k2": "test"}
+}
+```
+
+
+### 自动插件管理
+
+提供一个自动注册插件的脚本，它可以识别特定类的特定结构，自动化生成对应FunctionInfo.
+接口接收一个class类，自动遍历类中所有的子类。
+若子类包括`class MetaData`, 则为该类创建一个UserFunctionInfo.
+默认handler为一个返回该MetaData的函数，参数为MetaData的所有属性。
+默认validator为一个参数个数检查器。
+以此快速生成结构化数据。
+```python
+class Decl:
+    class Variable:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言变量信息"""
+
+            name: str  # 变量名
+            modifier: "Decl.TypeModifier.MetaData"  # 变量类型修饰符
+            init_expr: Optional["Expr.Base"] = None  # 初始化表达式，可能为None
+
+class DataNodePlugin(FunctionPlugin):
+    """模板插件，用于处理模板相关的用户函数"""
+
+    @classmethod
+    def functions(cls) -> List["UserFunctionInfo"]:
+        info_funcs = auto_register_factories(Node)
+        # 你还可以合并手写的其它函数
+        return info_funcs
+
+### === 将生成 ===
+def handler(
+  name: str,
+  modifier: "Decl.TypeModifier.MetaData",
+  init_expr: Optional["Expr.Base"] = None) -> "Decl.Variable.MetaData":
+    return Decl.Variable.MetaData(name, modifier, init_expr)
+
+def validator():
+  ...
+
+UserFunctionInfo(
+  name: <父类名>_<子类名>_create
+  handler: handler,
+  validator: validator()
+)
+```
+
+
+
+## 输入说明
+
+- **数据文件**: - root.yaml
+```yaml
+TEMPLATE_PATH: "root_template.j2"
+CHILDREN_PATH: []
+
+user_data_1: "111"
+user_data_2: "222"
+user_data_3: "aaa"
+
+function_exprs:
+  - "f'{node_find_create('./data.yaml').results[0].data['meta_data']}'"
+  - "basic string"
+  - "{node_value_create('user_data_1').value}"
+  - "f'{string_join(' +++ ', node_value_create('user_data_1').value, node_value_create('user_data_2').value, 'static string', user_data_3)}'"
+```
+- data.yaml
+
+```yaml
+TEMPLATE_PATH: 
+CHILDREN_PATH: 
+
+meta_data: 100
+```
+
+- **模板文件()**: 模板
+``` Jinja2
+{% for expr in function_exprs %}
+{{ expr }}
+{% endfor %}
+```
+
+
+## 输出说明
+
+输出文件
+```python
+100  # 引用自data.yaml节点数据
+basic string # 字符串
+111 # 引用自当前节点数据
+111 +++ 222 +++ static string +++ aaa # 函数嵌套
+```
+
+
+## 关键内容展示
+

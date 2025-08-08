@@ -1,0 +1,6 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "plugin_functions.md"
+CHILDREN_PATH: []
+
+### User data
+plugin_data: "{collect_plugin_functions()}"

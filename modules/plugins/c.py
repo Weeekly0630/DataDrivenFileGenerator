@@ -144,7 +144,7 @@ class CPlugin(FunctionPlugin):
 
     @classmethod
     def functions(cls) -> List["UserFunctionInfo"]:
-        info_funcs = auto_register_factories(Decl)
+        info_funcs = auto_register_factories(Decl)[0]
         # 你还可以合并手写的其它函数
         return info_funcs
 

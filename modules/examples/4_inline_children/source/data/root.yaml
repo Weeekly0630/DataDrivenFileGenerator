@@ -23,6 +23,3 @@ include: ["stdio.h", "stdlib.h"]
 define:
   name: "MAX"
   value: 1000
-
-function_exprs:
-  - "f'{find_node_by_file_path()}'"
