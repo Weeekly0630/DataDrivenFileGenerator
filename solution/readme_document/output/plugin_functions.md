@@ -10,6 +10,7 @@
 
 ### 所有函数列表
 - [decl_field_create](#decl-field-create)
+- [decl_record_create](#decl-record-create)
 - [decl_struct_create](#decl-struct-create)
 - [decl_typemodifier_create](#decl-typemodifier-create)
 - [decl_typeref_create](#decl-typeref-create)
@@ -23,7 +24,7 @@
 
 ## 函数收集摘要
 
-- **总函数数**: 9
+- **总函数数**: 10
 - **成功收集的类**: Decl, Node
 - **发现的类**: Decl, Node
 
@@ -32,10 +33,11 @@
 ## Decl 类函数
 
 来源类：`Decl`  
-函数数量：7
+函数数量：8
 
 ### 函数列表
 - [decl_field_create](#decl-field-create)
+- [decl_record_create](#decl-record-create)
 - [decl_struct_create](#decl-struct-create)
 - [decl_typemodifier_create](#decl-typemodifier-create)
 - [decl_typeref_create](#decl-typeref-create)
@@ -87,48 +89,85 @@ example2: f"结果: {decl_field_create('demo', decl_typemodifier_create(), 1)}"
 - [decl_typemodifier_create](#decl-typemodifier-create) - 用于 `modifier` 参数
 
 ---
-<a id="decl-struct-create"></a>
-### decl_struct_create
+<a id="decl-record-create"></a>
+### decl_record_create
 
-**描述**：C语言结构体信息
+**描述**：C语言结构体/联合体信息
 
 **参数列表**：
-- `record`: Any - 任意类型- `fields`: decl_field_create - [decl_field_create](#decl-field-create)
+- `name`: str - 名称字符串- `fields`: decl_field_create - [decl_field_create](#decl-field-create)- `attributes`: List - 列表类型- `qualifiers`: str - 限定符字符串
 **函数签名**：
 ```python
-decl_struct_create(record: Any, fields: decl_field_create)
+decl_record_create(name: str, fields: decl_field_create, attributes: List, qualifiers: str)
 ```
 
 **YAML 使用模板**：
 
 *简单调用：*
 ```yaml
-data: "{decl_struct_create(<record_value>, <fields_value>)}"
+data: "{decl_record_create(<name_value>, <fields_value>, <attributes_value>, <qualifiers_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
-data: "{decl_struct_create(
-  record=<record_value>,  fields=<fields_value>)}"
+data: "{decl_record_create(
+  name=<name_value>,  fields=<fields_value>,  attributes=<attributes_value>,  qualifiers=<qualifiers_value>)}"
 ```
 
 *嵌套调用示例：*
 ```yaml
-data: "{decl_struct_create(
-  record=<record_value>,  fields=decl_field_create(<nested_params>))}"
+data: "{decl_record_create(
+  name=<name_value>,  fields=decl_field_create(<nested_params>),  attributes=<attributes_value>,  qualifiers=<qualifiers_value>)}"
 ```
 
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{decl_struct_create('record_value', decl_field_create())}"
+example1: "{decl_record_create('example_name', decl_field_create(), [], 'example_qualifiers')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {decl_struct_create('demo', decl_field_create())}"
+example2: f"结果: {decl_record_create('demo', decl_field_create(), ['item1', 'item2'], 'demo')}"
 ```
 
 **相关函数**：
 - [decl_field_create](#decl-field-create) - 用于 `fields` 参数
+
+---
+<a id="decl-struct-create"></a>
+### decl_struct_create
+
+**描述**：C语言结构体信息
+
+**参数列表**：
+- `record`: Any - 任意类型
+**函数签名**：
+```python
+decl_struct_create(record: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{decl_struct_create(<record_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{decl_struct_create(
+  record=<record_value>)}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{decl_struct_create('record_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {decl_struct_create('demo')}"
+```
+
 
 ---
 <a id="decl-typemodifier-create"></a>
@@ -269,42 +308,35 @@ example2: f"结果: {decl_typedef_create('demo', decl_typeref_create())}"
 **描述**：C语言联合体信息
 
 **参数列表**：
-- `record`: Any - 任意类型- `fields`: decl_field_create - [decl_field_create](#decl-field-create)
+- `record`: Any - 任意类型
 **函数签名**：
 ```python
-decl_union_create(record: Any, fields: decl_field_create)
+decl_union_create(record: Any)
 ```
 
 **YAML 使用模板**：
 
 *简单调用：*
 ```yaml
-data: "{decl_union_create(<record_value>, <fields_value>)}"
+data: "{decl_union_create(<record_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
 data: "{decl_union_create(
-  record=<record_value>,  fields=<fields_value>)}"
+  record=<record_value>)}"
 ```
 
-*嵌套调用示例：*
-```yaml
-data: "{decl_union_create(
-  record=<record_value>,  fields=decl_field_create(<nested_params>))}"
-```
 
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{decl_union_create('record_value', decl_field_create())}"
+example1: "{decl_union_create('record_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {decl_union_create('demo', decl_field_create())}"
+example2: f"结果: {decl_union_create('demo')}"
 ```
 
-**相关函数**：
-- [decl_field_create](#decl-field-create) - 用于 `fields` 参数
 
 ---
 <a id="decl-variable-create"></a>
@@ -492,5 +524,5 @@ example2: f"结果: {node_value_create('demo')}"
 
 ### 生成信息
 
-- 总函数数：9
+- 总函数数：10
 - 成功收集的类：Decl, Node

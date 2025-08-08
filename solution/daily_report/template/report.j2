@@ -1,0 +1,16 @@
+{{ name }}——试用期学习日报 ({{year}}/{{month}}/{{day}})
+
+今日学习内容如下所示:
+{% for each in learning_contents %}
+{{loop.index}}. {{each.title}}: {{each.content}}
+{% endfor %}
+
+明日学习计划:
+{% for each in next_day_schedules %}
+{{loop.index}}. {{each.title}}: {{each.content}}
+{% endfor %}
+
+问题瓶颈点:
+{% for each in problems %}
+{{loop.index}}. {{each.title}}: {{each.content}}
+{% endfor %}

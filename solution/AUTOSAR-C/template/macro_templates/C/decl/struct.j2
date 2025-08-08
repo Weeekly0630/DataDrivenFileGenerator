@@ -1,0 +1,8 @@
+{% import "macro_templates/C/decl/variable.j2" as Var %}
+{%- macro struct_decl(info) -%}
+struct {{ info.record.name }} {
+    {% for field in info.record.fields %}
+    {{ Var.variable_decl({'modifier':field.modifier, 'name':field.name, 'init_expr':none}) }} {%- if field.bitfield_width -%}{{field.bitfield_width}}{%- endif -%};
+    {% endfor %}
+}
+{%- endmacro -%}

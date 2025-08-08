@@ -1,6 +1,6 @@
 data_type: yaml
 data_config:
-  file_root_path: .\test_data
+  file_root_path: .\data
   file_pattern: ["*.yaml"]
   encoding: utf-8
 
@@ -10,10 +10,10 @@ template_config:
   autoescape: false
 
 pattern:
-  - "c/struct.yaml"
+  - "*.yaml"
 
-output_dir: .\output\test
-output_file_extension: c
+output_dir: .\output
+output_file_extension: 
 
 preserved_template_key: TEMPLATE_PATH
 preserved_children_key: CHILDREN_PATH

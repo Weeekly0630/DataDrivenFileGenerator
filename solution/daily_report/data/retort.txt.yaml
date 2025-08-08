@@ -1,0 +1,26 @@
+TEMPLATE_PATH: "report.j2"
+CHILDREN_PATH: 
+
+name: 李玮
+
+year: 2025
+month: 8
+day: 8
+
+learn_title: DataDrivenFileGenerator文档编写
+
+learning_contents:
+  - title: "{learn_title}"
+    content: |
+      完成 DataDrivenFileGenerator 的文档编写工作，主要包括以下内容：
+        - 完成了插件函数的收集和文档化
+        - 更新了模板文件以支持新的功能
+        - 修复了一些文档中的错误
+
+next_day_schedules:
+  - title: 
+    content:
+
+problems:
+  - title:
+    content:

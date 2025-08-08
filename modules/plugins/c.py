@@ -36,14 +36,15 @@ class Expr:
 class Decl:
     """C语言声明体系的统一基类和命名空间"""
 
-    @dataclass
-    class RecordMetaData(MetaBase):
-        """C语言结构体/联合体信息"""
+    class Record:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言结构体/联合体信息"""
 
-        name: str  # 结构体/联合体名
-        fields: List["Decl.Field.MetaData"] = field(default_factory=list)  # 字段列表
-        attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
-        qualifiers: str = ""  # 结构体/联合体限定符，如const等
+            name: str  # 结构体/联合体名
+            fields: List["Decl.Field.MetaData"] = field(default_factory=list)  # 字段列表
+            attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
+            qualifiers: str = ""  # 结构体/联合体限定符，如const等
 
     class TypeRef:
         """C语言类型引用信息"""
@@ -119,8 +120,8 @@ class Decl:
         class MetaData(MetaBase):
             """C语言结构体信息"""
 
-            record: "Decl.RecordMetaData"
-            fields: List["Decl.Field.MetaData"] = field(default_factory=list)
+            record: "Decl.Record.MetaData"
+            # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
 
     class Union:
         """C语言联合声明信息"""
@@ -129,8 +130,8 @@ class Decl:
         class MetaData(MetaBase):
             """C语言联合体信息"""
 
-            record: "Decl.RecordMetaData"
-            fields: List["Decl.Field.MetaData"] = field(default_factory=list)
+            record: "Decl.Record.MetaData"
+            # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
 
         @staticmethod
         def validator() -> Optional[UserFunctionValidator]:

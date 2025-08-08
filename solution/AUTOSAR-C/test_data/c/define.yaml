@@ -1,6 +1,0 @@
-### Preserved Key for DataDrivenGenerator
-TEMPLATE_PATH: "C/macro/define.j2"
-CHILDREN_PATH: # []
-
-### User Data
-info: '{c_define_info_create("MAX", ["X", "Y"], "(X) > (Y) ? (X) : (Y)")}'

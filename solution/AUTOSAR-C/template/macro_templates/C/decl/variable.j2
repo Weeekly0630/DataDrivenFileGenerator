@@ -1,8 +1,8 @@
 {%- macro variable_decl(info) -%}
 {# 类型限定符 #}
-{{ info.modifier.qualifiers }} 
+{{- info.modifier.qualifiers + " " -}} 
 {# 类型名 #}
-{{ info.modifier.type }}
+{{- info.modifier.type -}}
 {# 指针修饰 #}
 {%- if info.modifier.is_pointer -%}
     {%- for i in range(info.modifier.pointer_level) -%}*{%- endfor -%}
@@ -13,5 +13,5 @@
     {%- for dim in info.modifier.array_dims -%}[{{ dim }}]{%- endfor -%}
 {%- endif -%}
 {# 初始化表达式 #}
-{%- if info.init_expr is not none %} = {{ info.init_expr }}{% endif %};
+{%- if info.init_expr is not none %} = {{ info.init_expr }}{% endif %}
 {%- endmacro -%}

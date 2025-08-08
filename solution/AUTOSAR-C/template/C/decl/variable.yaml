@@ -3,10 +3,13 @@ TEMPLATE_PATH: "C/decl/variable.j2"
 CHILDREN_PATH: # []
 
 ### User Data
-info: "{decl_variable_metadata_create(
-    'my_var',
-    decl_typemodifier_metadata_create(
-      decl_typeref_metadata_create('int'),
-      
-    )
-  )}"
+info: "{
+  decl_variable_create(
+    name='global_data',
+    modifier=decl_typemodifier_create(
+        type=decl_typeref_create('unsigned int'),
+        is_pointer=True,  
+        pointer_level=2,
+        qualifiers='const'
+      ),
+    init_expr=100)}"

@@ -257,7 +257,7 @@ def auto_register_factories(cls) -> Tuple[List[UserFunctionInfo], FunctionRegist
                 else:
                     # 用 *args 按字段顺序传参
                     handler = lambda *args, **kwargs: subcls.MetaData(
-                        **{k: v for k, v in zip(metadata_fields, args)}, **kwargs
+                        **{k: v for k, v in zip(metadata_fields, args[1:])}, **kwargs
                     )
                     # 自动创建 validator
                     validator = UserFunctionValidator()
@@ -273,7 +273,7 @@ def auto_register_factories(cls) -> Tuple[List[UserFunctionInfo], FunctionRegist
                 UserFunctionInfo(
                     name=function_name,
                     handler=handler,
-                    validator=validator,
+                    validator= None, # validator
                     description=description,
                 )
             )

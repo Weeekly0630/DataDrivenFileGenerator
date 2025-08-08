@@ -1,1 +1,1 @@
-static volatile int g_count = 0;
+const unsigned int** global_data = 100

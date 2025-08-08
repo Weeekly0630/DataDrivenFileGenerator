@@ -7,3 +7,8 @@
 {%- macro variable_decl(info) -%}
 {{- Variable.variable_decl(info) -}}
 {%- endmacro -%}
+
+{% import "macro_templates/C/decl/struct.j2" as Struct %}
+{%- macro struct_decl(info) -%}
+{{- Struct.struct_decl(info) -}}
+{%- endmacro -%}

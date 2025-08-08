@@ -1,4 +1,4 @@
 TEMPLATE_PATH: "C/decl/typedef.j2"
 CHILDREN_PATH: # []
 
-info: "{cplugin_typedefdecl_create('dai_pai', cplugin_typeref_create('unsigned int'))}"
+info: "{decl_typedef_create('dai_pai', decl_typeref_create('unsigned int'))}"
