@@ -1,6 +1,6 @@
 {% import "macro_templates/C/decl/field.j2" as Field %}
-{%- macro struct_decl(info) -%}
-struct {{ info.record.name }} {
+{%- macro union_decl(info) -%}
+union {{ info.record.name }} {
     {% for field in info.record.fields %}
     {{ Field.field_decl(field) }}
     {% endfor %}

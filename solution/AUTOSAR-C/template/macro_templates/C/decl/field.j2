@@ -1,6 +1,6 @@
 {% import "macro_templates/C/decl/modifier.j2" as Modifier %}
-{%- macro variable_decl(info) -%}
+
+{%- macro field_decl(info) -%}
 {{- Modifier.modifier_decl(info.modifier, info.name) -}}
-{# 初始化表达式 #}
-{%- if info.init_expr is not none %} = {{ info.init_expr }}{% endif %}
+{%- if info.bitfield_width -%} : {{- info.bitfield_width -}}{%- endif -%};
 {%- endmacro -%}

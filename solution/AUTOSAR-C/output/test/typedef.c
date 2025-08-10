@@ -1,1 +1,1 @@
-typedef unsigned int dai_pai
+typedef unsigned int dai_pai;

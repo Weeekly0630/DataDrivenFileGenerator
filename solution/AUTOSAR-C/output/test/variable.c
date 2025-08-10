@@ -1,1 +1,1 @@
-const unsigned int** global_data = 100
+const unsigned int** global_data = 100;

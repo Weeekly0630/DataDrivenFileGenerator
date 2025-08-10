@@ -1,0 +1,17 @@
+TEMPLATE_PATH: "C/decl/union.j2"
+CHILDREN_PATH: # []
+
+info: "{decl_union_create(
+      decl_record_create(
+        name=Point,
+        fields=decl_field_create(
+          name: 'name',
+          modifier: decl_typemodifier_create(
+            type=decl_typeref_create('unsigned int'),
+            is_pointer=True,  
+            pointer_level=2,
+            qualifiers='const'
+          )
+        ),
+      )
+    )}"

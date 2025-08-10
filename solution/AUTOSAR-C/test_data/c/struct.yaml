@@ -1,17 +1,31 @@
 TEMPLATE_PATH: "C/decl/struct.j2"
 CHILDREN_PATH: # []
 
-info: "{decl_struct_create(
+info: '{
+  decl_struct_create(
       decl_record_create(
-        name='Point',
-        fields=[decl_field_create(
-          name='name',
-          modifier=decl_typemodifier_create(
-            type=decl_typeref_create('unsigned int'),
-            is_pointer=True,  
-            pointer_level=2,
-            qualifiers='const'
-          )
-        )],
+          name="Point",
+          fields=[
+              decl_field_create(
+                  name="Var",
+                  modifier=decl_typemodifier_create(
+                      type=decl_typeref_create("unsigned int"),
+                      is_pointer=False,
+                      pointer_level=2,
+                      qualifiers="",
+                  ),
+                  bitfield_width=8,
+              ),
+              decl_field_create(
+                  name="Dummy",
+                  modifier=decl_typemodifier_create(
+                      type=decl_typeref_create("unsigned int"),
+                      is_pointer=False,
+                      pointer_level=0,
+                      qualifiers="",
+                  ),
+                  bitfield_width=8,
+              ),
+          ],
       )
-    )}"
+  )}'

@@ -10,7 +10,7 @@ template_config:
   autoescape: false
 
 pattern:
-  - "c/struct.yaml"
+  - "c/*.yaml"
 
 output_dir: .\output\test
 output_file_extension: c

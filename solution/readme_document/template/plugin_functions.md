@@ -46,14 +46,21 @@
 
 **描述**：{{ func_info.description }}
 
-**参数列表**：
 {% if func_info.parameters %}
+**参数列表**：
 {% for param in func_info.parameters %}
-- `{{ param.name }}`: {{ param.type_name }}{% if param.is_plugin_type %} - [{{ param.related_function }}](#{{ param.related_function | replace('_', '-') }}){% else %} - {{ param.type_description }}{% endif %}
+- `{{ param.name }}`: {{ param.type_name }}
+  {% if param.is_plugin_type %}
+  - [{{ param.related_function }}](#{{ param.related_function | replace('_', '-') }})
+  {% elif param.type_description %}
+  - {{ param.type_description }}
+  {% endif %}
 {% endfor %}
 {% else %}
 无参数
 {% endif %}
+
+
 
 **函数签名**：
 ```python
@@ -64,22 +71,41 @@
 
 *简单调用：*
 ```yaml
-data: "{% raw %}{{% endraw %}{{ func_name }}({% for param in func_info.parameters %}<{{ param.name }}_value>{% if not loop.last %}, {% endif %}{% endfor %}){% raw %}}{% endraw %}"
+data: "{% raw %}{{% endraw %}{{ func_name }}(
+{% for param in func_info.parameters %}
+    <{{ param.name }}_value>{% if not loop.last %},
+    {% endif %}
+{% endfor %}){% raw %}}{% endraw %}"
 ```
 
 *带参数名的调用：*
 ```yaml
-data: "{% raw %}{{% endraw %}{{ func_name }}(
-{% for param in func_info.parameters %}  {{ param.name }}=<{{ param.name }}_value>{% if not loop.last %},{% endif %}
-{% endfor %}){% raw %}}{% endraw %}"
+data: "{% raw %}{{% endraw %}
+{{ func_name }}(
+    {% for param in func_info.parameters %}
+    {{ param.name }}=<{{ param.name }}_value>{% if not loop.last %},
+    {% endif %}
+    {% endfor %})
+{% raw %}}{% endraw %}"
 ```
 
 {% if func_info.parameters | selectattr('is_plugin_type') | list %}
 *嵌套调用示例：*
 ```yaml
-data: "{% raw %}{{% endraw %}{{ func_name }}(
-{% for param in func_info.parameters %}{% if param.is_plugin_type %}  {{ param.name }}={{ param.related_function }}(<nested_params>){% else %}  {{ param.name }}=<{{ param.name }}_value>{% endif %}{% if not loop.last %},{% endif %}
-{% endfor %}){% raw %}}{% endraw %}"
+data: "{% raw %}{{% endraw %}
+{{ func_name }}(
+{% for param in func_info.parameters %}
+    {% if param.is_plugin_type %}
+    {{ param.name }}={{ param.related_function }}(<nested_params>)
+    {%- else %}
+    {{ param.name }}=<{{ param.name }}_value>
+    {%- endif %}
+    {%- if not loop.last -%}
+    , 
+    {% endif %}
+{% endfor %}
+)
+{% raw %}}{% endraw %}"
 ```
 {% endif %}
 

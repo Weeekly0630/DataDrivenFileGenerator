@@ -1,0 +1,17 @@
+{%- macro modifier_decl(info, name) -%}
+{# 类型限定符 #}
+{%- if info.qualifiers -%}
+{{- info.qualifiers + " " -}} 
+{%- endif -%}
+{# 类型名 #}
+{{- info.type -}}
+{# 指针修饰 #}
+{%- if info.is_pointer -%}
+    {%- for i in range(info.pointer_level) -%}*{%- endfor -%}
+{%- endif -%}
+{# 数组修饰 #}
+{{ " " ~ name }}
+{%- if info.is_array -%}
+    {%- for dim in info.array_dims -%}[{{ dim }}]{%- endfor -%}
+{%- endif -%}
+{%- endmacro -%}

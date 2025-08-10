@@ -42,7 +42,9 @@ class Decl:
             """C语言结构体/联合体信息"""
 
             name: str  # 结构体/联合体名
-            fields: List["Decl.Field.MetaData"] = field(default_factory=list)  # 字段列表
+            fields: List["Decl.Field.MetaData"] = field(
+                default_factory=list
+            )  # 字段列表
             attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
             qualifiers: str = ""  # 结构体/联合体限定符，如const等
 
@@ -131,13 +133,6 @@ class Decl:
             """C语言联合体信息"""
 
             record: "Decl.Record.MetaData"
-            # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
-
-        @staticmethod
-        def validator() -> Optional[UserFunctionValidator]:
-            return None
-
-
 
 
 
@@ -158,3 +153,8 @@ class CPlugin(FunctionPlugin):
     def on_plugin_unload(cls):
         """插件卸载时的清理操作（可选）"""
         pass
+
+
+if __name__ == "__main__":
+    # 仅在直接运行此文件时执行的代码
+   pass
