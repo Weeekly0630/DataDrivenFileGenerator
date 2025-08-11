@@ -1,0 +1,12 @@
+{% import "macro_templates/AUTOSAR/version/copyright.j2" as Copyright %}
+{%- macro copyright(info) -%}
+{{- Copyright.copyright(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/AUTOSAR/version/version_check.j2" as Version_Check %}
+{%- macro version_check(info) -%}
+{{- Version_Check.version_check(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/AUTOSAR/version/version_info.j2" as Version_Info %}
+{%- macro version_info(info) -%}
+{{- Version_Info.version_info(info) -}}
+{%- endmacro -%}

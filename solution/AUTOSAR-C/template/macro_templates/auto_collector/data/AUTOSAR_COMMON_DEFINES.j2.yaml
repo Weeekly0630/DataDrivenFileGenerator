@@ -1,0 +1,8 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "./defines.j2"
+CHILDREN_PATH: # []
+
+# 测试用宏信息
+infos: "{collect_jinja_macros_for_defines(
+  'U:/Users/Enlink/Documents/code/python/DataDrivenFileGenerator/solution/AUTOSAR-C/template/macro_templates/AUTOSAR',
+  path_prefix='macro_templates/AUTOSAR')}"

@@ -1,0 +1,8 @@
+{# 自动生成 Jinja2 宏模板 #}
+{% for info in infos %}
+{% raw %}{% import "{% endraw %}{{ info.module_path }}{% raw %}" as {% endraw %}{{ info.module_name }}{% raw %} %}
+{%- macro {% endraw %}{{ info.macro_name }}{% raw %}({% endraw %}{{ info.args | join(', ') }}{% raw %}) -%}
+{{- {% endraw %}{{ info.module_name }}{% raw %}.{% endraw %}{{ info.macro_name }}{% raw %}({% endraw %}{{ info.args | join(', ') }}{% raw %}) -}}
+{%- endmacro -%}{% endraw %}
+
+{% endfor %}

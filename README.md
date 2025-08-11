@@ -20,6 +20,5 @@ python modules/cli/cli.py your_config.yaml
 
 ## TODO-List
 
-- 将expr_filter的逻辑全部删除
-- 优化tree的构建，并支持内嵌DataNode
-- 移除所有静态动态函数插件概念，因为上下文由函数运行时传递，所有函数都是静态的函数
+- 从C源文件提取信息, 以便自动化生成yaml函数调用，最终生成文件文档。
+  1. Clang 能否直接从源文件提取出信息，并生成对应data_yaml的函数调用

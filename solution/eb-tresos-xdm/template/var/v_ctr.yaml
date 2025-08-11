@@ -1,6 +1,6 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "var/v_ctr.xdm" # Type of the template, cannot be changed
-CHILDREN_PATH: []
+CHILDREN_PATH: [./*.yaml]
 
 ### User data
 name: # Name of the container

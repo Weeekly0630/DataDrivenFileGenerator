@@ -1,0 +1,28 @@
+{% import "macro_templates/C/decl/field.j2" as Field %}
+{%- macro field_decl(info) -%}
+{{- Field.field_decl(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/modifier.j2" as Modifier %}
+{%- macro modifier_decl(info, name) -%}
+{{- Modifier.modifier_decl(info, name) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/record.j2" as Record %}
+{%- macro record_decl(info) -%}
+{{- Record.record_decl(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/struct.j2" as Struct %}
+{%- macro struct_decl(info) -%}
+{{- Struct.struct_decl(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/typedef.j2" as Typedef %}
+{%- macro typedef_decl(info) -%}
+{{- Typedef.typedef_decl(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/union.j2" as Union %}
+{%- macro union_decl(info) -%}
+{{- Union.union_decl(info) -}}
+{%- endmacro -%}
+{% import "macro_templates/C/decl/variable.j2" as Variable %}
+{%- macro variable_decl(info) -%}
+{{- Variable.variable_decl(info) -}}
+{%- endmacro -%}
