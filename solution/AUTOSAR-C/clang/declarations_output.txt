@@ -1,5 +1,5 @@
 === STRUCT DECLARATIONS ===
-struct I2c_Ipw_HwChannelConfigType /* @brief / */ { I2c_Ipw_eChannelType: I2c_StatusType, I2c_Ipw_LPI2CHwConfig: I2c_StatusType, I2c_Ipw_FlexIOCHwConfig: I2c_StatusType } @ .\test_autosar_minimal.c:58:8
+struct I2c_Ipw_HwChannelConfigType /* / */ { I2c_Ipw_eChannelType: I2c_StatusType, I2c_Ipw_LPI2CHwConfig: I2c_StatusType, I2c_Ipw_FlexIOCHwConfig: I2c_StatusType } @ .\test_autosar_minimal.c:58:8
 struct I2c_RequestType { u8BufferSize: int } @ .\test_autosar_minimal.c:77:8
 
 === UNION DECLARATIONS ===
@@ -17,7 +17,7 @@ typedef int I2c_StatusType @ .\test_autosar_minimal.c:50:23
 I2c_StatusType I2cStatus = <expression> @ .\test_autosar_minimal.c:52:16
 
 === FUNCTION DECLARATIONS ===
-void I2c_Ipw_InitChannel(uint8 u8Channel, const struct I2c_Ipw_HwChannelConfigType * pConfigPtr) /* @brief / */ @ .\test_autosar_minimal.c:87:1
+void I2c_Ipw_InitChannel(uint8 u8Channel, const struct I2c_Ipw_HwChannelConfigType * pConfigPtr) /* / */ @ .\test_autosar_minimal.c:87:1
 Std_ReturnType I2c_Ipw_CheckDataLength(const struct I2c_RequestType * pRequest, I2c_HwChannelType eChannelType) @ .\test_autosar_minimal.c:104:1
 
 === MACRO DEFINITIONS ===
@@ -429,8 +429,8 @@ Std_ReturnType I2c_Ipw_CheckDataLength(const struct I2c_RequestType * pRequest, 
 #define I2C_SW_MAJOR_VERSION_IPW_C 1 @ .\test_autosar_minimal.c:15:9
 #define I2C_SW_MINOR_VERSION_IPW_C 0 @ .\test_autosar_minimal.c:16:9
 #define I2C_SW_PATCH_VERSION_IPW_C 1 @ .\test_autosar_minimal.c:17:9
-#define LPI2C_CHANNEL 1 /* @brief / */ @ .\test_autosar_minimal.c:23:9
-#define FLEXIO_CHANNEL 2 /* @brief / */ @ .\test_autosar_minimal.c:29:9
-#define E_OK 0 /* @brief / */ @ .\test_autosar_minimal.c:34:9
-#define E_NOT_OK 1 /* @brief / */ @ .\test_autosar_minimal.c:39:9
-#define FLEXIO_MAX_NUMBER_OF_BYTES_U32 255 /* @brief / */ @ .\test_autosar_minimal.c:44:9
+#define LPI2C_CHANNEL 1 /* / */ @ .\test_autosar_minimal.c:23:9
+#define FLEXIO_CHANNEL 2 /* / */ @ .\test_autosar_minimal.c:29:9
+#define E_OK 0 /* / */ @ .\test_autosar_minimal.c:34:9
+#define E_NOT_OK 1 /* / */ @ .\test_autosar_minimal.c:39:9
+#define FLEXIO_MAX_NUMBER_OF_BYTES_U32 255 /* / */ @ .\test_autosar_minimal.c:44:9

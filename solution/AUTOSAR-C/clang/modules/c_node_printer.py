@@ -131,10 +131,11 @@ class StructDecl:
         self.location = location
         self.fields = fields  # List of (field_name, field_type, field_comment) tuples
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
         fields_str = ", ".join([f"{name}: {type_}" for name, type_, _ in self.fields])
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"struct {self.name}{comment_str} {{ {fields_str} }} @ {self.location}"
 
 
@@ -145,10 +146,11 @@ class VarDecl:
         self.location = location
         self.initializer = initializer
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
         init_str = f" = {self.initializer}" if self.initializer else ""
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"{self.type_name} {self.name}{init_str}{comment_str} @ {self.location}"
 
 
@@ -159,10 +161,11 @@ class FuncDecl:
         self.location = location
         self.parameters = parameters  # List of (param_name, param_type) tuples
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
         params_str = ", ".join([f"{type_} {name}" for name, type_ in self.parameters])
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"{self.return_type} {self.name}({params_str}){comment_str} @ {self.location}"
 
 
@@ -172,10 +175,11 @@ class EnumDecl:
         self.location = location
         self.enumerators = enumerators  # List of (enum_name, enum_value) tuples
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
         enums_str = ", ".join([f"{name}={value}" if value else name for name, value in self.enumerators])
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"enum {self.name}{comment_str} {{ {enums_str} }} @ {self.location}"
 
 
@@ -185,10 +189,11 @@ class UnionDecl:
         self.location = location
         self.fields = fields  # List of (field_name, field_type) tuples
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
         fields_str = ", ".join([f"{name}: {type_}" for name, type_ in self.fields])
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"union {self.name}{comment_str} {{ {fields_str} }} @ {self.location}"
 
 
@@ -198,9 +203,10 @@ class TypedefDecl:
         self.location = location
         self.underlying_type = underlying_type
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"typedef {self.underlying_type} {self.name}{comment_str} @ {self.location}"
 
 
@@ -210,9 +216,10 @@ class MacroDecl:
         self.location = location
         self.definition = definition
         self.comment = comment
+        self.doxygen = parse_doxygen_comment(comment) if comment else DoxygenComment()
     
     def __str__(self):
-        comment_str = f" /* {self.comment} */" if self.comment else ""
+        comment_str = f" /* {self.doxygen.brief or self.comment} */" if (self.doxygen.brief or self.comment) else ""
         return f"#define {self.name} {self.definition}{comment_str} @ {self.location}"
 
 
@@ -311,6 +318,285 @@ def clean_comment_text(comment: Optional[str]) -> Optional[str]:
     
     result = ' '.join(cleaned_lines).strip()
     return result if result else None
+
+
+class DoxygenComment:
+    """Structured representation of a Doxygen comment."""
+    def __init__(self):
+        self.brief: Optional[str] = None
+        self.detailed: Optional[str] = None
+        self.params: list = []  # List of (param_name, param_description) tuples
+        self.returns: Optional[str] = None
+        self.throws: list = []  # List of (exception_type, description) tuples
+        self.since: Optional[str] = None
+        self.deprecated: Optional[str] = None
+        self.author: Optional[str] = None
+        self.version: Optional[str] = None
+        self.date: Optional[str] = None
+        self.note: Optional[str] = None
+        self.warning: Optional[str] = None
+        self.see_also: list = []  # List of references
+        self.example: Optional[str] = None
+        self.todo: list = []  # List of TODO items
+        self.bug: list = []  # List of bug descriptions
+        self.raw_text: str = ""
+        
+    def __str__(self) -> str:
+        """Generate a formatted string representation."""
+        parts = []
+        if self.brief:
+            parts.append(f"Brief: {self.brief}")
+        if self.detailed:
+            parts.append(f"Detailed: {self.detailed}")
+        if self.params:
+            params_str = ", ".join([f"{name}: {desc}" for name, desc in self.params])
+            parts.append(f"Parameters: {params_str}")
+        if self.returns:
+            parts.append(f"Returns: {self.returns}")
+        if self.deprecated:
+            parts.append(f"Deprecated: {self.deprecated}")
+        if self.since:
+            parts.append(f"Since: {self.since}")
+        return " | ".join(parts) if parts else self.raw_text
+    
+    def get_summary(self) -> str:
+        """Get a concise summary of the comment."""
+        return self.brief or self.detailed or self.raw_text
+    
+    def has_content(self) -> bool:
+        """Check if the comment has any meaningful content."""
+        return bool(self.brief or self.detailed or self.params or self.returns or 
+                   self.deprecated or self.note or self.warning or self.example)
+    
+    def to_markdown(self) -> str:
+        """Convert the Doxygen comment to Markdown format."""
+        md_parts = []
+        
+        if self.brief:
+            md_parts.append(self.brief)
+        
+        if self.detailed and self.detailed != self.brief:
+            md_parts.append(f"\n{self.detailed}")
+        
+        if self.params:
+            md_parts.append("\n**Parameters:**")
+            for param_name, param_desc in self.params:
+                md_parts.append(f"- `{param_name}`: {param_desc}")
+        
+        if self.returns:
+            md_parts.append(f"\n**Returns:** {self.returns}")
+        
+        if self.throws:
+            md_parts.append("\n**Throws:**")
+            for exc_type, exc_desc in self.throws:
+                md_parts.append(f"- `{exc_type}`: {exc_desc}")
+        
+        if self.deprecated:
+            md_parts.append(f"\n> **Deprecated:** {self.deprecated}")
+        
+        if self.note:
+            md_parts.append(f"\n> **Note:** {self.note}")
+        
+        if self.warning:
+            md_parts.append(f"\n> **Warning:** {self.warning}")
+        
+        if self.example:
+            md_parts.append(f"\n**Example:**\n```c\n{self.example}\n```")
+        
+        if self.see_also:
+            md_parts.append("\n**See also:** " + ", ".join(self.see_also))
+        
+        if self.todo:
+            md_parts.append("\n**TODO:**")
+            for todo_item in self.todo:
+                md_parts.append(f"- {todo_item}")
+        
+        return "".join(md_parts) if md_parts else self.raw_text
+
+
+def parse_doxygen_comment(comment: Optional[str]) -> DoxygenComment:
+    """
+    Parse a Doxygen-style comment and extract structured information.
+    
+    Supports common Doxygen tags:
+    - @brief, @param, @return/@returns, @throw/@throws
+    - @since, @deprecated, @author, @version, @date
+    - @note, @warning, @see, @example, @todo, @bug
+    """
+    result = DoxygenComment()
+    
+    if not comment:
+        return result
+        
+    # Clean the comment first
+    cleaned = clean_comment_text(comment)
+    if not cleaned:
+        return result
+        
+    result.raw_text = cleaned
+    
+    # Split into lines for processing, preserving line breaks within content
+    lines = cleaned.split('\n') if '\n' in cleaned else [cleaned]
+    
+    current_tag = None
+    current_content = []
+    
+    def save_current_tag():
+        """Save the current tag and its content."""
+        if current_tag and current_content:
+            content = ' '.join(current_content).strip()
+            
+            if current_tag == 'brief':
+                result.brief = content
+            elif current_tag == 'detailed':
+                result.detailed = content
+            elif current_tag.startswith('param'):
+                # Handle @param[in], @param[out], @param[in,out] variants
+                if '[' in current_tag:
+                    # Extract direction from @param[in] or @param[out]
+                    direction_match = current_tag.split('[', 1)
+                    if len(direction_match) > 1 and ']' in direction_match[1]:
+                        direction = direction_match[1].split(']')[0]
+                        content = f"[{direction}] {content}"
+                
+                # Extract parameter name from @param name description
+                parts = content.split(None, 1)
+                param_name = parts[0] if parts else ""
+                param_desc = parts[1] if len(parts) > 1 else ""
+                result.params.append((param_name, param_desc))
+            elif current_tag in ['return', 'returns', 'retval']:
+                result.returns = content
+            elif current_tag in ['throw', 'throws', 'exception']:
+                # Extract exception type from @throw ExceptionType description
+                parts = content.split(None, 1)
+                exception_type = parts[0] if parts else ""
+                exception_desc = parts[1] if len(parts) > 1 else ""
+                result.throws.append((exception_type, exception_desc))
+            elif current_tag == 'since':
+                result.since = content
+            elif current_tag in ['deprecated', 'obsolete']:
+                result.deprecated = content
+            elif current_tag == 'author':
+                result.author = content
+            elif current_tag == 'version':
+                result.version = content
+            elif current_tag == 'date':
+                result.date = content
+            elif current_tag in ['note', 'remark']:
+                result.note = content
+            elif current_tag in ['warning', 'attention']:
+                result.warning = content
+            elif current_tag in ['see', 'sa', 'seealso']:
+                result.see_also.append(content)
+            elif current_tag in ['example', 'code']:
+                result.example = content
+            elif current_tag == 'todo':
+                result.todo.append(content)
+            elif current_tag == 'bug':
+                result.bug.append(content)
+    
+    # Process each line
+    for line in lines:
+        line = line.strip()
+        if not line:
+            # Empty line can separate different sections, but continue processing
+            if current_tag and current_content:
+                current_content.append("")  # Preserve paragraph breaks
+            continue
+            
+        # Check if this line starts with a Doxygen tag
+        if line.startswith('@') or line.startswith('\\'):
+            # Save previous tag
+            save_current_tag()
+            
+            # Parse new tag - handle complex tags like @param[in]
+            tag_part = line[1:]  # Remove @ or \
+            
+            # Handle tags with brackets like @param[in] name description
+            import re
+            tag_match = re.match(r'^(\w+(?:\[[^\]]*\])?)\s*(.*)', tag_part)
+            
+            if tag_match:
+                current_tag = tag_match.group(1).lower()
+                remaining_content = tag_match.group(2).strip()
+                current_content = [remaining_content] if remaining_content else []
+            else:
+                # Fallback to simple split for malformed tags
+                tag_split = tag_part.split(None, 1)
+                if tag_split:
+                    current_tag = tag_split[0].lower()
+                    current_content = [tag_split[1]] if len(tag_split) > 1 else []
+                else:
+                    current_tag = None
+                    current_content = []
+        else:
+            # This is continuation of current tag or detailed description
+            if current_tag:
+                # Remove empty strings that were added as paragraph separators
+                if current_content and current_content[-1] == "" and line:
+                    current_content[-1] = line
+                else:
+                    current_content.append(line)
+            else:
+                # No tag yet, this is detailed description
+                if not result.detailed:
+                    current_tag = 'detailed'
+                    current_content = [line]
+                else:
+                    # Already have detailed, append to it
+                    current_content.append(line)
+    
+    # Save the last tag
+    save_current_tag()
+    
+    # If we only have detailed content and no brief, try to extract brief from first sentence
+    if result.detailed and not result.brief:
+        detailed_text = result.detailed
+        # Look for first sentence (ending with . ! or ?)
+        import re
+        first_sentence = re.split(r'[.!?]\s+', detailed_text, 1)
+        if len(first_sentence) > 1:
+            result.brief = first_sentence[0].strip()
+            # Remove the brief part from detailed and clean up
+            remaining = detailed_text[len(first_sentence[0]):].strip(' .!?')
+            result.detailed = remaining if remaining else None
+        else:
+            # No sentence break found, use first part as brief if it's short
+            if len(detailed_text) <= 100:
+                result.brief = detailed_text
+                result.detailed = None
+    
+    # Clean up empty content
+    if result.brief == "":
+        result.brief = None
+    if result.detailed == "":
+        result.detailed = None
+    
+    return result
+
+
+def parse_doxygen_comment_simple(comment: Optional[str]) -> str:
+    """
+    Simple Doxygen comment parser that returns a clean, readable description.
+    Useful when you just want the main description without full parsing.
+    """
+    if not comment:
+        return ""
+        
+    doxy = parse_doxygen_comment(comment)
+    
+    # Build a simple description
+    parts = []
+    if doxy.brief:
+        parts.append(doxy.brief)
+    if doxy.detailed and doxy.detailed != doxy.brief:
+        parts.append(doxy.detailed)
+    
+    # Add deprecation warning if present
+    if doxy.deprecated:
+        parts.append(f"[DEPRECATED: {doxy.deprecated}]")
+    
+    return " ".join(parts) if parts else doxy.raw_text
 
 
 def get_macro_definition(macro_cursor: "cindex.Cursor") -> str:
@@ -626,8 +912,13 @@ def generate_markdown_report(declarations: dict, source_file: str = "") -> str:
     if declarations['structs']:
         for struct in declarations['structs']:
             md_content.append(f"\n### `{struct.name}`")
-            if struct.comment:
+            
+            # Use Doxygen markdown formatting if available
+            if struct.doxygen.has_content():
+                md_content.append(f"\n{struct.doxygen.to_markdown()}")
+            elif struct.comment:
                 md_content.append(f"\n**Description:** {struct.comment}")
+            
             md_content.append(f"\n**Location:** `{struct.location}`")
             
             if struct.fields:
@@ -710,8 +1001,13 @@ def generate_markdown_report(declarations: dict, source_file: str = "") -> str:
     if declarations['functions']:
         for func in declarations['functions']:
             md_content.append(f"\n### `{func.name}`")
-            if func.comment:
+            
+            # Use Doxygen markdown formatting if available
+            if func.doxygen.has_content():
+                md_content.append(f"\n{func.doxygen.to_markdown()}")
+            elif func.comment:
                 md_content.append(f"\n**Description:** {func.comment}")
+            
             md_content.append(f"\n**Return Type:** `{func.return_type}`")
             md_content.append(f"\n**Location:** `{func.location}`")
             
