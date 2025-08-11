@@ -12,7 +12,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 将顶级包目录添加到Python路径
 sys.path.insert(0, current_dir)
 
-from modules.c_node_printer import print_ast_tree, extract_declarations, print_extracted_declarations
+from modules.c_node_printer import print_ast_tree, extract_declarations, print_extracted_declarations, generate_markdown_report
 
 try:
     from clang import cindex
@@ -291,6 +291,7 @@ def main(argv: list[str]) -> int:
             # "--target", "arm-none-eabi",
             "--print-ast",
             "--ast-include-pp",
+            "--extract-decls"
             # "--ast-main-file-only",
         ]
     )
@@ -351,11 +352,32 @@ def main(argv: list[str]) -> int:
         declarations = extract_declarations(tu, main_file_only=ns.ast_main_file_only)
         print_extracted_declarations(declarations)
         
-        # Optionally save to file
+        # Generate Markdown report
+        source_filename = os.path.basename(ns.source) if ns.source != "-" else ns.virtual_filename
+        # markdown_content = generate_markdown_report(declarations, source_filename)
+        
+        # Save Markdown report
+        # with open("declarations_report.md", "w", encoding="utf-8") as f:
+        #     f.write(markdown_content)
+        # print(f"Markdown report written to declarations_report.md")
+        
+        # Also save the old text format for compatibility
         with open("declarations_output.txt", "w", encoding="utf-8") as f:
             f.write("=== STRUCT DECLARATIONS ===\n")
             for struct in declarations['structs']:
                 f.write(f"{struct}\n")
+            
+            f.write("\n=== UNION DECLARATIONS ===\n")
+            for union in declarations['unions']:
+                f.write(f"{union}\n")
+            
+            f.write("\n=== ENUM DECLARATIONS ===\n")
+            for enum in declarations['enums']:
+                f.write(f"{enum}\n")
+            
+            f.write("\n=== TYPEDEF DECLARATIONS ===\n")
+            for typedef in declarations['typedefs']:
+                f.write(f"{typedef}\n")
             
             f.write("\n=== VARIABLE DECLARATIONS ===\n")
             for var in declarations['variables']:
@@ -364,7 +386,11 @@ def main(argv: list[str]) -> int:
             f.write("\n=== FUNCTION DECLARATIONS ===\n")
             for func in declarations['functions']:
                 f.write(f"{func}\n")
-        print(f"Declarations written to declarations_output.txt")
+            
+            f.write("\n=== MACRO DEFINITIONS ===\n")
+            for macro in declarations['macros']:
+                f.write(f"{macro}\n")
+        print(f"Text report written to declarations_output.txt")
     # If we printed the AST, keep the diagnostic-derived exit code.
     return exit_code
 

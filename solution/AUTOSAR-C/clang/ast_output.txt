@@ -408,110 +408,113 @@
     ├── MACRO_DEFINITION I2C_SW_MAJOR_VERSION_IPW_C @ .\test_autosar_minimal.c:15:9
     ├── MACRO_DEFINITION I2C_SW_MINOR_VERSION_IPW_C @ .\test_autosar_minimal.c:16:9
     ├── MACRO_DEFINITION I2C_SW_PATCH_VERSION_IPW_C @ .\test_autosar_minimal.c:17:9
-    ├── MACRO_DEFINITION LPI2C_CHANNEL @ .\test_autosar_minimal.c:19:9
-    ├── MACRO_DEFINITION FLEXIO_CHANNEL @ .\test_autosar_minimal.c:20:9
-    ├── MACRO_DEFINITION E_OK @ .\test_autosar_minimal.c:21:9
-    ├── MACRO_DEFINITION E_NOT_OK @ .\test_autosar_minimal.c:22:9
-    ├── MACRO_DEFINITION FLEXIO_MAX_NUMBER_OF_BYTES_U32 @ .\test_autosar_minimal.c:23:9
-    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:31:28
-    ├── MACRO_INSTANTIATION E_NOT_OK @ .\test_autosar_minimal.c:31:35
-    ├── MACRO_INSTANTIATION FUNC @ .\test_autosar_minimal.c:44:1
-    ├── MACRO_INSTANTIATION CONST @ .\test_autosar_minimal.c:45:5
-    ├── MACRO_INSTANTIATION P2CONST @ .\test_autosar_minimal.c:46:5
-    ├── MACRO_INSTANTIATION LPI2C_CHANNEL @ .\test_autosar_minimal.c:48:9
-    ├── MACRO_INSTANTIATION FUNC @ .\test_autosar_minimal.c:58:1
-    ├── MACRO_INSTANTIATION P2CONST @ .\test_autosar_minimal.c:59:5
-    ├── MACRO_INSTANTIATION CONST @ .\test_autosar_minimal.c:60:5
-    ├── MACRO_INSTANTIATION FLEXIO_CHANNEL @ .\test_autosar_minimal.c:62:9
-    ├── MACRO_INSTANTIATION FLEXIO_MAX_NUMBER_OF_BYTES_U32 @ .\test_autosar_minimal.c:64:13
-    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:66:36
-    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:71:32
-    ├── MACRO_INSTANTIATION E_NOT_OK @ .\test_autosar_minimal.c:73:28
-    ├── TYPEDEF_DECL uint8 @ .\test_autosar_minimal.c:25:23
-    ├── TYPEDEF_DECL Std_ReturnType @ .\test_autosar_minimal.c:26:13
-    ├── TYPEDEF_DECL I2c_HwChannelType @ .\test_autosar_minimal.c:27:13
-    ├── TYPEDEF_DECL I2c_DataType @ .\test_autosar_minimal.c:28:13
-    ├── TYPEDEF_DECL I2c_StatusType @ .\test_autosar_minimal.c:29:13
-    ├── VAR_DECL I2cStatus @ .\test_autosar_minimal.c:31:16
-    │   ├── TYPE_REF I2c_StatusType @ .\test_autosar_minimal.c:31:1
-    │   └── BINARY_OPERATOR + @ .\test_autosar_minimal.c:31:28
-    │       ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:31:28
-    │       └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:31:35
-    ├── STRUCT_DECL I2c_Ipw_HwChannelConfigType @ .\test_autosar_minimal.c:33:8
-    │   ├── FIELD_DECL I2c_Ipw_eChannelType @ .\test_autosar_minimal.c:34:9
-    │   ├── FIELD_DECL I2c_Ipw_LPI2CHwConfig @ .\test_autosar_minimal.c:35:9
-    │   └── FIELD_DECL I2c_Ipw_FlexIOCHwConfig @ .\test_autosar_minimal.c:36:9
-    ├── STRUCT_DECL I2c_RequestType @ .\test_autosar_minimal.c:39:8
-    │   └── FIELD_DECL u8BufferSize @ .\test_autosar_minimal.c:40:9
-    ├── FUNCTION_DECL I2c_Ipw_InitChannel @ .\test_autosar_minimal.c:44:22
-    │   ├── PARM_DECL u8Channel @ .\test_autosar_minimal.c:45:29
-    │   │   └── TYPE_REF uint8 @ .\test_autosar_minimal.c:45:5
-    │   ├── PARM_DECL pConfigPtr @ .\test_autosar_minimal.c:46:69
-    │   │   └── TYPE_REF struct I2c_Ipw_HwChannelConfigType @ .\test_autosar_minimal.c:46:5
-    │   └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:47:1
-    │       └── IF_STMT <anon> @ .\test_autosar_minimal.c:48:5
-    │           ├── BINARY_OPERATOR == @ .\test_autosar_minimal.c:48:9
-    │           │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:48:9
-    │           │   └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:48:26
-    │           │       └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:48:26
-    │           │           └── MEMBER_REF_EXPR I2c_Ipw_eChannelType @ .\test_autosar_minimal.c:48:39
-    │           │               └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:48:27
-    │           │                   └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:48:27
-    │           ├── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:49:5
-    │           │   └── CALL_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:50:9
-    │           │       ├── UNEXPOSED_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:50:9
-    │           │       │   └── DECL_REF_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:50:9
-    │           │       ├── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:50:31
-    │           │       │   └── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:50:31
-    │           │       │       └── DECL_REF_EXPR u8Channel @ .\test_autosar_minimal.c:50:31
-    │           │       └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:50:42
-    │           │           └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:50:42
-    │           │               └── MEMBER_REF_EXPR I2c_Ipw_LPI2CHwConfig @ .\test_autosar_minimal.c:50:55
-    │           │                   └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:50:43
-    │           │                       └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:50:43
-    │           └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:53:5
-    │               └── CALL_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:54:9
-    │                   ├── UNEXPOSED_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:54:9
-    │                   │   └── DECL_REF_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:54:9
-    │                   ├── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:54:32
-    │                   │   └── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:54:32
-    │                   │       └── DECL_REF_EXPR u8Channel @ .\test_autosar_minimal.c:54:32
-    │                   └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:54:43
-    │                       └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:54:43
-    │                           └── MEMBER_REF_EXPR I2c_Ipw_FlexIOCHwConfig @ .\test_autosar_minimal.c:54:56
-    │                               └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:54:44
-    │                                   └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:54:44
-    └── FUNCTION_DECL I2c_Ipw_CheckDataLength @ .\test_autosar_minimal.c:58:32
-        ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:58:1
-        ├── PARM_DECL pRequest @ .\test_autosar_minimal.c:59:57
-        │   └── TYPE_REF struct I2c_RequestType @ .\test_autosar_minimal.c:59:5
-        ├── PARM_DECL eChannelType @ .\test_autosar_minimal.c:60:41
-        │   └── TYPE_REF I2c_HwChannelType @ .\test_autosar_minimal.c:60:5
-        └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:61:1
-            ├── IF_STMT <anon> @ .\test_autosar_minimal.c:62:5
-            │   ├── BINARY_OPERATOR == @ .\test_autosar_minimal.c:62:9
-            │   │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:62:9
-            │   │   └── UNEXPOSED_EXPR eChannelType @ .\test_autosar_minimal.c:62:27
-            │   │       └── DECL_REF_EXPR eChannelType @ .\test_autosar_minimal.c:62:27
-            │   ├── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:63:5
-            │   │   └── IF_STMT <anon> @ .\test_autosar_minimal.c:64:9
-            │   │       ├── BINARY_OPERATOR >= @ .\test_autosar_minimal.c:64:13
-            │   │       │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:64:13
-            │   │       │   └── UNEXPOSED_EXPR u8BufferSize @ .\test_autosar_minimal.c:64:57
-            │   │       │       └── MEMBER_REF_EXPR u8BufferSize @ .\test_autosar_minimal.c:64:57
-            │   │       │           └── UNEXPOSED_EXPR pRequest @ .\test_autosar_minimal.c:64:47
-            │   │       │               └── DECL_REF_EXPR pRequest @ .\test_autosar_minimal.c:64:47
-            │   │       └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:65:9
-            │   │           └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:66:13
-            │   │               └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:66:20
-            │   │                   ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:66:21
-            │   │                   └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:66:36
-            │   └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:70:5
-            │       └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:71:9
-            │           └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:71:16
-            │               ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:71:17
-            │               └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:71:32
-            └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:73:5
-                └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:73:12
-                    ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:73:13
-                    └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:73:28
+    ├── MACRO_DEFINITION LPI2C_CHANNEL @ .\test_autosar_minimal.c:23:9
+    ├── MACRO_DEFINITION FLEXIO_CHANNEL @ .\test_autosar_minimal.c:29:9
+    ├── MACRO_DEFINITION E_OK @ .\test_autosar_minimal.c:34:9
+    ├── MACRO_DEFINITION E_NOT_OK @ .\test_autosar_minimal.c:39:9
+    ├── MACRO_DEFINITION FLEXIO_MAX_NUMBER_OF_BYTES_U32 @ .\test_autosar_minimal.c:44:9
+    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:52:28
+    ├── MACRO_INSTANTIATION E_NOT_OK @ .\test_autosar_minimal.c:52:35
+    ├── MACRO_INSTANTIATION FUNC @ .\test_autosar_minimal.c:86:1
+    ├── MACRO_INSTANTIATION CONST @ .\test_autosar_minimal.c:87:21
+    ├── MACRO_INSTANTIATION P2CONST @ .\test_autosar_minimal.c:88:21
+    ├── MACRO_INSTANTIATION LPI2C_CHANNEL @ .\test_autosar_minimal.c:92:9
+    ├── MACRO_INSTANTIATION FUNC @ .\test_autosar_minimal.c:103:1
+    ├── MACRO_INSTANTIATION P2CONST @ .\test_autosar_minimal.c:104:25
+    ├── MACRO_INSTANTIATION CONST @ .\test_autosar_minimal.c:106:25
+    ├── MACRO_INSTANTIATION FLEXIO_CHANNEL @ .\test_autosar_minimal.c:108:9
+    ├── MACRO_INSTANTIATION FLEXIO_MAX_NUMBER_OF_BYTES_U32 @ .\test_autosar_minimal.c:110:13
+    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:112:37
+    ├── MACRO_INSTANTIATION E_OK @ .\test_autosar_minimal.c:117:33
+    ├── MACRO_INSTANTIATION E_NOT_OK @ .\test_autosar_minimal.c:119:29
+    ├── TYPEDEF_DECL uint8 @ .\test_autosar_minimal.c:46:23
+    ├── TYPEDEF_DECL Std_ReturnType @ .\test_autosar_minimal.c:47:23
+    ├── TYPEDEF_DECL I2c_HwChannelType @ .\test_autosar_minimal.c:48:23
+    ├── TYPEDEF_DECL I2c_DataType @ .\test_autosar_minimal.c:49:23
+    ├── TYPEDEF_DECL I2c_StatusType @ .\test_autosar_minimal.c:50:23
+    ├── VAR_DECL I2cStatus @ .\test_autosar_minimal.c:52:16
+    │   ├── TYPE_REF I2c_StatusType @ .\test_autosar_minimal.c:52:1
+    │   └── BINARY_OPERATOR + @ .\test_autosar_minimal.c:52:28
+    │       ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:52:28
+    │       └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:52:35
+    ├── STRUCT_DECL I2c_Ipw_HwChannelConfigType @ .\test_autosar_minimal.c:58:8
+    │   ├── FIELD_DECL I2c_Ipw_eChannelType @ .\test_autosar_minimal.c:64:20
+    │   │   └── TYPE_REF I2c_StatusType @ .\test_autosar_minimal.c:64:5
+    │   ├── FIELD_DECL I2c_Ipw_LPI2CHwConfig @ .\test_autosar_minimal.c:69:20
+    │   │   └── TYPE_REF I2c_StatusType @ .\test_autosar_minimal.c:69:5
+    │   └── FIELD_DECL I2c_Ipw_FlexIOCHwConfig @ .\test_autosar_minimal.c:74:20
+    │       └── TYPE_REF I2c_StatusType @ .\test_autosar_minimal.c:74:5
+    ├── STRUCT_DECL I2c_RequestType @ .\test_autosar_minimal.c:77:8
+    │   └── FIELD_DECL u8BufferSize @ .\test_autosar_minimal.c:79:9
+    ├── FUNCTION_DECL I2c_Ipw_InitChannel @ .\test_autosar_minimal.c:87:1
+    │   ├── PARM_DECL u8Channel @ .\test_autosar_minimal.c:87:45
+    │   │   └── TYPE_REF uint8 @ .\test_autosar_minimal.c:87:21
+    │   ├── PARM_DECL pConfigPtr @ .\test_autosar_minimal.c:90:45
+    │   │   └── TYPE_REF struct I2c_Ipw_HwChannelConfigType @ .\test_autosar_minimal.c:88:21
+    │   └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:91:1
+    │       └── IF_STMT <anon> @ .\test_autosar_minimal.c:92:5
+    │           ├── BINARY_OPERATOR == @ .\test_autosar_minimal.c:92:9
+    │           │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:92:9
+    │           │   └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:92:26
+    │           │       └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:92:26
+    │           │           └── MEMBER_REF_EXPR I2c_Ipw_eChannelType @ .\test_autosar_minimal.c:92:39
+    │           │               └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:92:27
+    │           │                   └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:92:27
+    │           ├── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:93:5
+    │           │   └── CALL_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:94:9
+    │           │       ├── UNEXPOSED_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:94:9
+    │           │       │   └── DECL_REF_EXPR I2c_LPI2C_InitChannel @ .\test_autosar_minimal.c:94:9
+    │           │       ├── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:94:31
+    │           │       │   └── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:94:31
+    │           │       │       └── DECL_REF_EXPR u8Channel @ .\test_autosar_minimal.c:94:31
+    │           │       └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:94:42
+    │           │           └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:94:42
+    │           │               └── MEMBER_REF_EXPR I2c_Ipw_LPI2CHwConfig @ .\test_autosar_minimal.c:94:55
+    │           │                   └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:94:43
+    │           │                       └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:94:43
+    │           └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:97:5
+    │               └── CALL_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:98:9
+    │                   ├── UNEXPOSED_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:98:9
+    │                   │   └── DECL_REF_EXPR I2c_FlexIO_InitChannel @ .\test_autosar_minimal.c:98:9
+    │                   ├── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:98:32
+    │                   │   └── UNEXPOSED_EXPR u8Channel @ .\test_autosar_minimal.c:98:32
+    │                   │       └── DECL_REF_EXPR u8Channel @ .\test_autosar_minimal.c:98:32
+    │                   └── UNEXPOSED_EXPR <anon> @ .\test_autosar_minimal.c:99:32
+    │                       └── PAREN_EXPR <anon> @ .\test_autosar_minimal.c:99:32
+    │                           └── MEMBER_REF_EXPR I2c_Ipw_FlexIOCHwConfig @ .\test_autosar_minimal.c:99:45
+    │                               └── UNEXPOSED_EXPR pConfigPtr @ .\test_autosar_minimal.c:99:33
+    │                                   └── DECL_REF_EXPR pConfigPtr @ .\test_autosar_minimal.c:99:33
+    └── FUNCTION_DECL I2c_Ipw_CheckDataLength @ .\test_autosar_minimal.c:104:1
+        ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:103:1
+        ├── PARM_DECL pRequest @ .\test_autosar_minimal.c:105:29
+        │   └── TYPE_REF struct I2c_RequestType @ .\test_autosar_minimal.c:104:25
+        ├── PARM_DECL eChannelType @ .\test_autosar_minimal.c:106:61
+        │   └── TYPE_REF I2c_HwChannelType @ .\test_autosar_minimal.c:106:25
+        └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:107:1
+            ├── IF_STMT <anon> @ .\test_autosar_minimal.c:108:5
+            │   ├── BINARY_OPERATOR == @ .\test_autosar_minimal.c:108:9
+            │   │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:108:9
+            │   │   └── UNEXPOSED_EXPR eChannelType @ .\test_autosar_minimal.c:108:27
+            │   │       └── DECL_REF_EXPR eChannelType @ .\test_autosar_minimal.c:108:27
+            │   ├── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:109:5
+            │   │   └── IF_STMT <anon> @ .\test_autosar_minimal.c:110:9
+            │   │       ├── BINARY_OPERATOR >= @ .\test_autosar_minimal.c:110:13
+            │   │       │   ├── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:110:13
+            │   │       │   └── UNEXPOSED_EXPR u8BufferSize @ .\test_autosar_minimal.c:110:57
+            │   │       │       └── MEMBER_REF_EXPR u8BufferSize @ .\test_autosar_minimal.c:110:57
+            │   │       │           └── UNEXPOSED_EXPR pRequest @ .\test_autosar_minimal.c:110:47
+            │   │       │               └── DECL_REF_EXPR pRequest @ .\test_autosar_minimal.c:110:47
+            │   │       └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:111:9
+            │   │           └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:112:13
+            │   │               └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:112:20
+            │   │                   ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:112:21
+            │   │                   └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:112:37
+            │   └── COMPOUND_STMT <anon> @ .\test_autosar_minimal.c:116:5
+            │       └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:117:9
+            │           └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:117:16
+            │               ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:117:17
+            │               └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:117:33
+            └── RETURN_STMT <anon> @ .\test_autosar_minimal.c:119:5
+                └── CSTYLE_CAST_EXPR <anon> @ .\test_autosar_minimal.c:119:12
+                    ├── TYPE_REF Std_ReturnType @ .\test_autosar_minimal.c:119:13
+                    └── INTEGER_LITERAL <anon> @ .\test_autosar_minimal.c:119:29
