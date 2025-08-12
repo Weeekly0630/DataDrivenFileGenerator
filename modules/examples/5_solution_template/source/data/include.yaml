@@ -1,0 +1,4 @@
+TEMPLATE_PATH: "root_template.j2"
+CHILDREN_PATH: 
+
+name: ""

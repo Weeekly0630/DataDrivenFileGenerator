@@ -280,6 +280,8 @@ def main(argv: list[str]) -> int:
             "U:\\Users\\Enlink\\Documents\\clang+llvm-20.1.0-x86_64-pc-windows-msvc\\bin\\libclang.dll",
             "-I",
             "U:\\Users\\Enlink\\Documents\\code\\python\\DataDrivenFileGenerator\\solution\\AUTOSAR-C\\clang",
+            "-I",
+            rf"U:\Users\Enlink\Documents\参考文档\AUTOSAR_SampleProject_S32K144-master\plugins\I2c_TS_T40D2M10I1R0\include"
         ]
     )
     argv.extend(
@@ -291,7 +293,7 @@ def main(argv: list[str]) -> int:
             # "--target", "arm-none-eabi",
             "--print-ast",
             "--ast-include-pp",
-            "--extract-decls"
+            "--extract-decls",
             # "--ast-main-file-only",
         ]
     )
@@ -326,6 +328,8 @@ def main(argv: list[str]) -> int:
         sys.stderr.write(f"Failed to parse TU: {e}\n")
         return 2
 
+    print(compile_args)
+
     exit_code = 0
     if not ns.no_diags:
         exit_code = print_diagnostics(tu)
@@ -346,7 +350,7 @@ def main(argv: list[str]) -> int:
         with open("ast_output.txt", "w", encoding="utf-8") as f:
             f.write(serialized_ast_tree)
         print(f"AST tree written to ast_output.txt")
-    
+    # return 0
     # Extract declarations if requested
     if ns.extract_decls:
         declarations = extract_declarations(tu, main_file_only=ns.ast_main_file_only)

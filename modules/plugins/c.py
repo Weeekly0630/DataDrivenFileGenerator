@@ -47,6 +47,7 @@ class Decl:
             )  # 字段列表
             attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
             qualifiers: str = ""  # 结构体/联合体限定符，如const等
+            comment: Optional[str] = None  # 可选的注释信息
 
     class TypeRef:
         """C语言类型引用信息"""
@@ -80,11 +81,9 @@ class Decl:
             """C语言类型修饰符信息"""
 
             type: "Decl.TypeRef.MetaData"  # 修饰的类型引用
-            qualifiers: str = ""  # 类型限定符，如const/volatile
+            qualifiers: str  # 类型限定符，如const/volatile
             attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
-            is_pointer: bool = False  # 是否为指针
             pointer_level: int = 0  # 指针层级，如int**为2
-            is_array: bool = False  # 是否为数组
             array_dims: List[int] = field(default_factory=list)  # 支持多维数组，如[3,4]
 
     class Variable:
@@ -93,8 +92,22 @@ class Decl:
             """C语言变量信息"""
 
             name: str  # 变量名
+            storage_class: str  # 存储类修饰符，如static/extern等
             modifier: "Decl.TypeModifier.MetaData"  # 变量类型修饰符
-            init_expr: Optional["Expr.Base"] = None  # 初始化表达式，可能为None
+            init_expr: Optional[str] = None  # 初始化表达式，可能为None
+            comment: Optional[str] = None  # 可选的注释信息
+            
+            def __str__(self):
+                parts = []
+                if self.storage_class:
+                    parts.append(self.storage_class)
+                parts.append(str(self.modifier.type))
+                parts.append(self.name)
+                if self.init_expr is not None:
+                    parts.append(f"= {self.init_expr}")
+                if self.comment:
+                    parts.append(f"// {self.comment}")
+                return " ".join(parts)
 
     class Field:
         @dataclass
@@ -135,7 +148,6 @@ class Decl:
             record: "Decl.Record.MetaData"
 
 
-
 class CPlugin(FunctionPlugin):
 
     @classmethod
@@ -157,4 +169,4 @@ class CPlugin(FunctionPlugin):
 
 if __name__ == "__main__":
     # 仅在直接运行此文件时执行的代码
-   pass
+    pass

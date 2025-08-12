@@ -1,0 +1,27 @@
+TEMPLATE_PATH: "root_template.j2"
+CHILDREN_PATH:
+  [
+    {
+      "TEMPLATE_PATH": "include.j2",
+      "CHILDREN_PATH": [],
+      "name": "f'{include[0]}'",
+    },
+    {
+      "TEMPLATE_PATH": "include.j2",
+      "CHILDREN_PATH": [],
+      "name": "f'{include[1]}'",
+    },
+    {
+      "TEMPLATE_PATH": "define.j2",
+      "CHILDREN_PATH": [],
+      "name": "f'{define.name}'",
+      "value": "f'{define.value}'",
+    },
+  ]
+
+include: ["stdio.h", "stdlib.h"]
+define:
+  name: "MAX"
+  value: 1000
+
+doc_info: 

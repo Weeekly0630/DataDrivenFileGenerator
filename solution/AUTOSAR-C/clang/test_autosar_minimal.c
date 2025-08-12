@@ -79,6 +79,17 @@ struct I2c_RequestType
     int u8BufferSize;
 };
 
+typedef int (*foo)(int a, void *b);
+
+struct Rectangle
+{
+    struct
+    {
+        int x;
+        int y;
+    } a, b;
+};
+
 /**
  * @brief
  *
@@ -89,6 +100,8 @@ I2c_Ipw_InitChannel(CONST(uint8, AUTOMATIC) u8Channel,
                             AUTOMATIC,
                             I2C_APPL_CONST) pConfigPtr)
 {
+    CONST(uint8, AUTOMATIC) channel = u8Channel;
+
     if (LPI2C_CHANNEL == (pConfigPtr->I2c_Ipw_eChannelType))
     {
         I2c_LPI2C_InitChannel(u8Channel, (pConfigPtr->I2c_Ipw_LPI2CHwConfig));
@@ -105,6 +118,7 @@ I2c_Ipw_CheckDataLength(P2CONST(I2c_RequestType, AUTOMATIC, I2C_APPL_CONST)
                             pRequest,
                         CONST(I2c_HwChannelType, AUTOMATIC) eChannelType)
 {
+    CONST(I2c_HwChannelType, AUTOMATIC) e = eChannelType;
     if (FLEXIO_CHANNEL == eChannelType)
     {
         if (FLEXIO_MAX_NUMBER_OF_BYTES_U32 >= pRequest->u8BufferSize)

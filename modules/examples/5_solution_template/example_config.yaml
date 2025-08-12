@@ -1,0 +1,20 @@
+data_type: yaml
+data_config:
+  file_root_path: .\source\data
+  file_pattern: ["*.yaml"]
+  encoding: utf-8
+
+template_type: jinja
+template_config:
+  template_dir: .\source\template
+  autoescape: false
+
+pattern:
+  - "root.yaml"
+
+output_dir: .\source\output
+output_file_extension: c
+
+preserved_template_key: TEMPLATE_PATH
+preserved_children_key: CHILDREN_PATH
+preserved_children_content_key: CHILDREN_CONTEXT
