@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.xdm": "xml",
+        "fake.h": "c"
+    }
+}

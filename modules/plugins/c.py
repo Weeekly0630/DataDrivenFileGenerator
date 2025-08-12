@@ -8,6 +8,47 @@ from typing import List, Dict, Any, Union, Optional, Callable
 from dataclasses import dataclass, field, asdict
 from modules.plugins.type import MetaBase, auto_register_factories
 
+class Expression:
+    """C语言表达式信息"""
+    
+    
+class Preprocess:
+    """C语言预处理信息"""
+
+    class MacroDefinition:
+        """C语言宏定义信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言宏定义的元数据"""
+
+            name: str  # 宏名
+            value: str  # 宏值（可通过 get_tokens 拼接）
+            location: str  # 定义位置（如 "file:line:col"）
+            params: List[str] = field(default_factory=list)  # 宏参数（如有）
+
+    class InclusionDirective:
+        """C语言包含指令信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言包含指令信息"""
+
+            filename: str  # 被包含的文件名
+            location: str  # 指令位置（如 "file:line:col"）
+            is_system: bool = False  # 是否为系统头文件（<...>）
+
+    class MacroInstantiation:
+        """C语言宏实例化信息"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言宏实例化信息"""
+
+            name: str  # 宏名
+            location: str  # 实例化位置（如 "file:line:col"）
+            args: List[str] = field(default_factory=list)  # 实例化参数（如有）
+
 
 class Attr:
     """C语言属性信息"""
@@ -96,7 +137,7 @@ class Decl:
             modifier: "Decl.TypeModifier.MetaData"  # 变量类型修饰符
             init_expr: Optional[str] = None  # 初始化表达式，可能为None
             comment: Optional[str] = None  # 可选的注释信息
-            
+
             def __str__(self):
                 parts = []
                 if self.storage_class:

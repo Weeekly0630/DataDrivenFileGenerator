@@ -9,7 +9,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.c import Decl, Expr, Attr
+from modules.plugins.c import Decl, Expr, Attr, Preprocess
 
 try:
     from clang import cindex
@@ -155,12 +155,13 @@ class ClangExtractor:
         except Exception:
             return str(loc.file) == tu.spelling
 
-    def extract_declarations(
+    def extract(
         self,
         source_file: str,
         c_args: List[str],
         debug_level: int = 0,
         main_file_only: bool = True,  # 仅处理主文件中的声明
+        user_macro_only: bool = True,  # 仅处理用户自定义宏
     ) -> Any:
         """从源文件中提取声明信息"""
         structs = []
@@ -170,6 +171,11 @@ class ClangExtractor:
         unions = []
         typedefs = []
         macros = []
+        
+        # 预处理信息
+        macro_definitions = []
+        inclusion_directives = []
+        macro_instantiations = []
 
         try:
             tu = cindex.TranslationUnit.from_source(
@@ -178,7 +184,7 @@ class ClangExtractor:
                 options=(
                     cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD
                     | cindex.TranslationUnit.PARSE_INCLUDE_BRIEF_COMMENTS_IN_CODE_COMPLETION
-                    | cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
+                    # | cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
                 ),
             )
         except cindex.TranslationUnitLoadError as e:
@@ -194,11 +200,17 @@ class ClangExtractor:
             print(
                 ClangDebugPrinter.get_info(tu, print_tree=True, print_diagnostics=True)
             )
+            print(f"Args: {c_args}")
 
         def traverse(cursor: cindex.Cursor):
             # Filter to main file if requested
             if main_file_only and cursor.kind != cindex.CursorKind.TRANSLATION_UNIT:
                 if not ClangExtractor.in_main_file_only(tu, cursor):
+                    return
+                
+            # Filter system file
+            if user_macro_only and cursor.kind != cindex.CursorKind.TRANSLATION_UNIT:
+                if not cursor.location.file:
                     return
 
             # Get comment for the current cursor
@@ -208,7 +220,12 @@ class ClangExtractor:
                 pass
             elif cursor.kind == cindex.CursorKind.VAR_DECL:
                 variables.append(self.extract_variable(cursor))
-
+            elif cursor.kind == cindex.CursorKind.MACRO_DEFINITION:
+                macro_definitions.append(self.extract_macro_definition(cursor))
+            elif cursor.kind == cindex.CursorKind.INCLUSION_DIRECTIVE:
+                inclusion_directives.append(self.extract_inclusion_directive(cursor))
+            elif cursor.kind == cindex.CursorKind.MACRO_INSTANTIATION:
+                macro_instantiations.append(self.extract_macro_instantiation(cursor))
             # Recursively traverse children
             for child in cursor.get_children():
                 traverse(child)
@@ -225,7 +242,72 @@ class ClangExtractor:
             "unions": unions,
             "typedefs": typedefs,
             "macros": macros,
+            "preprocessing": {
+                "macro_definitions": macro_definitions,
+                "inclusion_directives": inclusion_directives,
+                "macro_instantiations": macro_instantiations,
+            },
         }
+
+    # @staticmethod
+    # def extract_preprocessing(cursor: "cindex.Cursor", preprocessing_results: Dict[str, List]):
+    #     """从光标中提取预处理相关的对象，结果存储到 preprocessing_results 中"""
+        
+    #     # 宏定义
+    #     if cursor.kind == cindex.CursorKind.MACRO_DEFINITION:
+    #         name = cursor.spelling
+    #         # 提取宏值：跳过宏名本身
+    #         tokens = list(cursor.get_tokens())
+    #         value = " ".join(t.spelling for t in tokens[1:]) if len(tokens) > 1 else ""
+    #         location = ClangExtractor.format_loc(cursor)
+            
+    #         # 提取宏参数（如果是函数式宏）
+    #         params = []
+    #         # 简单的参数提取逻辑，可根据需要完善
+            
+    #         preprocessing_results["macro_definitions"].append(
+    #             Preprocess.MacroDefinition.MetaData(
+    #                 name=name,
+    #                 value=value,
+    #                 location=location,
+    #                 params=params
+    #             )
+    #         )
+        
+    #     # 包含指令
+    #     elif cursor.kind == cindex.CursorKind.INCLUSION_DIRECTIVE:
+    #         filename = cursor.spelling
+    #         location = ClangExtractor.format_loc(cursor)
+    #         # 判断是否为系统头文件（尖括号包含）
+    #         is_system = filename.startswith("<") and filename.endswith(">")
+            
+    #         preprocessing_results["inclusion_directives"].append(
+    #             Preprocess.InclusionDirective.MetaData(
+    #                 filename=filename,
+    #                 location=location,
+    #                 is_system=is_system
+    #             )
+    #         )
+        
+    #     # 宏实例化
+    #     elif cursor.kind == cindex.CursorKind.MACRO_INSTANTIATION:
+    #         name = cursor.spelling
+    #         location = ClangExtractor.format_loc(cursor)
+            
+    #         # 提取宏参数（如有）
+    #         tokens = list(cursor.get_tokens())
+    #         args = []
+    #         if len(tokens) > 1:
+    #             # 简单的参数提取，跳过宏名本身
+    #             args = [t.spelling for t in tokens[1:]]
+            
+    #         preprocessing_results["macro_instantiations"].append(
+    #             Preprocess.MacroInstantiation.MetaData(
+    #                 name=name,
+    #                 location=location,
+    #                 args=args
+    #             )
+    #         )
 
     @staticmethod
     def extract_comment(cursor: "cindex.Cursor") -> str:
@@ -359,23 +441,86 @@ class ClangExtractor:
             comment=comment,
         )
 
+    @staticmethod
+    def extract_macro_definition(cursor: cindex.Cursor) -> "Preprocess.MacroDefinition.MetaData":
+        """从MACRO_DEFINITION节点中提取宏定义元数据"""
+        name = cursor.spelling
+        # 提取宏值：跳过宏名本身
+        tokens = list(cursor.get_tokens())
+        value = " ".join(t.spelling for t in tokens[1:]) if len(tokens) > 1 else ""
+        location = ClangExtractor.format_loc(cursor)
+        
+        # 提取宏参数（如果是函数式宏）
+        params = []
+        # 简单的参数提取逻辑，可根据需要完善
+        
+        return Preprocess.MacroDefinition.MetaData(
+            name=name,
+            value=value,
+            location=location,
+            params=params
+        )
+
+    @staticmethod
+    def extract_inclusion_directive(cursor: cindex.Cursor) -> "Preprocess.InclusionDirective.MetaData":
+        """从INCLUSION_DIRECTIVE节点中提取包含指令元数据"""
+        filename = cursor.spelling
+        location = ClangExtractor.format_loc(cursor)
+        # 判断是否为系统头文件（尖括号包含）
+        is_system = filename.startswith("<") and filename.endswith(">")
+        
+        return Preprocess.InclusionDirective.MetaData(
+            filename=filename,
+            location=location,
+            is_system=is_system
+        )
+
+    @staticmethod
+    def extract_macro_instantiation(cursor: cindex.Cursor) -> "Preprocess.MacroInstantiation.MetaData":
+        """从MACRO_INSTANTIATION节点中提取宏实例化元数据"""
+        name = cursor.spelling
+        location = ClangExtractor.format_loc(cursor)
+        tokens = list(cursor.get_tokens())
+        args = []
+        # 简单处理：如果是函数式宏，提取括号内的参数
+        if len(tokens) > 2 and tokens[1].spelling == '(' and tokens[-1].spelling == ')':
+            # 提取括号内的参数
+            args = [t.spelling for t in tokens[2:-1]]
+        elif len(tokens) > 1:
+            # 对于对象式宏，直接取后面的 token
+            args = [t.spelling for t in tokens[1:]]
+        return Preprocess.MacroInstantiation.MetaData(
+            name=name,
+            location=location,
+            args=args
+        )
+
 
 if __name__ == "__main__":
     extractor = ClangExtractor(
         "U:\\Users\\Enlink\\Documents\\clang+llvm-20.1.0-x86_64-pc-windows-msvc\\bin\\libclang.dll"
     )
 
-    res = extractor.extract_declarations(
+    res = extractor.extract(
         rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_simple.c",
         c_args=[
-            "-x",
-            "c",
-            "-std=c99",
-            "-IU:\\Users\\Enlink\\Documents\\code\\python\\DataDrivenFileGenerator\\solution\\AUTOSAR-C\\clang",
-            "-IU:\\Users\\Enlink\\Documents\\参考文档\\AUTOSAR_SampleProject_S32K144-master\\plugins\\I2c_TS_T40D2M10I1R0\\include",
+            # "-x",
+            # "c",
+            # "-std=c99",
+            rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
         ],
         debug_level=1,
+        main_file_only=False
     )
 
     for var in res["variables"]:
         print(var)
+
+    for macro in res["preprocessing"]["macro_definitions"]:
+        print(macro)
+    
+    for inc in res["preprocessing"]["inclusion_directives"]:
+        print(inc)
+    
+    for macro_inst in res["preprocessing"]["macro_instantiations"]:
+        print(macro_inst)
