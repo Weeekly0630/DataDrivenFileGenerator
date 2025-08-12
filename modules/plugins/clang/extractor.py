@@ -1,7 +1,7 @@
 import sys
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 # 自动添加项目根目录到 sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -171,12 +171,18 @@ class ClangExtractor:
         unions = []
         typedefs = []
         macros = []
-        
+
         # 预处理信息
         macro_definitions = []
         inclusion_directives = []
-        macro_instantiations = []
+        macro_instantiations: List[Preprocess.MacroInstantiation.MetaData] = []
 
+        # 保存宏实例化信息
+        self.macro_instantiations = macro_instantiations
+
+        # 初始化类型引用字典
+        self.type_table: Dict[str, Any] = {}
+        
         try:
             tu = cindex.TranslationUnit.from_source(
                 source_file,
@@ -207,19 +213,21 @@ class ClangExtractor:
             if main_file_only and cursor.kind != cindex.CursorKind.TRANSLATION_UNIT:
                 if not ClangExtractor.in_main_file_only(tu, cursor):
                     return
-                
+
             # Filter system file
             if user_macro_only and cursor.kind != cindex.CursorKind.TRANSLATION_UNIT:
                 if not cursor.location.file:
                     return
 
             # Get comment for the current cursor
-            comment: str = ClangExtractor.extract_comment(cursor)
+            comment: str = self.extract_comment(cursor)
 
             if cursor.kind == cindex.CursorKind.STRUCT_DECL:
-                pass
+                structs.append(self.extract_struct(cursor))
             elif cursor.kind == cindex.CursorKind.VAR_DECL:
                 variables.append(self.extract_variable(cursor))
+            elif cursor.kind == cindex.CursorKind.UNION_DECL:
+                unions.append(self.extract_union(cursor))
             elif cursor.kind == cindex.CursorKind.MACRO_DEFINITION:
                 macro_definitions.append(self.extract_macro_definition(cursor))
             elif cursor.kind == cindex.CursorKind.INCLUSION_DIRECTIVE:
@@ -252,7 +260,7 @@ class ClangExtractor:
     # @staticmethod
     # def extract_preprocessing(cursor: "cindex.Cursor", preprocessing_results: Dict[str, List]):
     #     """从光标中提取预处理相关的对象，结果存储到 preprocessing_results 中"""
-        
+
     #     # 宏定义
     #     if cursor.kind == cindex.CursorKind.MACRO_DEFINITION:
     #         name = cursor.spelling
@@ -260,11 +268,11 @@ class ClangExtractor:
     #         tokens = list(cursor.get_tokens())
     #         value = " ".join(t.spelling for t in tokens[1:]) if len(tokens) > 1 else ""
     #         location = ClangExtractor.format_loc(cursor)
-            
+
     #         # 提取宏参数（如果是函数式宏）
     #         params = []
     #         # 简单的参数提取逻辑，可根据需要完善
-            
+
     #         preprocessing_results["macro_definitions"].append(
     #             Preprocess.MacroDefinition.MetaData(
     #                 name=name,
@@ -273,14 +281,14 @@ class ClangExtractor:
     #                 params=params
     #             )
     #         )
-        
+
     #     # 包含指令
     #     elif cursor.kind == cindex.CursorKind.INCLUSION_DIRECTIVE:
     #         filename = cursor.spelling
     #         location = ClangExtractor.format_loc(cursor)
     #         # 判断是否为系统头文件（尖括号包含）
     #         is_system = filename.startswith("<") and filename.endswith(">")
-            
+
     #         preprocessing_results["inclusion_directives"].append(
     #             Preprocess.InclusionDirective.MetaData(
     #                 filename=filename,
@@ -288,19 +296,19 @@ class ClangExtractor:
     #                 is_system=is_system
     #             )
     #         )
-        
+
     #     # 宏实例化
     #     elif cursor.kind == cindex.CursorKind.MACRO_INSTANTIATION:
     #         name = cursor.spelling
     #         location = ClangExtractor.format_loc(cursor)
-            
+
     #         # 提取宏参数（如有）
     #         tokens = list(cursor.get_tokens())
     #         args = []
     #         if len(tokens) > 1:
     #             # 简单的参数提取，跳过宏名本身
     #             args = [t.spelling for t in tokens[1:]]
-            
+
     #         preprocessing_results["macro_instantiations"].append(
     #             Preprocess.MacroInstantiation.MetaData(
     #                 name=name,
@@ -308,9 +316,31 @@ class ClangExtractor:
     #                 args=args
     #             )
     #         )
+    # @staticmethod
 
-    @staticmethod
-    def extract_comment(cursor: "cindex.Cursor") -> str:
+    def extract_code_by_extent(self, cursor: "cindex.Cursor") -> str:
+        """从光标的源码范围中提取代码文本"""
+        extent = cursor.extent
+        if not extent or not extent.start.file:
+            return ""
+        filename = extent.start.file.name
+        with open(filename, encoding="utf-8") as f:
+            lines = f.readlines()
+        # 单行表达式
+        if extent.start.line == extent.end.line:
+            return lines[extent.start.line - 1][
+                extent.start.column - 1 : extent.end.column - 1
+            ].strip()
+        # 多行表达式
+        parts = []
+        parts.append(lines[extent.start.line - 1][extent.start.column - 1 :])
+        for i in range(extent.start.line, extent.end.line - 1):
+            parts.append(lines[i])
+        parts.append(lines[extent.end.line - 1][: extent.end.column - 1])
+        return "".join(parts).strip()
+
+    # @staticmethod
+    def extract_comment(self, cursor: "cindex.Cursor") -> str:
         """Extract comment text from cursor."""
         try:
             comment = cursor.brief_comment
@@ -323,8 +353,8 @@ class ClangExtractor:
             pass
         return ""
 
-    @staticmethod
-    def extract_type_modifier(ctype: "cindex.Type") -> Decl.TypeModifier.MetaData:
+    # @staticmethod
+    def extract_type_modifier(self, ctype: "cindex.Type") -> Decl.TypeModifier.MetaData:
         """从cindex.Type对象中提取类型修饰符信息，便于变量和字段等复用"""
         # 指针和数组信息
         pointer_level = 0
@@ -364,45 +394,38 @@ class ClangExtractor:
             array_dims=array_dims,
         )
 
-    def extract_init_expr_text(self, cursor: "cindex.Cursor") -> str:
-        """提取初始化表达式的文本，同时收集宏使用"""
-        # 方法1: 使用 cursor 的 extent 来限制 token 范围
-        if hasattr(cursor, "extent") and cursor.extent:
-            start = cursor.extent.start
-            end = cursor.extent.end
-            tokens = []
-
-            # 只收集在当前 cursor extent 范围内的 token
-            for token in cursor.get_tokens():
-                # 检查 token 是否在当前 cursor 的范围内
-                if (
-                    token.location.file.name == start.file.name
-                    and start.offset <= token.location.offset <= end.offset
-                ):
-                    tokens.append(token.spelling)
-                elif token.location.offset > end.offset:
-                    # 如果超出范围就停止
-                    break
-
-            if tokens:
-                return " ".join(tokens)
-
-        # 方法2: 如果没有 extent，尝试递归子节点
-        parts = []
-        for child in cursor.get_children():
-            child_text = self.extract_init_expr_text(child)
-            if child_text:
-                parts.append(child_text)
-
-        return " ".join(parts) if parts else cursor.spelling or ""
+    # def extract_init_expr_text(self, cursor):
+    #     expr_range = ClangExtractor.extract_source_range(cursor)
+    #     macro_name = None
+    #     if expr_range and hasattr(self, "macro_instantiations"):
+    #         for macro in self.macro_instantiations:
+    #             macro_range = macro.source_range
+    #             # 只有当整个节点被宏完全覆盖时才替换
+    #             if macro_range and (
+    #                 macro_range.start.file == expr_range.start.file
+    #                 and macro_range.start.line == expr_range.start.line
+    #                 and macro_range.start.column == expr_range.start.column
+    #                 and macro_range.end.line == expr_range.end.line
+    #                 and macro_range.end.column == expr_range.end.column
+    #             ):
+    #                 macro_name = macro.name
+    #                 break
+    #     if macro_name:
+    #         return macro_name
+    #     # 否则递归处理所有子节点
+    #     parts = []
+    #     for child in cursor.get_children():
+    #         child_text = self.extract_init_expr_text(child)
+    #         if child_text:
+    #             parts.append(child_text)
+    #     return " ".join(parts) if parts else cursor.spelling or ""
 
     def extract_variable(self, cursor: cindex.Cursor) -> Decl.Variable.MetaData:
         """从VAR_DECL节点中提取变量声明元数据"""
+        # 1. Name
         name = cursor.spelling
-        ctype = cursor.type
-        modifier = ClangExtractor.extract_type_modifier(ctype)
 
-        # storage_class 只在变量声明时有意义
+        # 2. storage_class
         storage_class = ""
         if hasattr(cursor, "storage_class") and cursor.storage_class is not None:
             sc = cursor.storage_class
@@ -410,13 +433,18 @@ class ClangExtractor:
             if hasattr(sc, "name") and sc != cindex.StorageClass.NONE:
                 storage_class = str(sc.name)
 
-        # 初始化表达式（如有）
+        # 3. Modifier
+        ctype = cursor.type
+        modifier = self.extract_type_modifier(ctype)
+
+        # 4. 初始化表达式（如有）
         init_expr = None
         for child in cursor.get_children():
             if child.kind in (
                 cindex.CursorKind.UNEXPOSED_EXPR,
                 cindex.CursorKind.BINARY_OPERATOR,
                 cindex.CursorKind.INTEGER_LITERAL,
+                cindex.CursorKind.INIT_LIST_EXPR,
                 cindex.CursorKind.FLOATING_LITERAL,
                 cindex.CursorKind.STRING_LITERAL,
                 cindex.CursorKind.CHARACTER_LITERAL,
@@ -426,11 +454,35 @@ class ClangExtractor:
                 cindex.CursorKind.MACRO_DEFINITION,
                 cindex.CursorKind.PAREN_EXPR,
             ):
-                init_expr = self.extract_init_expr_text(child)
-                if init_expr:
-                    break
+                # 新增：判断是否被宏实例化覆盖
+                # expr_range = ClangExtractor.extract_source_range(child)
+                # macro_name = None
+                # if expr_range and hasattr(self, "macro_instantiations"):
+                #     for macro in self.macro_instantiations:
+                #         macro_range = macro.source_range
+                #         if macro_range and (
+                #             macro_range.start.file == expr_range.start.file and
+                #             macro_range.start.line <= expr_range.start.line <= macro_range.end.line and
+                #             macro_range.start.column <= expr_range.start.column <= macro_range.end.column
+                #         ):
+                #             macro_name = macro.name
+                #             break
+                # if macro_name:
+                #     # 如果有参数，拼接成 SQUARE(10)
+                #     if macro.args:
+                #         init_expr = f"{macro_name}({', '.join(macro.args)})"
+                #     else:
+                #         init_expr = macro_name
+                # else:
+                #     init_expr = self.extract_init_expr_text(child)
+                # if init_expr:
+                #     break
+                init_expr = self.extract_code_by_extent(
+                    child
+                )  # self.extract_init_expr_text(child)
+                break
 
-        # 注释
+        # 5. 注释
         comment = cursor.raw_comment or cursor.brief_comment or ""
 
         return Decl.Variable.MetaData(
@@ -439,60 +491,183 @@ class ClangExtractor:
             modifier=modifier,
             init_expr=init_expr,
             comment=comment,
+            raw_code=self.extract_code_by_extent(cursor),
         )
 
+    # @staticmethod
+    def extract_fileds(self, cursor: cindex.Cursor) -> List[Decl.Field.MetaData]:
+        """从STRUCT_DECL节点中提取字段信息"""
+        if cursor.kind not in (
+            cindex.CursorKind.STRUCT_DECL,
+            cindex.CursorKind.UNION_DECL,
+            cindex.CursorKind.ENUM_DECL,
+        ):
+            raise ValueError("Cursor is not a record declaration.")
+        fields: List[Decl.Field.MetaData] = []
+
+        for child in cursor.get_children():
+            if child.kind == cindex.CursorKind.FIELD_DECL:
+                # 提取字段名和类型
+                name = child.spelling
+                ctype = child.type
+                modifier = self.extract_type_modifier(ctype)
+                comment = self.extract_comment(child)
+                bitfield_width = (
+                    child.get_bitfield_width() if child.is_bitfield() else None
+                )
+                fields.append(
+                    Decl.Field.MetaData(
+                        name=name,
+                        modifier=modifier,
+                        bitfield_width=bitfield_width,
+                        comment=comment,
+                        raw_code=self.extract_code_by_extent(child),
+                    )
+                )
+        return fields
+
+    def extract_record(self, cursor: cindex.Cursor) -> Decl.Record.MetaData:
+        """从STRUCT_DECL节点中提取记录（结构体、联合体、枚举等）信息"""
+        if cursor.kind not in (
+            cindex.CursorKind.STRUCT_DECL,
+            cindex.CursorKind.UNION_DECL,
+            cindex.CursorKind.ENUM_DECL,
+        ):
+            raise ValueError("Cursor is not a record declaration.")
+
+        name = cursor.spelling
+        fileds: List[Decl.Field.MetaData] = self.extract_fileds(cursor)
+
+        qualifiers: str = ""
+        comment = self.extract_comment(cursor)
+
+        return Decl.Record.MetaData(
+            name=name,
+            fields=fileds,
+            qualifiers=qualifiers,
+            comment=comment,
+        )
+
+    # @staticmethod
+    def extract_struct(self, cursor: cindex.Cursor) -> Decl.Struct.MetaData:
+        """从STRUCT_DECL节点中提取结构体声明元数据"""
+        record: Decl.Record.MetaData = self.extract_record(cursor)
+        raw_code: str = self.extract_code_by_extent(cursor)
+
+        return Decl.Struct.MetaData(
+            record=record,
+            raw_code=raw_code,
+        )
+
+    # @staticmethod
+    def extract_union(self, cursor: cindex.Cursor) -> Decl.Union.MetaData:
+        """从UNION_DECL节点中提取联合体声明元数据"""
+        record: Decl.Record.MetaData = self.extract_record(cursor)
+        raw_code: str = self.extract_code_by_extent(cursor)
+        return Decl.Union.MetaData(
+            record=record,
+            raw_code=raw_code,
+        )
+
+    # @staticmethod
+    # def extract_enum(cursor: cindex.Cursor) -> Decl.Enum.MetaData:
+    # @staticmethod
+    # def extract_location(cursor: cindex.Cursor) -> FileLocation.Location:
+    #     loc = cursor.location
+    #     if not loc or not loc.file:
+    #         return FileLocation.Location(file="None", line=0, column=0, offset=None)
+    #     else:
+    #         return FileLocation.Location(
+    #             file=loc.file,
+    #             line=loc.line,
+    #             column=loc.column,
+    #             offset=loc.offset,
+    #         )
+
+    # @staticmethod
+    # def extract_source_range(cursor: cindex.Cursor) -> Optional[FileLocation.Range]:
+    #     extent = cursor.extent
+    #     source_range = None
+    #     if extent and extent.start.file:
+    #         start = FileLocation.Location(
+    #             file=str(extent.start.file),
+    #             line=extent.start.line,
+    #             column=extent.start.column,
+    #             offset=getattr(extent.start, "offset", None),
+    #         )
+    #         end = FileLocation.Location(
+    #             file=str(extent.end.file),
+    #             line=extent.end.line,
+    #             column=extent.end.column,
+    #             offset=getattr(extent.end, "offset", None),
+    #         )
+    #         source_range = FileLocation.Range(start=start, end=end)
+    #     return source_range
+
     @staticmethod
-    def extract_macro_definition(cursor: cindex.Cursor) -> "Preprocess.MacroDefinition.MetaData":
+    def extract_macro_definition(
+        cursor: cindex.Cursor,
+    ) -> "Preprocess.MacroDefinition.MetaData":
         """从MACRO_DEFINITION节点中提取宏定义元数据"""
         name = cursor.spelling
         # 提取宏值：跳过宏名本身
         tokens = list(cursor.get_tokens())
         value = " ".join(t.spelling for t in tokens[1:]) if len(tokens) > 1 else ""
-        location = ClangExtractor.format_loc(cursor)
-        
+
         # 提取宏参数（如果是函数式宏）
         params = []
         # 简单的参数提取逻辑，可根据需要完善
-        
+
         return Preprocess.MacroDefinition.MetaData(
             name=name,
             value=value,
-            location=location,
-            params=params
+            # location=ClangExtractor.extract_location(cursor),
+            params=params,
         )
 
     @staticmethod
-    def extract_inclusion_directive(cursor: cindex.Cursor) -> "Preprocess.InclusionDirective.MetaData":
+    def extract_inclusion_directive(
+        cursor: cindex.Cursor,
+    ) -> "Preprocess.InclusionDirective.MetaData":
         """从INCLUSION_DIRECTIVE节点中提取包含指令元数据"""
         filename = cursor.spelling
-        location = ClangExtractor.format_loc(cursor)
         # 判断是否为系统头文件（尖括号包含）
         is_system = filename.startswith("<") and filename.endswith(">")
-        
+
         return Preprocess.InclusionDirective.MetaData(
             filename=filename,
-            location=location,
-            is_system=is_system
+            # location=ClangExtractor.extract_location(cursor),
+            is_system=is_system,
         )
 
     @staticmethod
-    def extract_macro_instantiation(cursor: cindex.Cursor) -> "Preprocess.MacroInstantiation.MetaData":
+    def extract_macro_instantiation(
+        cursor: cindex.Cursor,
+    ) -> "Preprocess.MacroInstantiation.MetaData":
         """从MACRO_INSTANTIATION节点中提取宏实例化元数据"""
         name = cursor.spelling
-        location = ClangExtractor.format_loc(cursor)
+
         tokens = list(cursor.get_tokens())
         args = []
-        # 简单处理：如果是函数式宏，提取括号内的参数
-        if len(tokens) > 2 and tokens[1].spelling == '(' and tokens[-1].spelling == ')':
-            # 提取括号内的参数
+        if len(tokens) > 2 and tokens[1].spelling == "(" and tokens[-1].spelling == ")":
             args = [t.spelling for t in tokens[2:-1]]
         elif len(tokens) > 1:
-            # 对于对象式宏，直接取后面的 token
             args = [t.spelling for t in tokens[1:]]
+        # # 提取 source range
+        # extent = cursor.extent
+        # if extent and extent.start.file:
+        #     source_range = (
+        #         f"{extent.start.file.name}:"
+        #         f"{extent.start.line}:{extent.start.column}-"
+        #         f"{extent.end.line}:{extent.end.column}"
+        #     )
+        # else:
+        #     source_range = None
         return Preprocess.MacroInstantiation.MetaData(
             name=name,
-            location=location,
-            args=args
+            # location=ClangExtractor.extract_location(cursor),
+            args=args,
+            # source_range=ClangExtractor.extract_source_range(cursor),
         )
 
 
@@ -502,7 +677,7 @@ if __name__ == "__main__":
     )
 
     res = extractor.extract(
-        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_simple.c",
+        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_struct.c",
         c_args=[
             # "-x",
             # "c",
@@ -510,17 +685,17 @@ if __name__ == "__main__":
             rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
         ],
         debug_level=1,
-        main_file_only=False
+        main_file_only=False,
     )
 
     for var in res["variables"]:
         print(var)
 
-    for macro in res["preprocessing"]["macro_definitions"]:
-        print(macro)
-    
-    for inc in res["preprocessing"]["inclusion_directives"]:
-        print(inc)
-    
+    # for macro in res["preprocessing"]["macro_definitions"]:
+    #     print(macro)
+
+    # for inc in res["preprocessing"]["inclusion_directives"]:
+    #     print(inc)
+
     for macro_inst in res["preprocessing"]["macro_instantiations"]:
         print(macro_inst)

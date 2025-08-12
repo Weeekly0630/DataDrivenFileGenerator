@@ -8,6 +8,8 @@
 
 #define MYTYPE int
 
+#define INIT_LIST {1, 2, 3}
+
 static inline int square(int x) {
     return SQUARE(x);
 }
