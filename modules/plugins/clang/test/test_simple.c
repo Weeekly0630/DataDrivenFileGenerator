@@ -5,17 +5,18 @@
 #define MIN 0
 
 int a = MAX + 100;
-int b = MIN;
+int b = 100 + 100;
 int c = 42;
 
 // 结构体和typedef
-struct Point {
+struct Point
+{
     int x;
     int y;
 };
 typedef struct Point Point;
 
-Point p1 = {1, 2};
+Point p1 = { 1, 2 };
 
 // 带宏的数组
 int arr[MAX];
@@ -24,4 +25,4 @@ int arr[MAX];
 int d = MAX + MIN;
 
 // 带注释的变量
-int e = MAX; // 需要保留MAX
+int e = MAX;  // 需要保留MAX

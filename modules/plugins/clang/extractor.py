@@ -100,10 +100,6 @@ class ClangExtractor:
                 cindex.Config.set_library_path(env_path)
             else:
                 cindex.Config.set_library_file(env_path)
-        
-        # 宏收集相关
-        self.used_macros = set()  # 全局收集使用的宏
-        self.macro_definitions = {}  # 宏定义：{宏名: 宏值}
 
     @staticmethod
     def format_loc(cur: "cindex.Cursor") -> str:
@@ -175,10 +171,6 @@ class ClangExtractor:
         typedefs = []
         macros = []
 
-        # 清空宏收集缓存
-        self.used_macros.clear()
-        self.macro_definitions.clear()
-
         try:
             tu = cindex.TranslationUnit.from_source(
                 source_file,
@@ -202,10 +194,6 @@ class ClangExtractor:
             print(
                 ClangDebugPrinter.get_info(tu, print_tree=True, print_diagnostics=True)
             )
-
-        # 先收集宏定义
-        if tu.cursor:
-            self._collect_macro_definitions(tu.cursor)
 
         def traverse(cursor: cindex.Cursor):
             # Filter to main file if requested
@@ -237,8 +225,6 @@ class ClangExtractor:
             "unions": unions,
             "typedefs": typedefs,
             "macros": macros,
-            "used_macros": list(self.used_macros),
-            "macro_definitions": self.macro_definitions,
         }
 
     @staticmethod
@@ -254,41 +240,6 @@ class ClangExtractor:
         except:
             pass
         return ""
-
-    def _collect_macro_definitions(self, cursor: "cindex.Cursor") -> None:
-        """收集所有宏定义"""
-        for child in cursor.walk_preorder():
-            if child.kind == cindex.CursorKind.MACRO_DEFINITION:
-                macro_name = child.spelling
-                # 提取宏值（从 tokens）
-                tokens = list(child.get_tokens())
-                if len(tokens) > 1:  # 跳过宏名本身
-                    macro_value = " ".join(t.spelling for t in tokens[1:])
-                else:
-                    macro_value = ""
-                self.macro_definitions[macro_name] = macro_value
-
-    def _collect_macro_usage_in_node(self, cursor: "cindex.Cursor") -> None:
-        """递归收集某个节点中的宏使用"""
-        for child in cursor.walk_preorder():
-            if child.kind == cindex.CursorKind.DECL_REF_EXPR:
-                ref_name = child.spelling
-                if ref_name in self.macro_definitions:
-                    self.used_macros.add(ref_name)
-            elif child.kind == cindex.CursorKind.MACRO_INSTANTIATION:
-                self.used_macros.add(child.spelling)
-
-    def _get_macros_in_node(self, cursor: "cindex.Cursor") -> List[str]:
-        """获取某个节点中使用的宏列表"""
-        node_macros = set()
-        for child in cursor.walk_preorder():
-            if child.kind == cindex.CursorKind.DECL_REF_EXPR:
-                ref_name = child.spelling
-                if ref_name in self.macro_definitions:
-                    node_macros.add(ref_name)
-            elif child.kind == cindex.CursorKind.MACRO_INSTANTIATION:
-                node_macros.add(child.spelling)
-        return list(node_macros)
 
     @staticmethod
     def extract_type_modifier(ctype: "cindex.Type") -> Decl.TypeModifier.MetaData:
@@ -346,9 +297,6 @@ class ClangExtractor:
                     token.location.file.name == start.file.name
                     and start.offset <= token.location.offset <= end.offset
                 ):
-                    # 检查是否为宏引用，如果是就记录
-                    if token.spelling in self.macro_definitions:
-                        self.used_macros.add(token.spelling)
                     tokens.append(token.spelling)
                 elif token.location.offset > end.offset:
                     # 如果超出范围就停止
@@ -363,9 +311,6 @@ class ClangExtractor:
             child_text = self.extract_init_expr_text(child)
             if child_text:
                 parts.append(child_text)
-
-        # 同时收集该节点的宏使用
-        self._collect_macro_usage_in_node(cursor)
 
         return " ".join(parts) if parts else cursor.spelling or ""
 
@@ -402,10 +347,7 @@ class ClangExtractor:
                 init_expr = self.extract_init_expr_text(child)
                 if init_expr:
                     break
-        
-        # 收集该变量声明中使用的宏
-        self._collect_macro_usage_in_node(cursor)
-        
+
         # 注释
         comment = cursor.raw_comment or cursor.brief_comment or ""
 
@@ -429,7 +371,6 @@ if __name__ == "__main__":
             "-x",
             "c",
             "-std=c99",
-            "-detailed-preprocessing-record",  # 保留预处理信息，包括宏
             "-IU:\\Users\\Enlink\\Documents\\code\\python\\DataDrivenFileGenerator\\solution\\AUTOSAR-C\\clang",
             "-IU:\\Users\\Enlink\\Documents\\参考文档\\AUTOSAR_SampleProject_S32K144-master\\plugins\\I2c_TS_T40D2M10I1R0\\include",
         ],
@@ -438,11 +379,3 @@ if __name__ == "__main__":
 
     for var in res["variables"]:
         print(var)
-    
-    print("\n=== 宏定义 ===")
-    for macro_name, macro_value in res["macro_definitions"].items():
-        print(f"#define {macro_name} {macro_value}")
-    
-    print("\n=== 使用的宏 ===")
-    for macro in res["used_macros"]:
-        print(f"使用了宏: {macro}")
