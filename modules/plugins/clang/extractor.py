@@ -2,6 +2,7 @@ import sys
 import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Union, Optional, Protocol
+from enum import Enum, IntFlag
 
 # 自动添加项目根目录到 sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,43 +28,112 @@ SEVERITY_ORDER = {
     cindex.Diagnostic.Fatal: 4,
 }
 
-class ClangVisitor(Protocol):
-    """Clang Visitor Protocol for type hinting"""
-    
-    def visit(self, cursor: cindex.Cursor) -> Any:
-        """Visit a cursor node."""
+
+class CursorVisitorResult(IntFlag):
+    """Visitor函数访问结果枚举, 用来控制VisitorChain的遍历行为"""
+    CONTINUE = 0 # 继续遍历子节点
+    SKIP_VISITOR = 1  # 跳过后续访问器
+    SKIP_CHILDREN = 2  # 跳过子节点, 用于控制当前节点的子节点访问
+    BREAK_CHILDREN = 4 # 跳过兄弟节点，用于返回给父节点，使其跳过兄弟节点
+
+
+@dataclass
+class CursorVisitorContext:
+    """访问器上下文信息"""
+
+    depth: int
+
+
+class CursorVisitor(Protocol):
+    """Clang Cursor访问器"""
+
+    def visit(
+        self, cursor: "cindex.Cursor", context: CursorVisitorContext
+    ) -> CursorVisitorResult:
+        """访问Cursor节点，提供一个遍历上下文信息，返回一定信息"""
+        ...
+
+
+class CursorPrintVisitor(CursorVisitor):
+    """AST打印访问器，用于打印AST节点信息"""
+
+    def __init__(self):
+        self.lines: List[str] = []  # 最终结果
+        self.is_last: bool = True  # 是否为最后一个子节点
+        self.last_depth: int = -1  # 上一个节点的深度
+        self.prefix: List[str] = []  # 当前前缀，用于缩进打印
+
+
+
+    def visit(self, cur: cindex.Cursor, context: CursorVisitorContext) -> CursorVisitorResult:
+        method_name = f"visit_{cur.kind.name.lower()}"
+        visitor = getattr(self, method_name, self.generic_visit)
+        visitor(cur, context)
+        return CursorVisitorResult.CONTINUE
+
+    def generic_visit(self, cur: cindex.Cursor, context: CursorVisitorContext) -> None:
+        depth = context.depth
+        is_last = True if depth < self.last_depth else False
+        prefix = self.prefix
+
+        connector = "└── " if is_last else "├── "
+        node_desc = ClangExtractor.describe_node(cur)
+        self.lines.append(f"{''.join(prefix)}{connector}{node_desc}")
         
-        return self._visit_any(cursor)
-    
-    def _visit_any(self, cursor: cindex.Cursor) -> Any:
-        
-        for child in cursor.get_children():
-            self._visit_any(child)
+        if depth > self.last_depth:
+            # 如果当前深度大于上一个节点的深度，说明是子节点
+            # 更改前缀
+            self.prefix.append(f"  ")
+        elif depth < self.last_depth:
+            self.prefix.pop()
+            
+        # 更新上一个节点的深度
+        self.last_depth = depth
+
+class VisitorChain:
+    """访问器链，用于按顺序访问AST节点"""
+
+    def __init__(self, visitors: List[CursorVisitor]):
+        self.visitors = visitors
+
+    def traverse(self, cursor: "cindex.Cursor") -> None:
+        """开始遍历AST节点"""
+        self._traverse(cursor=cursor, context=CursorVisitorContext(depth=0))
+
+    def _traverse(self, cursor: "cindex.Cursor", context: CursorVisitorContext) -> CursorVisitorResult:
+        """遍历AST节点，按顺序调用每个访问器"""
+        visit_result: CursorVisitorResult = CursorVisitorResult.CONTINUE
+
+        for visitor in self.visitors:
+            result = visitor.visit(cursor, context)
+            visit_result |= result
+            if result & CursorVisitorResult.SKIP_VISITOR:
+                break
+            
+        if visit_result & CursorVisitorResult.SKIP_CHILDREN:
+            return visit_result
+
+        children = list(cursor.get_children())
+        for child in children:
+            child_result = self._traverse(child, CursorVisitorContext(depth=context.depth + 1))
+            if child_result & CursorVisitorResult.BREAK_CHILDREN:
+                break
+
+        return visit_result
+
 
 class ClangDebugPrinter:
     """Clang调试打印器，用于打印光标和诊断信息"""
 
     def _serialize_cursor_tree(self, cursor: cindex.Cursor) -> str:
-        """递归序列化Cursor树为字符串表示"""
+        """使用Visitor模式美化打印Cursor树"""
 
-        @staticmethod
-        def traverse(
-            cur: cindex.Cursor, depth: int = 0, is_last: bool = True, prefix: str = ""
-        ) -> str:
-            result = ""
-            connector = "└── " if is_last else "├── "
-            result += f"{prefix}{connector}{ClangExtractor.describe_node(cur,)}\n"
-            # Prepare next prefix for children
-            child_prefix = f"{prefix}    " if is_last else f"{prefix}│   "
-
-            children = ClangExtractor.iter_children(cur)
-
-            for i, child in enumerate(children):
-                is_last_child = i == len(children) - 1
-                result += traverse(child, depth + 1, is_last_child, child_prefix)
-            return result
-
-        return traverse(cursor)
+        print_visitor = CursorPrintVisitor()
+        visitor = VisitorChain([print_visitor])
+        visitor.traverse(cursor)
+        # 从print_visitor中获取结果
+        lines = print_visitor.lines
+        return "\n".join(lines)
 
     @staticmethod
     def print_diagnostics(tu: "cindex.TranslationUnit") -> str:
@@ -99,13 +169,16 @@ class ClangDebugPrinter:
 
         return result
 
+
 @dataclass
 class ClangExtractorOptional:
-    """Clang提取器的可选功能类    """
+    """Clang提取器的可选功能类"""
+
     c_args: List[str] = field(default_factory=list)
     debug_level: int = 0
     main_file_only: bool = True  # 仅提取主文件中的声明
-    
+
+
 class ClangExtractor:
     """Clang提取器，用于从C/C++源文件中提取信息"""
 
@@ -178,7 +251,7 @@ class ClangExtractor:
         source_file: str,
         c_args: List[str],
         debug_level: int = 0,
-        main_file_only: bool = True,  # 
+        main_file_only: bool = True,  #
         user_macro_only: bool = False,  # 仅处理用户自定义宏
     ) -> Any:
         """从源文件中提取声明信息"""
@@ -200,7 +273,7 @@ class ClangExtractor:
 
         # 初始化类型引用字典
         self.type_table: Dict[str, Any] = {}
-        
+
         try:
             tu = cindex.TranslationUnit.from_source(
                 source_file,

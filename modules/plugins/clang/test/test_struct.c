@@ -1,4 +1,7 @@
 #define VAR(TYPE, STORAGE) TYPE
+#define INIT_ARRAY         { 1, 2, 3 }
+// 全局变量，带注释
+static const int g_value = 42;
 
 struct Point
 {
@@ -20,6 +23,7 @@ struct UART_REG
     unsigned int BAUD_RATE : 8;  // 波特率寄存器
     int          data[100];
 };
+int array[] = INIT_ARRAY;
 
 struct Point pt = { 1, 2 };
 
