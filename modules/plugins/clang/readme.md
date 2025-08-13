@@ -89,6 +89,121 @@ print(result["variables"])
 print(result["preprocessing"]["macro_definitions"])
 ```
 
+源代码预览(test_struct.c)：
+
+```c
+#define VAR(TYPE, STORAGE) TYPE
+
+struct Point
+{
+    int x;
+    int y;
+};
+
+typedef struct Rectangle
+{
+    struct Point top_left;
+    struct Point bottom_right;
+} Rectangle;
+
+struct UART_REG
+{
+    unsigned int DATA : 8;  // 数据寄存器
+    unsigned int STATUS : 8;
+    unsigned int CONTROL : 8;    // 控制寄存器
+    unsigned int BAUD_RATE : 8;  // 波特率寄存器
+    int          data[100];
+};
+
+struct Point pt = { 1, 2 };
+
+Rectangle rect = { { 0, 0 }, { 10, 10 } };
+
+VAR(Rectangle, AUTO) rect2 = { { 1, 1 }, { 5, 5 } };
+```
+
+
+
+AST树预览(test_struct.c)：
+```text
+Cursor Tree:
+└── TRANSLATION_UNIT .\test\test_struct.c
+    ... 
+    ... # 省略编译器相关宏
+    ...
+    ├── MACRO_DEFINITION VAR @ .\test\test_struct.c:1:9
+    ├── MACRO_INSTANTIATION VAR @ .\test\test_struct.c:28:1
+    ├── STRUCT_DECL Point @ .\test\test_struct.c:3:8
+    │   ├── FIELD_DECL x @ .\test\test_struct.c:5:9
+    │   └── FIELD_DECL y @ .\test\test_struct.c:6:9
+    ├── STRUCT_DECL Rectangle @ .\test\test_struct.c:9:16
+    │   ├── FIELD_DECL top_left @ .\test\test_struct.c:11:18
+    │   │   └── TYPE_REF struct Point @ .\test\test_struct.c:11:12
+    │   └── FIELD_DECL bottom_right @ .\test\test_struct.c:12:18
+    │       └── TYPE_REF struct Point @ .\test\test_struct.c:12:12
+    ├── TYPEDEF_DECL Rectangle @ .\test\test_struct.c:13:3
+    │   └── STRUCT_DECL Rectangle @ .\test\test_struct.c:9:16
+    │       ├── FIELD_DECL top_left @ .\test\test_struct.c:11:18
+    │       │   └── TYPE_REF struct Point @ .\test\test_struct.c:11:12
+    │       └── FIELD_DECL bottom_right @ .\test\test_struct.c:12:18
+    │           └── TYPE_REF struct Point @ .\test\test_struct.c:12:12
+    ├── STRUCT_DECL UART_REG @ .\test\test_struct.c:15:8
+    │   ├── FIELD_DECL DATA @ .\test\test_struct.c:17:18
+    │   │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:17:25
+    │   ├── FIELD_DECL STATUS @ .\test\test_struct.c:18:18
+    │   │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:18:27
+    │   ├── FIELD_DECL CONTROL @ .\test\test_struct.c:19:18
+    │   │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:19:28
+    │   ├── FIELD_DECL BAUD_RATE @ .\test\test_struct.c:20:18
+    │   │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:20:30
+    │   └── FIELD_DECL data @ .\test\test_struct.c:21:18
+    │       └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:21:23
+    ├── VAR_DECL pt @ .\test\test_struct.c:24:14
+    │   ├── TYPE_REF struct Point @ .\test\test_struct.c:24:8
+    │   └── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:24:19
+    │       ├── INTEGER_LITERAL <anon> @ .\test\test_struct.c:24:21
+    │       └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:24:24
+    ├── VAR_DECL rect @ .\test\test_struct.c:26:11
+    │   ├── TYPE_REF Rectangle @ .\test\test_struct.c:26:1
+    │   └── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:26:18
+    │       ├── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:26:20
+    │       │   ├── INTEGER_LITERAL <anon> @ .\test\test_struct.c:26:22
+    │       │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:26:25
+    │       └── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:26:30
+    │           ├── INTEGER_LITERAL <anon> @ .\test\test_struct.c:26:32
+    │           └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:26:36
+    └── VAR_DECL rect2 @ .\test\test_struct.c:28:22
+        ├── TYPE_REF Rectangle @ .\test\test_struct.c:28:1
+        └── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:28:30
+            ├── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:28:32
+            │   ├── INTEGER_LITERAL <anon> @ .\test\test_struct.c:28:34
+            │   └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:28:37
+            └── INIT_LIST_EXPR <anon> @ .\test\test_struct.c:28:42
+                ├── INTEGER_LITERAL <anon> @ .\test\test_struct.c:28:44
+                └── INTEGER_LITERAL <anon> @ .\test\test_struct.c:28:47
+```
+
+解析结果预览:
+```text
+Rectangle rect2 = { { 1, 1 }, { 5, 5 } }
+  Raw Code: VAR(Rectangle, AUTO) rect2 = { { 1, 1 }, { 5, 5 } }
+
+struct UART_REG {DATA: unsigned int : 8, STATUS: unsigned int : 8, CONTROL: unsigned int : 8, BAUD_RATE: unsigned int : 8, data: int[100]}
+
+Raw Code: struct UART_REG
+{
+    unsigned int DATA : 8;  // 数据寄存器
+    unsigned int STATUS : 8;
+    unsigned int CONTROL : 8;    // 控制寄存器
+    unsigned int BAUD_RATE : 8;  // 波特率寄存器
+    int          data[100];
+}
+...
+
+
+Macro Instantation: VAR(Rectangle, AUTO)
+```
+
 ---
 
 ## 依赖
@@ -98,9 +213,14 @@ print(result["preprocessing"]["macro_definitions"])
 
 详细参数与扩展用法见 extractor.py 注释。
 
-## 可能的问题
+## 可能的问题/需求
 
 - 宏不展开：
-   - **需求**：宏定义不展开，需要一个宏定义未展开的代码，例如`int a = MAX;`。
+   - **需求**：需要展示源代码内容，宏定义不展开，例如`int a = MAX;`。
    - **问题的原因**: Clang AST 树中的值为宏展开后的值，无法直接获取未展开的宏定义。
    - **解决方案**：对于需要获取未展开代码的场景，可以使用`cursor.extend`获取源文件代码。
+
+- 重构代码布局，但保留宏
+   - **需求**：重构代码布局，例如将一般C样式`int a = ...;`重构为AUTOSAR宏定义样式`VAR(...) a = ...;`。
+   - **问题的原因**: Clang AST 树中的宏定义会被展开，无法直接获取原始宏定义。
+   - **解决方案**：可能可以在解析AST时，通过AST extension位置信息以及宏实例位置信息判断，保留对应位置的宏定义。例如在判断到`int a = MAX;`时，通过判断a的`init_expr`在源代码中的位置与某一个宏实例是否一致(即代码开头位置与结束位置完全重合)，一致则保留`MAX`字符串。

@@ -24,7 +24,7 @@ origin: "BYD"
 optional: # boolean
 symbolicNameValue: false # boolean
 
-defaultConfig:
+defaultConfig: 
   type:
   tsts:
     # - expr:

@@ -1,3 +1,5 @@
+#define VAR(TYPE, STORAGE) TYPE
+
 struct Point
 {
     int x;
@@ -22,3 +24,5 @@ struct UART_REG
 struct Point pt = { 1, 2 };
 
 Rectangle rect = { { 0, 0 }, { 10, 10 } };
+
+VAR(Rectangle, AUTO) rect2 = { { 1, 1 }, { 5, 5 } };

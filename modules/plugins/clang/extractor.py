@@ -1,7 +1,7 @@
 import sys
 import os
-from dataclasses import dataclass
-from typing import Any, Dict, List, Union, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Union, Optional, Protocol
 
 # 自动添加项目根目录到 sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +27,18 @@ SEVERITY_ORDER = {
     cindex.Diagnostic.Fatal: 4,
 }
 
+class ClangVisitor(Protocol):
+    """Clang Visitor Protocol for type hinting"""
+    
+    def visit(self, cursor: cindex.Cursor) -> Any:
+        """Visit a cursor node."""
+        
+        return self._visit_any(cursor)
+    
+    def _visit_any(self, cursor: cindex.Cursor) -> Any:
+        
+        for child in cursor.get_children():
+            self._visit_any(child)
 
 class ClangDebugPrinter:
     """Clang调试打印器，用于打印光标和诊断信息"""
@@ -87,7 +99,13 @@ class ClangDebugPrinter:
 
         return result
 
-
+@dataclass
+class ClangExtractorOptional:
+    """Clang提取器的可选功能类    """
+    c_args: List[str] = field(default_factory=list)
+    debug_level: int = 0
+    main_file_only: bool = True  # 仅提取主文件中的声明
+    
 class ClangExtractor:
     """Clang提取器，用于从C/C++源文件中提取信息"""
 
@@ -160,8 +178,8 @@ class ClangExtractor:
         source_file: str,
         c_args: List[str],
         debug_level: int = 0,
-        main_file_only: bool = True,  # 仅处理主文件中的声明
-        user_macro_only: bool = True,  # 仅处理用户自定义宏
+        main_file_only: bool = True,  # 
+        user_macro_only: bool = False,  # 仅处理用户自定义宏
     ) -> Any:
         """从源文件中提取声明信息"""
         structs = []
@@ -650,7 +668,7 @@ class ClangExtractor:
         tokens = list(cursor.get_tokens())
         args = []
         if len(tokens) > 2 and tokens[1].spelling == "(" and tokens[-1].spelling == ")":
-            args = [t.spelling for t in tokens[2:-1]]
+            args = [t.spelling for t in tokens[2:-1] if t.spelling != ","]
         elif len(tokens) > 1:
             args = [t.spelling for t in tokens[1:]]
         # # 提取 source range
@@ -685,12 +703,14 @@ if __name__ == "__main__":
             rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
         ],
         debug_level=1,
-        main_file_only=False,
+        main_file_only=True,
     )
 
     for var in res["variables"]:
-        print(var)
+        print(str(var) + f"\n  Raw Code: {var.raw_code}")
 
+    for struct in res["structs"]:
+        print(str(struct) + f"\n  Raw Code: {struct.raw_code}")
     # for macro in res["preprocessing"]["macro_definitions"]:
     #     print(macro)
 

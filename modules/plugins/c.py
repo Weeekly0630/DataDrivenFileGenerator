@@ -79,7 +79,7 @@ class Preprocess:
 
             def __str__(self):
                 args_str = ", ".join(self.args) if self.args else ""
-                return f"{self.name}{'(' + args_str + ')' if args_str else ''}"
+                return f"Macro Instantation: {self.name}{'(' + args_str + ')' if args_str else ''}"
 
 
 class Attr:
@@ -121,6 +121,13 @@ class Decl:
             attributes: List["Attr.Base"] = field(default_factory=list)  # 属性列表
             qualifiers: str = ""  # 结构体/联合体限定符，如const等
             comment: Optional[str] = None  # 可选的注释信息
+
+            def __str__(self) -> str:
+                return (
+                    f"{self.name} {{"
+                    + f"{', '.join(str(field) for field in self.fields)}}}"
+                    + (f" // {self.qualifiers}" if self.qualifiers else "")
+                )
 
     class TypeRef:
         """C语言类型引用信息"""
@@ -193,7 +200,13 @@ class Decl:
             bitfield_width: Optional[int] = None  # 位域宽度，非位域为None
             raw_code: Optional[str] = None  # 变量的原始代码文本
             comment: Optional[str] = None  # 可选的注释信息
-            
+
+            def __str__(self) -> str:
+                return (
+                    f"{self.name}: {self.modifier.type}"
+                    + (f" : {self.bitfield_width}" if self.bitfield_width else "")
+                    + (f" // {self.comment}" if self.comment else "")
+                )
     class Typedef:
         """C语言类型定义声明信息"""
 
@@ -214,11 +227,11 @@ class Decl:
 
             record: "Decl.Record.MetaData"
             raw_code: Optional[str] = None  # 变量的原始代码文本
-            
+
             # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
-            
+
             def __str__(self) -> str:
-                return f"{self.record} \nRaw Code: {self.raw_code if self.raw_code else ''}"
+                return f"struct {self.record} \nRaw Code: {self.raw_code if self.raw_code else ''}"
 
     class Union:
         """C语言联合声明信息"""
