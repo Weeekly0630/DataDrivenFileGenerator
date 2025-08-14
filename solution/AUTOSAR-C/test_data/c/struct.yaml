@@ -1,31 +1,40 @@
 TEMPLATE_PATH: "C/decl/struct.j2"
 CHILDREN_PATH: # []
 
-info: '{
-  decl_struct_create(
-      decl_record_create(
-          name="Point",
-          fields=[
-              decl_field_create(
-                  name="Var",
-                  modifier=decl_typemodifier_create(
-                      type=decl_typeref_create("unsigned int"),
-                      is_pointer=False,
-                      pointer_level=2,
-                      qualifiers="",
-                  ),
-                  bitfield_width=8,
-              ),
-              decl_field_create(
-                  name="Dummy",
-                  modifier=decl_typemodifier_create(
-                      type=decl_typeref_create("unsigned int"),
-                      is_pointer=False,
-                      pointer_level=0,
-                      qualifiers="",
-                  ),
-                  bitfield_width=8,
-              ),
-          ],
-      )
-  )}'
+info: '{extract_decl_from_c(
+    lib_clang_path="U:/Users/Enlink/Documents/clang+llvm-20.1.0-x86_64-pc-windows-msvc/bin/libclang.dll",
+    file_path=r"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_type.c",
+    c_args=[
+        "-std=c99",
+        r"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
+    ],
+    debug_level=1,
+    main_file_only=True).struct_declarations[0]}'
+# info: '{
+#   decl_struct_create(
+#       decl_record_create(
+#           name="Point",
+#           fields=[
+#               decl_field_create(
+#                   name="Var",
+#                   modifier=decl_typemodifier_create(
+#                       type=decl_typeref_create("unsigned int"),
+#                       is_pointer=False,
+#                       pointer_level=2,
+#                       qualifiers="",
+#                   ),
+#                   bitfield_width=8,
+#               ),
+#               decl_field_create(
+#                   name="Dummy",
+#                   modifier=decl_typemodifier_create(
+#                       type=decl_typeref_create("unsigned int"),
+#                       is_pointer=False,
+#                       pointer_level=0,
+#                       qualifiers="",
+#                   ),
+#                   bitfield_width=8,
+#               ),
+#           ],
+#       )
+#   )}'

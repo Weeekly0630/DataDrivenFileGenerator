@@ -6,12 +6,12 @@
 {# 类型名 #}
 {{- info.type -}}
 {# 指针修饰 #}
-{%- if info.is_pointer -%}
+{%- if info.pointer_level and info.pointer_level > 0 -%}
     {%- for i in range(info.pointer_level) -%}*{%- endfor -%}
 {%- endif -%}
 {# 数组修饰 #}
 {{ " " ~ name }}
-{%- if info.is_array -%}
+{%- if info.array_dims and info.array_dims | length > 0 -%}
     {%- for dim in info.array_dims -%}[{{ dim }}]{%- endfor -%}
 {%- endif -%}
 {%- endmacro -%}

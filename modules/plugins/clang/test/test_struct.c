@@ -3,6 +3,7 @@
 /* VAR Type macro */
 #define VAR(TYPE, STORAGE) TYPE
 
+// Assert for programming degug
 #define ASSERT(expr) \
     do { \
         if (!(expr)) { \
@@ -10,7 +11,7 @@
             exit(EXIT_FAILURE); \
         } \
     } while (0)
-    
+
 #define INIT_ARRAY         { 1, 2, 3 }
 // 全局变量，带注释
 static const int g_value = 42;
