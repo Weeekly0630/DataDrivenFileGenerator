@@ -1,3 +1,5 @@
+#include "fake.h"
+
 #define VAR(TYPE, STORAGE) TYPE
 #define INIT_ARRAY         { 1, 2, 3 }
 // 全局变量，带注释
@@ -23,7 +25,7 @@ struct UART_REG
     unsigned int BAUD_RATE : 8;  // 波特率寄存器
     int          data[100];
 };
-int array[] = INIT_ARRAY;
+int array[] = INIT_LIST;
 
 struct Point pt = { 1, 2 };
 

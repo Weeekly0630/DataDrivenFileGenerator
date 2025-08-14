@@ -1,7 +1,7 @@
 import sys
 import os
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Union, Optional, Protocol
+from typing import Any, Dict, List, Union, Optional, Protocol, Tuple
 from enum import Enum, IntFlag
 
 # 自动添加项目根目录到 sys.path
@@ -31,10 +31,11 @@ SEVERITY_ORDER = {
 
 class CursorVisitorResult(IntFlag):
     """Visitor函数访问结果枚举, 用来控制VisitorChain的遍历行为"""
-    CONTINUE = 0 # 继续遍历子节点
+
+    CONTINUE = 0  # 继续遍历子节点
     SKIP_VISITOR = 1  # 跳过后续访问器
     SKIP_CHILDREN = 2  # 跳过子节点, 用于控制当前节点的子节点访问
-    BREAK_CHILDREN = 4 # 跳过兄弟节点，用于返回给父节点，使其跳过兄弟节点
+    BREAK_CHILDREN = 4  # 跳过兄弟节点，用于返回给父节点，使其跳过兄弟节点
 
 
 @dataclass
@@ -58,14 +59,11 @@ class CursorPrintVisitor(CursorVisitor):
     """AST打印访问器，用于打印AST节点信息"""
 
     def __init__(self):
-        self.lines: List[str] = []  # 最终结果
-        self.is_last: bool = True  # 是否为最后一个子节点
-        self.last_depth: int = -1  # 上一个节点的深度
-        self.prefix: List[str] = []  # 当前前缀，用于缩进打印
+        self.nodes: List[Tuple[int, str]] = []  # 收集(depth, node_desc)
 
-
-
-    def visit(self, cur: cindex.Cursor, context: CursorVisitorContext) -> CursorVisitorResult:
+    def visit(
+        self, cur: cindex.Cursor, context: CursorVisitorContext
+    ) -> CursorVisitorResult:
         method_name = f"visit_{cur.kind.name.lower()}"
         visitor = getattr(self, method_name, self.generic_visit)
         visitor(cur, context)
@@ -73,25 +71,154 @@ class CursorPrintVisitor(CursorVisitor):
 
     def generic_visit(self, cur: cindex.Cursor, context: CursorVisitorContext) -> None:
         depth = context.depth
-        is_last = True if depth < self.last_depth else False
-        prefix = self.prefix
+        node_desc = describe_node(cur)
+        self.nodes.append((depth, node_desc))
 
-        connector = "└── " if is_last else "├── "
-        node_desc = ClangExtractor.describe_node(cur)
-        self.lines.append(f"{''.join(prefix)}{connector}{node_desc}")
-        
-        if depth > self.last_depth:
-            # 如果当前深度大于上一个节点的深度，说明是子节点
-            # 更改前缀
-            self.prefix.append(f"  ")
-        elif depth < self.last_depth:
-            self.prefix.pop()
-            
-        # 更新上一个节点的深度
-        self.last_depth = depth
+    def format_tree(self) -> str:
+        lines = []
+        n = len(self.nodes)
+
+        for i, (depth, desc) in enumerate(self.nodes):
+            # 判断当前节点是否为父节点的最后一个子节点
+            is_last = True
+            # 向后查找同深度的兄弟节点
+            for j in range(i + 1, n):
+                next_depth = self.nodes[j][0]
+                if next_depth < depth:
+                    # 遇到更浅的节点，说明当前节点是最后一个
+                    break
+                elif next_depth == depth:
+                    # 遇到同深度节点，说明当前节点不是最后一个
+                    is_last = False
+                    break
+
+            # 构造前缀：需要知道每一层是否有后续兄弟节点
+            prefix = ""
+            for d in range(depth):
+                # 判断第d层是否有后续兄弟节点
+                has_sibling = False
+                # 从当前节点向后查找
+                for j in range(i + 1, n):
+                    check_depth = self.nodes[j][0]
+                    if check_depth < d:
+                        # 遇到更浅的节点，停止查找
+                        break
+                    elif check_depth == d:
+                        # 找到同层兄弟节点
+                        has_sibling = True
+                        break
+
+                if has_sibling:
+                    prefix += "│   "
+                else:
+                    prefix += "    "
+
+            connector = "└── " if is_last else "├── "
+            lines.append(f"{prefix}{connector}{desc}")
+        return "\n".join(lines)
+
+
+class CursorFilterVisitor(CursorVisitor):
+    """AST过滤访问器，用于过滤特定条件的节点"""
+
+    def __init__(
+        self,
+        main_file_only: bool = False,
+        allowed_files: Optional[List[str]] = None,
+        excluded_files: Optional[List[str]] = None,
+        allowed_kinds: Optional[List[cindex.CursorKind]] = None,
+        excluded_kinds: Optional[List[cindex.CursorKind]] = None,
+    ):
+        """
+        初始化过滤器
+
+        Args:
+            main_file_only: 只允许主文件的节点
+            allowed_files: 允许的文件名列表（支持通配符）
+            excluded_files: 排除的文件名列表（支持通配符）
+            allowed_kinds: 允许的节点类型列表
+            excluded_kinds: 排除的节点类型列表
+        """
+        self.main_file_only = main_file_only
+        self.allowed_files = allowed_files or []
+        self.excluded_files = excluded_files or []
+        self.allowed_kinds = allowed_kinds or []
+        self.excluded_kinds = excluded_kinds or []
+
+    def _check_file_filter(self, cursor: cindex.Cursor) -> bool:
+        """检查文件过滤条件"""
+        # Translation Unit 节点始终允许通过
+        if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            return True
+
+        loc = cursor.location
+        if not loc or not loc.file:
+            # 没有文件信息的节点（如内置类型）
+            return not self.main_file_only
+
+        filename = str(loc.file)
+
+        # 主文件过滤
+        if self.main_file_only:
+            try:
+                if hasattr(cursor, "translation_unit") and cursor.translation_unit:
+                    if not os.path.samefile(filename, cursor.translation_unit.spelling):
+                        return False
+            except Exception:
+                if filename != cursor.translation_unit.spelling:
+                    return False
+
+        # 排除文件列表
+        for excluded in self.excluded_files:
+            if excluded in filename or filename.endswith(excluded):
+                return False
+
+        # 允许文件列表
+        if self.allowed_files:
+            allowed = False
+            for allowed_file in self.allowed_files:
+                if allowed_file in filename or filename.endswith(allowed_file):
+                    allowed = True
+                    break
+            if not allowed:
+                return False
+
+        return True
+
+    def _check_kind_filter(self, cursor: cindex.Cursor) -> bool:
+        """检查节点类型过滤条件"""
+        # 排除类型列表
+        if cursor.kind in self.excluded_kinds:
+            return False
+
+        # 允许类型列表
+        if self.allowed_kinds and cursor.kind not in self.allowed_kinds:
+            return False
+
+        return True
+
+    def visit(
+        self, cur: cindex.Cursor, context: CursorVisitorContext
+    ) -> CursorVisitorResult:
+        """访问节点并进行过滤"""
+        # 检查文件过滤条件
+        if not self._check_file_filter(cur):
+            return CursorVisitorResult.SKIP_CHILDREN | CursorVisitorResult.SKIP_VISITOR
+
+        # 检查节点类型过滤条件
+        if not self._check_kind_filter(cur):
+            return CursorVisitorResult.SKIP_CHILDREN | CursorVisitorResult.SKIP_VISITOR
+
+        # 通过所有过滤条件，继续遍历
+        return CursorVisitorResult.CONTINUE
+
+    def generic_visit(self, cur: cindex.Cursor, context: CursorVisitorContext) -> None:
+        """默认访问行为"""
+        pass
+
 
 class VisitorChain:
-    """访问器链，用于按顺序访问AST节点"""
+    """访问器链，用于递归访问Cursor节点，同时调用多个访问器"""
 
     def __init__(self, visitors: List[CursorVisitor]):
         self.visitors = visitors
@@ -100,7 +227,9 @@ class VisitorChain:
         """开始遍历AST节点"""
         self._traverse(cursor=cursor, context=CursorVisitorContext(depth=0))
 
-    def _traverse(self, cursor: "cindex.Cursor", context: CursorVisitorContext) -> CursorVisitorResult:
+    def _traverse(
+        self, cursor: "cindex.Cursor", context: CursorVisitorContext
+    ) -> CursorVisitorResult:
         """遍历AST节点，按顺序调用每个访问器"""
         visit_result: CursorVisitorResult = CursorVisitorResult.CONTINUE
 
@@ -109,13 +238,15 @@ class VisitorChain:
             visit_result |= result
             if result & CursorVisitorResult.SKIP_VISITOR:
                 break
-            
+
         if visit_result & CursorVisitorResult.SKIP_CHILDREN:
             return visit_result
 
         children = list(cursor.get_children())
         for child in children:
-            child_result = self._traverse(child, CursorVisitorContext(depth=context.depth + 1))
+            child_result = self._traverse(
+                child, CursorVisitorContext(depth=context.depth + 1)
+            )
             if child_result & CursorVisitorResult.BREAK_CHILDREN:
                 break
 
@@ -126,14 +257,13 @@ class ClangDebugPrinter:
     """Clang调试打印器，用于打印光标和诊断信息"""
 
     def _serialize_cursor_tree(self, cursor: cindex.Cursor) -> str:
-        """使用Visitor模式美化打印Cursor树"""
-
+        """使用VisitorChain模式打印Cursor树"""
+        filter_visitor = CursorFilterVisitor(main_file_only=False)
         print_visitor = CursorPrintVisitor()
-        visitor = VisitorChain([print_visitor])
+
+        visitor = VisitorChain([filter_visitor, print_visitor])
         visitor.traverse(cursor)
-        # 从print_visitor中获取结果
-        lines = print_visitor.lines
-        return "\n".join(lines)
+        return print_visitor.format_tree()
 
     @staticmethod
     def print_diagnostics(tu: "cindex.TranslationUnit") -> str:
@@ -170,13 +300,40 @@ class ClangDebugPrinter:
         return result
 
 
+def describe_node(
+    cur: "cindex.Cursor",
+    show_type: bool = False,
+    show_canonical: bool = False,
+    show_usr: bool = False,
+) -> str:
+    """描述光标节点的字符串表示"""
+    name = cur.spelling or "<anon>"
+    kind = cur.kind.name
+    pieces = [f"{kind}", name]
+    if show_type:
+        t = cur.type
+        if t.kind.name != "INVALID":
+            if show_canonical:
+                pieces.append(f"type={t.spelling} [canon={t.get_canonical().spelling}]")
+            else:
+                pieces.append(f"type={t.spelling}")
+    if show_usr:
+        usr = cur.get_usr()
+        if usr:
+            pieces.append(f"usr={usr}")
+    loc = ClangExtractor.format_loc(cur)
+    if loc:
+        pieces.append(f"@ {loc}")
+    return " ".join(pieces)
+
+
 @dataclass
 class ClangExtractorOptional:
     """Clang提取器的可选功能类"""
 
     c_args: List[str] = field(default_factory=list)
     debug_level: int = 0
-    main_file_only: bool = True  # 仅提取主文件中的声明
+    main_file_only: bool = False  # 仅提取主文件中的声明
 
 
 class ClangExtractor:
@@ -201,35 +358,6 @@ class ClangExtractor:
         return ""
 
     @staticmethod
-    def describe_node(
-        cur: "cindex.Cursor",
-        show_type: bool = False,
-        show_canonical: bool = False,
-        show_usr: bool = False,
-    ) -> str:
-        """描述光标节点的字符串表示"""
-        name = cur.spelling or "<anon>"
-        kind = cur.kind.name
-        pieces = [f"{kind}", name]
-        if show_type:
-            t = cur.type
-            if t.kind.name != "INVALID":
-                if show_canonical:
-                    pieces.append(
-                        f"type={t.spelling} [canon={t.get_canonical().spelling}]"
-                    )
-                else:
-                    pieces.append(f"type={t.spelling}")
-        if show_usr:
-            usr = cur.get_usr()
-            if usr:
-                pieces.append(f"usr={usr}")
-        loc = ClangExtractor.format_loc(cur)
-        if loc:
-            pieces.append(f"@ {loc}")
-        return " ".join(pieces)
-
-    @staticmethod
     def iter_children(cur: "cindex.Cursor"):
         # Provide a stable list to use len() for tree connectors.
         return [c for c in cur.get_children()]
@@ -247,12 +375,7 @@ class ClangExtractor:
             return str(loc.file) == tu.spelling
 
     def extract(
-        self,
-        source_file: str,
-        c_args: List[str],
-        debug_level: int = 0,
-        main_file_only: bool = True,  #
-        user_macro_only: bool = False,  # 仅处理用户自定义宏
+        self, source_file: str, optional: Optional[ClangExtractorOptional] = None
     ) -> Any:
         """从源文件中提取声明信息"""
         structs = []
@@ -768,15 +891,7 @@ if __name__ == "__main__":
     )
 
     res = extractor.extract(
-        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_struct.c",
-        c_args=[
-            # "-x",
-            # "c",
-            # "-std=c99",
-            rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
-        ],
-        debug_level=1,
-        main_file_only=True,
+        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_struct.c"
     )
 
     for var in res["variables"]:
