@@ -53,7 +53,9 @@ class Preprocess:
             value: str  # 宏值（可通过 get_tokens 拼接）
             # location: FileLocation.Location  # 定义位置（如 "file:line:col"）
             params: List[str] = field(default_factory=list)  # 宏参数（如有）
-
+            comment: str = ""
+            raw_code: str = ""
+            
     class InclusionDirective:
         """C语言包含指令信息"""
 
@@ -174,9 +176,9 @@ class Decl:
             name: str  # 变量名
             storage_class: str  # 存储类修饰符，如static/extern等
             modifier: "Decl.TypeModifier.MetaData"  # 变量类型修饰符
-            init_expr: Optional[str] = None  # 初始化表达式，可能为None
-            comment: Optional[str] = None  # 可选的注释信息
-            raw_code: Optional[str] = None  # 变量的原始代码文本
+            init_expr: str = ""  # 初始化表达式，可能为None
+            comment: str = ""  # 可选的注释信息
+            raw_code: str = ""  # 变量的原始代码文本
 
             def __str__(self):
                 parts = []
@@ -184,7 +186,7 @@ class Decl:
                     parts.append(self.storage_class)
                 parts.append(str(self.modifier.type))
                 parts.append(self.name)
-                if self.init_expr is not None:
+                if self.init_expr != "":
                     parts.append(f"= {self.init_expr}")
                 if self.comment:
                     parts.append(f"// {self.comment}")
@@ -207,6 +209,7 @@ class Decl:
                     + (f" : {self.bitfield_width}" if self.bitfield_width else "")
                     + (f" // {self.comment}" if self.comment else "")
                 )
+
     class Typedef:
         """C语言类型定义声明信息"""
 
@@ -226,7 +229,7 @@ class Decl:
             """C语言结构体信息"""
 
             record: "Decl.Record.MetaData"
-            raw_code: Optional[str] = None  # 变量的原始代码文本
+            raw_code: str = ""  # 变量的原始代码文本
 
             # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
 
