@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Union, Optional, Callable
 from dataclasses import dataclass, field, asdict
-from modules.plugins.type import MetaBase, auto_register_factories
+from modules.plugins.type import MetaBase
 
 
 class Expression:

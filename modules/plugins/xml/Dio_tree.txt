@@ -1,0 +1,532 @@
+└── datamodel [ns:http://www.tresos.de/_projects/DataModel2/08/root.xsd] [attr:{'version': '3.0'}]
+    └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'AUTOSAR', 'factory': 'autosar'}]
+        └── lst [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'TOP-LEVEL-PACKAGES'}]
+            └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'TS_T40D2M10I1R0', 'type': 'AR-PACKAGE'}]
+                ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:7690b8cf-35e0-40d4-8b90-603d098bfa1b'}]
+                └── lst [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'ELEMENTS'}]
+                    ├── chc [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'Dio', 'type': 'AR-ELEMENT', 'value': 'MODULE-DEF'}]
+                    │   └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'type': 'MODULE-DEF'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'RELEASE', 'value': 'asc:4.2'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ADMIN-DATA', 'type': 'ADMIN-DATA'}]
+                    │       │   └── ADMIN-DATA [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd]
+                    │       │       └── DOC-REVISIONS [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd]
+                    │       │           └── DOC-REVISION [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd]
+                    │       │               ├── REVISION-LABEL [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd] [text:4.6.0]
+                    │       │               ├── ISSUED-BY [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd] [text:AUTOSAR]
+                    │       │               └── DATE [ns:http://www.tresos.de/_projects/DataModel2/08/admindata.xsd] [text:2014-10-31]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'POSTBUILDVARIANTSUPPORT', 'value': 'true'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                        <html><p> Configuration of the Dio (Digital IO) module. </p></html>]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LOWER-MULTIPLICITY', 'value': '1'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UPPER-MULTIPLICITY', 'value': '1'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:68e60706-b10b-4b09-8ae8-3bec4104934c'}]
+                    │       ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'IMPLEMENTATION_CONFIG_VARIANT', 'type': 'ENUMERATION'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Config Variant'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:1a6b36f9-eb4c-46d6-87b5-9360aa3b226c'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                            <html><p>
+                                                VariantPreCompile: Only precompile time configuration parameters.<br>
+                                                The files Dio_Cfg.h and Dio_Cfg.c are used.<br>
+                                            </p></html>]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'VariantPreCompile'}]
+                    │       │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'RANGE'}]
+                    │       │       ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:VariantLinkTime]
+                    │       │       └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:VariantPreCompile]
+                    │       ├── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioConfig', 'type': 'IDENTIFIABLE'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC', 'value': 'EN: This container contains the configuration parameters and sub containers of the AUTOSAR DIO module. This container is a MultipleConfigurationContainer, i.e. this container and its sub-containers exist once per configuration set.'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:4e1b9d37-58b0-46ba-a549-c40c8e80d6f3'}]
+                    │       │   └── lst [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPort', 'type': 'MAP'}]
+                    │       │       ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'MIN', 'value': '1'}]
+                    │       │       └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPort', 'type': 'IDENTIFIABLE'}]
+                    │       │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │           │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                    <html><p>
+                                                        Configuration of individual DIO ports, consisting of channels and possible channel groups.
+                                                        The single DIO channel levels inside a DIO port represent a bit in the DIO port value. A channel group is a formal
+                                                        logical combination of several adjoining DIO channels within a DIO port. The configuration process for Dio module
+                                                        shall provide symbolic names for each configured DIO channel, port and group.
+                                                    </p></html>]
+                    │       │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │           │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │           │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:4e6fabe5-32b5-42b8-b166-115c11cdc751'}]
+                    │       │           ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPortId', 'type': 'INTEGER'}]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Port Id'}]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │           │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                        <html><p>
+                                                            Numeric identifier of the DIO port. Symbolic names will be generated for each port pin id
+                                                            for the pins which being used for configuration.
+                                                            NOTE: Use the following values to configure different ports.
+                                                            <ul>
+                                                                <li>PortA=0</li>
+                                                                <li>PortB=1</li>
+                                                                <li>PortC=2</li>
+                                                                <li>PortD=3</li>
+                                                                <li>PortE=4</li>
+                                                            </ul>
+                                                        </p></html>]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │           │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'Link'}] [text:VariantLinkTime]
+                    │       │           │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'true'}]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'ECU'}]
+                    │       │           │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:e572b945-92b2-4a6b-9209-16791c1307cc'}]
+                    │       │           │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '0'}]
+                    │       │           │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Multi'}]
+                    │       │           │       ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': 'text:uniq(../../*/DioPortId, .)', 'false': 'DioPortId is repeated for two or more ports.'}]
+                    │       │           │       ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': "(num:hextoint(ecu:list('Dio.AvailablePortPinsForWrite')[num:dectoint(node:current())+1]) != num:i('0')) or (num:hextoint(ecu:list('Dio.AvailablePortPinsForRead')[num:dectoint(node:current())+1]) != num:i('0'))", 'false': 'This port is not available for the selected package. Please see RM for a list of available ports for selected package.'}]
+                    │       │           │       ├── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │           │       │   └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '>=0'}]
+                    │       │           │       └── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │           │           └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '<=4'}]
+                    │       │           ├── lst [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannel', 'type': 'MAP'}]
+                    │       │           │   └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannel', 'type': 'IDENTIFIABLE'}]
+                    │       │           │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │           │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                            <html><p>
+                                                                Configuration of an individual DIO channel. Symbolic names will be generated for each channel.
+                                                                A general purpose digital IO pin represents a DIO channel which will be having value either STD_HIGH or STD_LOW.
+                                                            </p></html>]
+                    │       │           │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │           │       │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │           │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │           │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:27aaf24e-fe6b-4d85-9666-e20239723ac8'}]
+                    │       │           │       └── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannelId', 'type': 'INTEGER'}]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Channel Id'}]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │           │           │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                                <html><p>
+                                                                    Channel Id of the DIO channel. This value will be assigned to the symbolic names.
+                                                                </p></html>]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │           │           │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'Link'}] [text:VariantLinkTime]
+                    │       │           │           │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'ECU'}]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'true'}]
+                    │       │           │           ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:0222ad95-d800-476d-a551-96fcf5c84481'}]
+                    │       │           │           ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '0'}]
+                    │       │           │           └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Multi'}]
+                    │       │           │               ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': 'text:uniq(../../*/DioChannelId, .)', 'false': 'DioChannelId is repeated for two or more channels.'}]
+                    │       │           │               ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': "(bit:and(num:hextoint(ecu:list('Dio.AvailablePortPinsForWrite')[num:dectoint((node:current())/../../../DioPortId)+1]),bit:shl( num:i(1),num:dectoint ( node:current() ) )) != '0') or (bit:and(num:hextoint(ecu:list('Dio.AvailablePortPinsForRead')[num:dectoint((node:current())/../../../DioPortId)+1]),bit:shl( num:i(1),num:dectoint ( node:current() ) )) != '0')", 'false': 'This channel is not available in the selected package. Please see RM for a list of available channels for selected package.'}]
+                    │       │           │               ├── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │           │               │   └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '>=0'}]
+                    │       │           │               └── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │           │                   └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '<=31'}]
+                    │       │           └── lst [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannelGroup', 'type': 'MAP'}]
+                    │       │               ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'MAX', 'value': '255'}]
+                    │       │               └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannelGroup', 'type': 'IDENTIFIABLE'}]
+                    │       │                   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │                   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                            <html><p>
+                                                                A channel group represents several adjoining DIO channels represented by a logical group.
+                                                                This container definition does not explicitly define a symbolic name parameter, but symbolic names will be generated for
+                                                                each channel group. Each group provides a structure with parameters port, offset and mask.
+                                                            </p></html>]
+                    │       │                   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │                   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │                   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'mclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │                   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:39154b03-0601-4bfd-8f96-5ec46a6543ea'}]
+                    │       │                   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioChannelGroupIdentification', 'type': 'STRING'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Channel Group Identification'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                                <html><p>
+                                                                    A DIO channel group is identified in DIO APIs by a pointer to a data structure of type Dio_ChannelGroupType. This data structure
+                                                                    contains the channel group information. This parameter contains the code fragment that has to be inserted in the API call of the calling module to get the address
+                                                                    of the variable in memory which holds the channel group information, a string value should be given for this parameter. Symbolic names will be generated for
+                                                                    each DioChannelGroup, which will be assigned with address of this string inorder to point to the structure parameters. Example: OutputGroup
+                                                                </p></html>]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │                   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'ECU'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'true'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:0222ad95-d800-476d-a551-96fcf5c84482'}]
+                    │       │                   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'DioChannelGroup'}]
+                    │       │                   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'XPath'}]
+                    │       │                   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': "text:match(normalize-space(.),'^[_a-zA-Z]+[_0-9a-zA-Z]*$') or normalize-space(.) = ' ' ", 'false': 'DioChannelGroupIdentification name should be entered as string.'}]
+                    │       │                   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': 'text:uniq(../../../..//DioChannelGroup//DioChannelGroupIdentification, .)', 'false': 'DioChannelGroupIdentification is repeated for two or more channel groups. Please enter different symbolic name.'}]
+                    │       │                   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPortBitNumber', 'type': 'INTEGER'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Port Bit Number'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                                <html><p>
+                                                                 This is the number of continuous channels that create a channel group
+                                                                </p></html>]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │                   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:49aebdd1-b2b7-42e8-82fc-c09f8321978b'}]
+                    │       │                   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '1'}]
+                    │       │                   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │                   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=0'}]
+                    │       │                   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=32'}]
+                    │       │                   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPortOffset', 'type': 'INTEGER'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Port Offset'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                                <html><p>
+                                                                 The position of the Channel Group on the port, counted from the least significant bit. This value can be derived from DioPortMask.
+                                                                 calculationFormula = Position of the first bit of DioPortMask which is set to 1 counted from least significant bit
+                                                                </p></html>]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │                   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'Link'}] [text:VariantLinkTime]
+                    │       │                   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │                   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:0222ad95-d800-476d-a551-96fcf6c84482'}]
+                    │       │                   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '0'}]
+                    │       │                   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Multi'}]
+                    │       │                   │       ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': "(node:fallback(.,0) >= 0) and (node:fallback(.,0) <= (num:i(32-node:fallback(../DioPortBitNumber, '1'))))", 'false': 'Value out of range: '}]
+                    │       │                   │       ├── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │                   │       │   └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '>=0'}]
+                    │       │                   │       └── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │                   │           └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '<=31'}]
+                    │       │                   └── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioPortMask', 'type': 'INTEGER'}]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Port Mask'}]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │                       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                                <html><p>
+                                                                This shall be the mask which defines the positions of the channel group.
+                                                                This field holds a decimal value that, when converted into binary, represents a bitmask for the channels in the group(e.g a value of 14 = 0x0E selects channels 1, 2 and 3).
+                                                                The binary value of the mask should have a single continuous group of 1 bits.
+                                                                The data type depends on the port width.
+                                                                To display the correct result you must click on the "calculator" icon near the Dio Port Mask field
+                                                                Calculation formula: DioPortMask=DioPortBitNumber<<DioPortOffset
+                                                                </p></html>]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │                       │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'Link'}] [text:VariantLinkTime]
+                    │       │                       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │                       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:a13389fa-d994-47e4-99d7-4cfaea7c4f1d'}]
+                    │       │                       ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'type': 'XPath'}]
+                    │       │                       │   └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '                                                                     (                                                                           bit:shl((bit:shl(1,node:fallback(../DioPortBitNumber,0)) - 1), node:fallback(../DioPortOffset,1))                                                                     )                                                         '}]
+                    │       │                       └── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Multi'}]
+                    │       │                           ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '                                                         (                                                             not( node:empty( node:fallback(., 1) )) and                                                              (                                                                 num:i(node:fallback(., 1)) !=                                                                  (                                                                       bit:shl((bit:shl(1,node:fallback(../DioPortBitNumber,0)) - 1), node:fallback(../DioPortOffset,1))                                                                 )                                                             )                                                         )', 'true': 'This value is wrong. DioPortMask is calculated by formula in the description. Please press the button to calculate the value automatically.'}]
+                    │       │                           ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': "(node:fallback(node:value(../../../../../../DioGeneral/DioReversePortBits), 'false') = 'false')  and ((bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForWrite'),node:value(../../../DioPortId)*11 + 1 ,10))))!=0) and (bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForRead'),node:value(../../../DioPortId)*11 + 1 ,10))))!=0)) ", 'true': 'You are trying to write an unavailable channel'}]
+                    │       │                           ├── xpath [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': "(node:fallback(node:value(../../../../../../DioGeneral/DioReversePortBits), 'false') = 'true')  and ((bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForWriteReversedBits'),node:value(../../../DioPortId)*11 + 1 ,10))))!=0) and (bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForReadReversedBits'),node:value(../../../DioPortId)*11 + 1 ,10))))!=0))", 'true': 'You are trying to write an unavailable channel. Please note that ReversePortBits option in DioGeneral is checked.'}]
+                    │       │                           ├── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │                           │   └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '>=0'}]
+                    │       │                           └── range [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd]
+                    │       │                               └── tst [ns:http://www.tresos.de/_projects/DataModel2/11/multitest.xsd] [attr:{'expr': '<=4294967295'}]
+                    │       ├── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioGeneral', 'type': 'IDENTIFIABLE'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                            <html><p>
+                                                General DIO module configuration parameters.
+                                            </p></html>]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:14bebd57-a98c-496c-9b67-0d150cd8719c'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioDevErrorDetect', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Development Error Detect'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                <html><p>
+                                                    Switches the Development Error Detection and Notification ON or OFF.<br>
+                                                    True: Enabled.<br>
+                                                    False: Disabled.<br>
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:068c841e-9f94-429d-b5a5-c19387eefd19'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioVersionInfoApi', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Version Info Api'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                <html><p>
+                                                    Adds / removes the service Dio_GetVersionInfo() from the code.<br>
+                                                    True - Dio_GetVersionInfo() API is enabled.<br>
+                                                    False - Dio_GetVersionInfo() API is disabled (it cannot be used).<br>
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:702473f2-8a23-47a9-a347-62f97e4f4114'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioReversePortBits', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Reverse Port Bits'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                <html><p>
+                                                    If this box is checked, the bits written to defined ports will be reversed,
+                                                    meaning that writing 3 to a port with checkbox disabled will set pins 0 and 1 of the port
+                                                    while writing 3 to a port with checkbox enabled will set pins 30 and 31 of the port.<br>
+                                                    This functionality is an AutoSAR extension.
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:1675d1c1-c6b1-4ad4-b2d0-d0332971e0ab'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioFlipChannelApi', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Flip Channel Api'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                            <html><p>
+                                                Adds / removes the service Dio_FlipChannel() from the code.<br>
+                                                True - Dio_FlipChannel() API is enabled.<br>
+                                                False - Dio_FlipChannel() API is disabled (it cannot be used).<br>
+                                            </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'AUTOSAR_ECUC'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:361c04b3-7ef8-4d5f-b6bc-c1cbb9d1b464'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioReadZeroForUndefinedPortPins', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Read Zero For Undefined Port Pins'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                <html><p>
+                                                    Defines whether the Dio_ReadPort() function includes the capability to
+                                                    read the undefined port pins as 0.<br>
+                                                    True - Enables the Dio_ReadPort() functionality to read the undefined port pins as 0.<br>
+                                                    False - Disables the Dio_ReadPort() functionality to read the undefined port pins as 0
+                                                            (Supports the normal functionality with Dio_ReadPort()).<br>
+                                                    This functionality is an AutoSAR extension. <br>
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:41610c04-821a-44bf-9ee9-af489f72b9de'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioMaskedWritePortApi', 'type': 'BOOLEAN'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Dio Masked Write Port Api'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                                <html><p>
+                                                    Defines whether the driver function Dio_MaskedWritePort() will be
+                                                    included at compile time or excluded.<br>
+                                                    This API is an AutoSAR extension. <br>
+                                                    True - Dio_MaskedWritePort() API enabled.<br>
+                                                    False - Dio_MaskedWritePort() API disabled.<br>
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:39ce509a-1849-4eb4-ace9-8e17cfbc8429'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │   └── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'DioEnableUserModeSupport', 'type': 'BOOLEAN'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:<html>
+                                                This parameter is added in Dio configuration in order to keep a consistent design over the entire set of MCAL drivers. 
+                                                It cannot be configured by the user and is always set to 'false'. 
+                                                There are no registers used by the driver which require special measures in order to be accessed from user mode, so Dio driver can be run from either user or supervisor mode.<p/>
+                                            </html>]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │       │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantLinkTime]
+                    │       │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PreCompile'}] [text:VariantPreCompile]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Enable Dio User Mode Support'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:2c37b26f-6cb3-4634-b20b-b616fg579f1c'}]
+                    │       │       ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': 'false'}]
+                    │       │       └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'READONLY', 'value': 'true'}]
+                    │       ├── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'CommonPublishedInformation', 'type': 'IDENTIFIABLE'}]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN:
+                                            <html><p>Common container, aggregated by all modules. It contains published information about vendor and versions.</p></html>]
+                    │       │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:ef717b12-97df-4b5b-b6a6-d0b8996f2e38'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'ArReleaseMajorVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'AUTOSAR Major Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Major version number of AUTOSAR specification on which the appropriate implementation is based on.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:32f49adf-7953-4ec3-ab96-aec0b0448a14'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '4'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=4'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=4'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'ArReleaseMinorVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'AUTOSAR Minor Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Minor version number of AUTOSAR specification on which the appropriate implementation is based on.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:4fe4cef9-84e4-4de9-ac95-5cc936e2da3b'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '2'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=2'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=2'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'ArReleaseRevisionVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'AUTOSAR Release Revision Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Revision version number of AUTOSAR specification on which the appropriate implementation is based on.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:0c384084-2c1c-4418-ac51-edde20594e08'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '2'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=2'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=2'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'ModuleId', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Module Id'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Module ID of this module from Module List.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:ed907e0d-66b4-4665-81ed-098b94ea6ab5'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '120'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=120'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=120'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'SwMajorVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Software Major Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Major version number of the vendor specific implementation of the module. The numbering is vendor specific.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:1901aea7-8038-479d-8196-e0ac8c1b05eb'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '1'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=1'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=1'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'SwMinorVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Software Minor Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Minor version number of the vendor specific implementation of the module. The numbering is vendor specific.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:f56e8d83-8aa5-46d9-bd73-7e78a62a54ed'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '0'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=0'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=0'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'SwPatchVersion', 'type': 'INTEGER_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Software Patch Version'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Patch level version number of the vendor specific implementation of the module. The numbering is vendor specific.</p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:11ecd4b7-edba-4c68-a971-d171b3a7ced5'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '1'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │   │       ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=1'}]
+                    │       │   │       └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=1'}]
+                    │       │   ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'VendorApiInfix', 'type': 'STRING_LABEL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Vendor Api Infix'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>
+                                                    In driver modules which can be instantiated several times on a single ECU, BSW00347 requires that the name of APIs is extended by the VendorId and a vendor specific name. 
+                                                    This parameter is used to specify the vendor specific name. In total, the implementation specific name is generated as follows:
+                                                    &lt;ModuleName&gt;_&gt;VendorId&gt;_&lt;VendorApiInfix&gt;&lt;Api name from SWS&gt;.
+                                                    E.g.  assuming that the VendorId of the implementor is 123 and the implementer chose a VendorApiInfix of &quot;v11r456&quot; a api name Can_Write defined in the SWS will translate to Can_123_v11r456Write. 
+                                                    This parameter is mandatory for all modules with upper multiplicity &gt; 1. It shall not be used for modules with upper multiplicity =1.
+                                                </p></html>]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │   │   │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'class': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │   │   │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'class': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:83459491-a8d6-4a18-b772-f632a1c589cb'}]
+                    │       │   │   ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': ''}]
+                    │       │   │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'OPTIONAL', 'value': 'true'}]
+                    │       │   │   └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'READONLY', 'value': 'true'}]
+                    │       │   └── var [ns:http://www.tresos.de/_projects/DataModel2/06/schema.xsd] [attr:{'name': 'VendorId', 'type': 'INTEGER_LABEL'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'LABEL', 'value': 'Vendor Id'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DESC'}]
+                    │       │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [text:EN: 
+                                                <html><p>Vendor ID of the dedicated implementation of this module according to the AUTOSAR vendor list.</p></html>]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPLEMENTATIONCONFIGCLASS', 'type': 'IMPLEMENTATIONCONFIGCLASS'}]
+                    │       │       │   ├── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantLinkTime]
+                    │       │       │   └── v [ns:http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd] [attr:{'vclass': 'PublishedInformation'}] [text:VariantPreCompile]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'ORIGIN', 'value': 'NXP'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SCOPE', 'value': 'LOCAL'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'SYMBOLICNAMEVALUE', 'value': 'false'}]
+                    │       │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:dc6f51af-019f-47d2-a12c-02e3a7cda386'}]
+                    │       │       ├── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEFAULT', 'value': '43'}]
+                    │       │       └── da [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'INVALID', 'type': 'Range'}]
+                    │       │           ├── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '>=43'}]
+                    │       │           └── tst [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'expr': '<=43'}]
+                    │       └── ref [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'REFINED_MODULE_DEF', 'value': 'ASPath:/AUTOSAR/EcucDefs/Dio'}]
+                    ├── chc [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'Dio_EcuParameterDefinition', 'type': 'AR-ELEMENT', 'value': 'ECU_PARAMETER_DEFINITION'}]
+                    │   └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'AR-ELEMENT'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEF', 'value': 'ASPath:/AR_PACKAGE_SCHEMA/ECU_PARAMETER_DEFINITION'}]
+                    │       ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'UUID', 'value': 'ECUC:47c84e0c-43c6-4152-98fa-0e2553449fac'}]
+                    │       └── lst [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'MODULE_REF'}]
+                    │           └── ref [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'MODULE_REF', 'value': 'ASPath:/TS_T40D2M10I1R0/Dio'}]
+                    └── chc [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'Dio_ModuleDescription', 'type': 'AR-ELEMENT', 'value': 'BSW_MODULE_DESCRIPTION'}]
+                        └── ctr [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'AR-ELEMENT'}]
+                            ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'DEF', 'value': 'ASPath:/AR_PACKAGE_SCHEMA/BSW_MODULE_DESCRIPTION'}]
+                            ├── var [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'name': 'MODULE_ID', 'type': 'INTEGER'}]
+                            │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'EDITABLE', 'value': 'false'}]
+                            │   └── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPORTER_INFO', 'value': '@DEF'}]
+                            ├── ref [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'RECOMMENDED_CONFIGURATION'}]
+                            │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'EDITABLE', 'value': 'false'}]
+                            │   └── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPORTER_INFO', 'value': '@DEF'}]
+                            ├── ref [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'PRE_CONFIGURED_CONF'}]
+                            │   ├── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'EDITABLE', 'value': 'false'}]
+                            │   └── a [ns:http://www.tresos.de/_projects/DataModel2/08/attribute.xsd] [attr:{'name': 'IMPORTER_INFO', 'value': '@DEF'}]
+                            └── ref [ns:http://www.tresos.de/_projects/DataModel2/06/data.xsd] [attr:{'type': 'VENDOR_SPECIFIC_MODULE_DEF', 'value': 'ASPath:/TS_T40D2M10I1R0/Dio'}]
