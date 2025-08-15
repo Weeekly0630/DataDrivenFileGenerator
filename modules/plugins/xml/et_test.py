@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+def 
 # 示例 XML 字符串
 data = '''
 <root>

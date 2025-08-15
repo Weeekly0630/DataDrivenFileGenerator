@@ -623,7 +623,11 @@ class CursorExtractVisitor(CursorVisitor):
     def extract_type_modifier(
         cursor: cindex.Cursor,
     ) -> Decl.TypeModifier.MetaData:
-        """从节点中提取类型修饰符"""
+        """从节点中提取类型修饰符
+        TODO: 处理匿名类型，因为匿名类型没有spelling属性，需要进一步处理
+        例如：struct { int a; } x;
+        这种情况下，cursor.spelling会是空字符串，但我们仍然需要提取类型信息
+        """
         ctype = cursor.type
         # 指针和数组信息
         pointer_level = 0
