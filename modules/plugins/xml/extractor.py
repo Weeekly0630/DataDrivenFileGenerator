@@ -321,7 +321,7 @@ def get_namespaces(xml_file):
 
 if __name__ == "__main__":
     # 遍历1目录下所有.xdm文件
-    xdm_dir = r"u:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\xml\1"
+    xdm_dir = r"E:\NCUNIMABI\BYDNMB\code\DataDrivenFileGenerator\modules\plugins\xml\1"
     all_files = [f for f in os.listdir(xdm_dir) if f.endswith('.xdm')]
     merged_dict = dict()
 
