@@ -185,36 +185,164 @@ class ElementPrinterVisitor(ElementVisitor):
         return "\n".join(lines)
 
 
+@dataclass
+class PlaceholderNode:
+    """占位符节点，用于标记嵌套的目标节点"""
+    element_id: str  # 唯一标识符
+    element: ET.Element  # 原始XML元素引用
+
+
 class ElementExtractVisitor(ElementVisitor):
-    """提取XML元素信息的访问器"""
+    """提取XML元素信息的访问器，支持嵌套目标节点的占位符处理"""
 
     def __init__(self) -> None:
         self.result: List[XmlNode.MetaData] = []
+        self.target_tags = {"ctr", "var", "lst", "chc", "ref"}
+        self.placeholder_map: Dict[str, ET.Element] = {}  # 占位符映射表
+        self._id_counter = 0
 
-    def print_summery(self) -> None:
+    def _generate_placeholder_id(self) -> str:
+        """生成唯一占位符ID"""
+        self._id_counter += 1
+        return f"__PLACEHOLDER_{self._id_counter}__"
+
+    def _extract_node_with_placeholders(self, elem: ET.Element) -> XmlNode.MetaData:
+        """递归提取节点，对嵌套的目标节点使用占位符"""
+        ns, tag = get_namespace_and_tag(elem)
+        
+        children = []
+        for child in elem:
+            child_ns, child_tag = get_namespace_and_tag(child)
+            if child_tag in self.target_tags:
+                # 为嵌套的目标节点创建占位符
+                placeholder_id = self._generate_placeholder_id()
+                self.placeholder_map[placeholder_id] = child
+                placeholder = XmlNode.MetaData(
+                    namespace="__PLACEHOLDER__",
+                    tag="placeholder",
+                    attributes={"id": placeholder_id, "original_tag": child_tag},
+                    text="",
+                    children=[],
+                )
+                children.append(placeholder)
+            else:
+                # 递归处理非目标节点
+                children.append(self._extract_node_with_placeholders(child))
+        
+        return XmlNode.MetaData(
+            namespace=ns,
+            tag=tag,
+            attributes=elem.attrib,
+            text=elem.text.strip() if elem.text else "",
+            children=children,
+        )
+
+    def _resolve_placeholders(self, node: XmlNode.MetaData) -> XmlNode.MetaData:
+        """递归解析占位符，替换为实际的目标节点"""
+        if node.namespace == "__PLACEHOLDER__" and node.tag == "placeholder":
+            # 这是一个占位符，需要替换
+            placeholder_id = node.attributes.get("id", "")
+            if placeholder_id in self.placeholder_map:
+                original_elem = self.placeholder_map[placeholder_id]
+                # 递归提取原始元素，但不再创建新的占位符
+                return self._extract_node_recursive(original_elem)
+            else:
+                # 占位符未找到，返回原节点
+                return node
+        else:
+            # 递归处理子节点
+            resolved_children = [self._resolve_placeholders(child) for child in node.children]
+            return XmlNode.MetaData(
+                namespace=node.namespace,
+                tag=node.tag,
+                attributes=node.attributes,
+                text=node.text,
+                children=resolved_children,
+            )
+
+    def _extract_node_recursive(self, elem: ET.Element) -> XmlNode.MetaData:
+        """递归提取节点，不使用占位符（用于占位符解析阶段）"""
+        ns, tag = get_namespace_and_tag(elem)
+        children = [self._extract_node_recursive(child) for child in elem]
+        return XmlNode.MetaData(
+            namespace=ns,
+            tag=tag,
+            attributes=elem.attrib,
+            text=elem.text.strip() if elem.text else "",
+            children=children,
+        )
+
+    def postprocess(self) -> List[XmlNode.MetaData]:
+        """后处理：解析所有占位符，生成完整的节点树"""
+        return [self._resolve_placeholders(node) for node in self.result]
+
+    def postprocess_to_xdm(self) -> List[Any]:
+        """后处理：转换为XdmNode.MetaData"""
+        from modules.plugins.type_classes.xdm import XdmNode
+        processed_nodes = self.postprocess()
+        
+        def convert_to_xdm(node: XmlNode.MetaData):
+            # 递归转换子节点 - 保持XmlNode.MetaData类型
+            converted_children = [convert_xml_children(child) for child in node.children]
+            # 创建新的XmlNode.MetaData，包含处理后的子节点
+            xml_meta = XmlNode.MetaData(
+                namespace=node.namespace,
+                tag=node.tag,
+                attributes=node.attributes,
+                text=node.text,
+                children=converted_children,
+            )
+            return XdmNode.MetaData(xml_meta=xml_meta, config=None)
+        
+        def convert_xml_children(node: XmlNode.MetaData) -> XmlNode.MetaData:
+            # 递归处理子节点，保持XmlNode.MetaData类型
+            converted_children = [convert_xml_children(child) for child in node.children]
+            return XmlNode.MetaData(
+                namespace=node.namespace,
+                tag=node.tag,
+                attributes=node.attributes,
+                text=node.text,
+                children=converted_children,
+            )
+        
+        return [convert_to_xdm(node) for node in processed_nodes]
+
+    def visit(
+        self, elem: ET.Element, context: ElementVisitorContext
+    ) -> ElementVisitorResult:
+        ns, tag = get_namespace_and_tag(elem)
+        
+        if tag in self.target_tags:
+            # 提取目标节点，使用占位符处理嵌套
+            node = self._extract_node_with_placeholders(elem)
+            self.result.append(node)
+            return ElementVisitorResult.SKIP_CHILDREN
+        
+        return ElementVisitorResult.CONTINUE
+
+    def print_summary(self) -> None:
         """打印提取结果的摘要"""
         print("\n--- Extracted Elements ---")
-        for item in self.result:
+        processed = self.postprocess()
+        for item in processed:
             print(f"{item}")
-    
+
     def get_child_a_da_summary_dict(self) -> Dict[Tuple[str, str, Tuple[Tuple[str, str], ...]], set]:
         """
         返回每个父节点(ctr, var, lst, chc, ref)下的所有a, da子节点类型(namespace, tag, name)集合的字典
-        key: (parent_namespace, parent_tag, parent_attributes_tuple)
-        value: set((child_namespace, child_tag, child_name))
-        parent_attributes_tuple: ((attr_key, attr_value), ...) 按key排序，便于去重和合并
         """
         parent_a_da_map = dict()
-        target_parents = {"ctr", "var", "lst", "chc", "ref"}
+        processed_nodes = self.postprocess()
 
-        for item in self.result:
+        for item in processed_nodes:
             parent_tag = item.tag
-            parent_ns = item.namespace if hasattr(item, "namespace") else ""
-            if parent_tag not in target_parents:
+            parent_ns = item.namespace if item.namespace else ""
+            if parent_tag not in self.target_tags:
                 continue
-            # attributes转为tuple，便于hash和去重
-            parent_attrs_tuple = tuple(sorted(item.attributes.items())) if hasattr(item, "attributes") else tuple()
+            
+            parent_attrs_tuple = tuple(sorted(item.attributes.items()))
             parent_key = (parent_ns, parent_tag, parent_attrs_tuple)
+            
             for child in item.children:
                 if child.tag in ("a", "da"):
                     ns = child.namespace if child.namespace else ""
@@ -224,68 +352,6 @@ class ElementExtractVisitor(ElementVisitor):
                         parent_a_da_map[parent_key] = set()
                     parent_a_da_map[parent_key].add(key)
         return parent_a_da_map
-
-    def print_child_a_da_summary(self) -> None:
-        """打印每个父节点(ctr, var, lst, chc, ref)下的所有a, da子节点类型(namespace, tag, name)集合"""
-        print("\n--- 父节点及其a, da子节点类型统计 ---")
-        parent_a_da_map = self.get_child_a_da_summary_dict()
-        print("每个父节点的a, da子节点类型(namespace, tag, name)：")
-        for parent_tag, a_da_set in parent_a_da_map.items():
-            print(f"父节点: {parent_tag}")
-            for ns, tag, name in sorted(a_da_set):
-                print(f"    子节点: namespace={ns!r}, tag={tag!r}, name={name!r}")
-        
-    def print_a_da_summary(self) -> None:
-        """统计所有唯一的a, da节点(namespace, name)，以及它们可能的父节点tag集合"""
-        print("\n--- a, da节点及其父节点统计 ---")
-        a_da_parent_map = dict()
-        
-        for item in extract_visitor.result:
-            parent_tag = item.tag
-            for child in item.children:
-                if child.tag in ("a", "da"):
-                    ns = child.namespace if child.namespace else ""
-                    name = child.attributes.get("name", "")
-                    key = (ns, child.tag, name)
-                    if key not in a_da_parent_map:
-                        a_da_parent_map[key] = set()
-                    a_da_parent_map[key].add(parent_tag)
-
-        print("唯一的a, da节点(namespace, name)，及其父节点tag集合：")
-        for (ns, tag, name), parent_tags in a_da_parent_map.items():
-            parent_tags_str = ", ".join(sorted(parent_tags))
-            print(f"tag={ns!r}:{tag}, name={name!r}, parent_tags=[{parent_tags_str}]")
-
-    def visit(
-        self, elem: ET.Element, context: ElementVisitorContext
-    ) -> ElementVisitorResult:
-        ns, tag = get_namespace_and_tag(elem)
-        child_list: List[XmlNode.MetaData] = []
-        # 提取子节点信息
-        for child in elem:
-            child_ns, child_tag = get_namespace_and_tag(child)
-            child_list.append(
-                XmlNode.MetaData(
-                    namespace=child_ns,
-                    tag=child_tag,
-                    attributes=child.attrib,
-                    text=child.text.strip() if child.text else "",
-                    children=[],  # 子节点在这里不展开
-                )
-            )
-
-        # 提取节点信息
-        self.result.append(
-            XmlNode.MetaData(
-                namespace=ns,
-                tag=tag,
-                attributes=elem.attrib,
-                text=elem.text.strip() if elem.text else "",
-                children=child_list,
-            )
-        )
-
-        return ElementVisitorResult.CONTINUE
 
 
 data = """
@@ -320,59 +386,84 @@ def get_namespaces(xml_file):
     return namespaces
 
 if __name__ == "__main__":
-    # 遍历1目录下所有.xdm文件
-    xdm_dir = r"E:\NCUNIMABI\BYDNMB\code\DataDrivenFileGenerator\modules\plugins\xml\1"
-    all_files = [f for f in os.listdir(xdm_dir) if f.endswith('.xdm')]
-    merged_dict = dict()
+    # 测试数据：包含嵌套目标节点
+    test_data = """
+    <root xmlns:d="http://www.tresos.de/_projects/DataModel2/06/data.xsd"
+          xmlns:a="http://www.tresos.de/_projects/DataModel2/08/attribute.xsd">
+        <d:var name="Speed" value="100" type="int"/>
+        <d:ctr name="Config">
+            <a:a name="UUID" value="12345"/>
+            <d:var name="Enable" value="true" type="bool"/>
+            <d:lst name="Items">
+                <a:a name="DESC" value="Items list"/>
+                <d:var name="Item1" value="A"/>
+                <d:var name="Item2" value="B"/>
+                <d:ctr name="NestedConfig">
+                    <a:a name="NESTED_UUID" value="67890"/>
+                    <d:var name="NestedVar" value="nested"/>
+                </d:ctr>
+            </d:lst>
+        </d:ctr>
+        <d:chc name="Mode" default="auto">
+            <d:var name="Manual"/>
+            <d:var name="Auto"/>
+        </d:chc>
+        <d:ref name="Ref1" target="Speed"/>
+    </root>
+    """
 
-    for fname in all_files:
-        xml_file = os.path.join(xdm_dir, fname)
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-        except Exception as e:
-            print(f"解析失败: {xml_file}, 错误: {e}")
-            continue
-
-        filter_visitor = ElementFilterVisitor(
-            included_tags=["datamodel", "root", "var", "ctr", "lst", "chc", "ref"]
-        )
-        extract_visitor = ElementExtractVisitor()
-        visitor_chain = ElementVisitorChain([
-            filter_visitor,
-            extract_visitor
-        ])
-        visitor_chain.traverse(root)
-
-        # 合并字典
-        file_dict = extract_visitor.get_child_a_da_summary_dict()
-        for parent_key, child_set in file_dict.items():
-            if parent_key not in merged_dict:
-                merged_dict[parent_key] = set()
-            merged_dict[parent_key].update(child_set)
-
-    # 打印并输出到文件
-    output_lines = []
-    output_lines.append("=== 所有文件合并后的父节点(type分类)及a, da子节点类型统计 ===\n")
-    # 仅按type属性分类
-    type_grouped = dict()
-    for parent_key, a_da_set in merged_dict.items():
-        parent_ns, parent_tag, parent_attrs_tuple = parent_key
-        parent_attrs = dict(parent_attrs_tuple)
-        parent_type = parent_attrs.get("type", "<none>")
-        type_key = (parent_ns, parent_tag, parent_type)
-        if type_key not in type_grouped:
-            type_grouped[type_key] = set()
-        type_grouped[type_key].update(a_da_set)
-
-    for (parent_ns, parent_tag, parent_type), a_da_set in type_grouped.items():
-        output_lines.append(f"父节点: ns={parent_ns!r}, tag={parent_tag!r}, type={parent_type!r}")
-        for ns, tag, name in sorted(a_da_set):
-            output_lines.append(f"    子节点: namespace={ns!r}, tag={tag!r}, name={name!r}")
-    output_str = "\n".join(output_lines)
-    print("\n" + output_str)
-    output_file = os.path.join(xdm_dir, "merged_a_da_summary.txt")
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(output_str)
-    print(f"统计结果已输出到: {output_file}")
+    print("=== 测试嵌套目标节点的占位符提取 ===")
+    
+    # 解析XML
+    root = ET.fromstring(test_data)
+    
+    # 创建访问器链
+    filter_visitor = ElementFilterVisitor(
+        included_tags=["root", "var", "ctr", "lst", "chc", "ref"]
+    )
+    extract_visitor = ElementExtractVisitor()
+    
+    visitor_chain = ElementVisitorChain([filter_visitor, extract_visitor])
+    
+    # 执行遍历
+    visitor_chain.traverse(root)
+    
+    print(f"\n提取到 {len(extract_visitor.result)} 个目标节点")
+    
+    # 显示原始结果（包含占位符）
+    print("\n--- 原始结果（包含占位符） ---")
+    for i, node in enumerate(extract_visitor.result):
+        print(f"节点 {i+1}: {node.tag} (namespace: {node.namespace})")
+        print(f"  属性: {node.attributes}")
+        print(f"  子节点数: {len(node.children)}")
+        for j, child in enumerate(node.children):
+            if child.namespace == "__PLACEHOLDER__":
+                print(f"    子节点 {j+1}: [占位符] -> {child.attributes.get('original_tag', 'unknown')}")
+            else:
+                print(f"    子节点 {j+1}: {child.tag} (ns: {child.namespace})")
+    
+    # 后处理：解析占位符
+    print("\n--- 后处理结果（占位符已解析） ---")
+    processed_nodes = extract_visitor.postprocess()
+    for i, node in enumerate(processed_nodes):
+        print(f"节点 {i+1}: {node}")
+    
+    # 转换为XdmNode
+    print("\n--- 转换为XdmNode ---")
+    xdm_nodes = extract_visitor.postprocess_to_xdm()
+    for i, xdm_node in enumerate(xdm_nodes):
+        print(f"XdmNode {i+1}: tag={xdm_node.tag}, type={xdm_node.type}")
+        print(f"  XML结构: {xdm_node.xml_meta}")
+    
+    # 统计a/da子节点
+    print("\n--- a/da子节点统计 ---")
+    summary_dict = extract_visitor.get_child_a_da_summary_dict()
+    for parent_key, child_set in summary_dict.items():
+        parent_ns, parent_tag, parent_attrs = parent_key
+        parent_attrs_dict = dict(parent_attrs)
+        print(f"父节点: {parent_tag} (ns: {parent_ns}, attrs: {parent_attrs_dict})")
+        for child_ns, child_tag, child_name in sorted(child_set):
+            print(f"  -> {child_tag}:{child_name} (ns: {child_ns})")
+    
+    print("\n=== 测试完成 ===")
     
