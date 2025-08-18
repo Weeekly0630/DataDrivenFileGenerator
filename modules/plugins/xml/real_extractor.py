@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Optional, Protocol, Tuple
+from typing import List, Dict, Any, Optional, Protocol, Tuple, Union
 from dataclasses import dataclass, field
 from enum import IntFlag
 import sys
@@ -111,7 +111,7 @@ class ElementFilterVisitor(ElementVisitor):
 
 class PathResolveVisitor(ElementVisitor):
     def __init__(self):
-        self.path_stack = []  # 存储 (tag, index) 
+        self.path_stack = []  # 存储 (tag, index)
         self.current_path = ""
         self.last_depth = -1
         self.sibling_counts = {}  # 按深度记录兄弟节点计数
@@ -135,9 +135,9 @@ class PathResolveVisitor(ElementVisitor):
             self.sibling_counts[cur_depth][tag] = 0
         else:
             self.sibling_counts[cur_depth][tag] += 1
-        
+
         index = self.sibling_counts[cur_depth][tag]
-        
+
         # 更新路径栈
         if cur_depth < len(self.path_stack):
             self.path_stack[cur_depth] = (tag, index)
@@ -145,7 +145,9 @@ class PathResolveVisitor(ElementVisitor):
             self.path_stack.append((tag, index))
 
         # 生成路径
-        self.current_path = "/" + "/".join([f"{t}[{i}]" for t, i in self.path_stack[:cur_depth + 1]])
+        self.current_path = "/" + "/".join(
+            [f"{t}[{i}]" for t, i in self.path_stack[: cur_depth + 1]]
+        )
         self.last_depth = cur_depth
         return ElementVisitorResult.CONTINUE
 
@@ -153,34 +155,37 @@ class PathResolveVisitor(ElementVisitor):
         """获取当前解析的路径"""
         return self.current_path if self.current_path else "/"
 
+
 class ElementExtractVisitor(ElementVisitor):
     """提取XML元素的访问器, 将符合条件的节点转换为 XmlNode"""
 
     def __init__(self) -> None:
         self.path_visitor = PathResolveVisitor()
         self.result: List[XmlNode.MetaData] = []
-        self.node_refs: Dict[str, ET.Element] = {}  # 存储非a/da节点的路径引用
+        self.all_nodes: Dict[str, XmlNode.MetaData] = {}  # 路径 -> 节点映射表
 
-    def _recursively_parse_a_da(self, elem: ET.Element, base_path: str = "") -> List[XmlNode.MetaData]:
+    def _recursively_parse_a_da(
+        self, elem: ET.Element, base_path: str = ""
+    ) -> List[XmlNode.MetaData]:
         """递归解析a/da节点的所有子节点"""
         child_list: List[XmlNode.MetaData] = []
         child_tag_counts = {}
-        
+
         for child in elem:
             child_ns, child_tag = get_namespace_and_tag(child)
-            
+
             # 计算子节点索引
             if child_tag not in child_tag_counts:
                 child_tag_counts[child_tag] = 0
             else:
                 child_tag_counts[child_tag] += 1
-            
+
             child_index = child_tag_counts[child_tag]
             child_path = f"{base_path}/{child_tag}[{child_index}]"
-            
+
             # 递归解析子节点
             grandchildren = self._recursively_parse_a_da(child, child_path)
-            
+
             child_meta = XmlNode.MetaData(
                 namespace=child_ns,
                 tag=child_tag,
@@ -189,73 +194,41 @@ class ElementExtractVisitor(ElementVisitor):
                 children=grandchildren,
             )
             child_list.append(child_meta)
-            
+
         return child_list
 
     def print_summary(self) -> None:
         print(f"Extracted {len(self.result)} XML nodes:")
-        print(f"Stored {len(self.node_refs)} node references:")
+        print(f"Total nodes in mapping: {len(self.all_nodes)}")
 
         for node in self.result:
             print(f"{node}")
-        
-        for path, elem in self.node_refs.items():
-            _, tag = get_namespace_and_tag(elem)
-            print(f"Reference: {path} -> {tag}")
 
-    def post_process_node_refs(self) -> Dict[str, XmlNode.MetaData]:
-        """后处理节点引用，将引用的节点转换为完整的 XmlNode.MetaData"""
-        processed_refs = {}
-        
-        for path, elem in self.node_refs.items():
-            ns, tag = get_namespace_and_tag(elem)
-            
-            # 递归解析引用节点的所有子节点
-            children = self._recursively_parse_element(elem, path)
-            
-            processed_node = XmlNode.MetaData(
-                namespace=ns,
-                tag=tag,
-                attributes=dict(elem.attrib),
-                text=elem.text.strip() if elem.text else "",
-                children=children,
-            )
-            
-            processed_refs[path] = processed_node
-            print(f"Post-processed reference: {path} -> {tag}")
-        
-        return processed_refs
-    
-    def _recursively_parse_element(self, elem: ET.Element, base_path: str = "") -> List[XmlNode.MetaData]:
-        """递归解析元素的所有子节点（用于后处理引用节点）"""
-        child_list: List[XmlNode.MetaData] = []
-        child_tag_counts = {}
-        
-        for child in elem:
-            child_ns, child_tag = get_namespace_and_tag(child)
-            
-            # 计算子节点索引
-            if child_tag not in child_tag_counts:
-                child_tag_counts[child_tag] = 0
-            else:
-                child_tag_counts[child_tag] += 1
-            
-            child_index = child_tag_counts[child_tag]
-            child_path = f"{base_path}/{child_tag}[{child_index}]"
-            
-            # 递归解析子节点
-            grandchildren = self._recursively_parse_element(child, child_path)
-            
-            child_meta = XmlNode.MetaData(
-                namespace=child_ns,
-                tag=child_tag,
-                attributes=dict(child.attrib),
-                text=child.text.strip() if child.text else "",
-                children=grandchildren,
-            )
-            child_list.append(child_meta)
-            
-        return child_list
+    def post_process(self) -> None:
+        """后处理：用实际节点替换路径引用"""
+        print("=== 开始后处理：替换路径引用 ===")
+
+        for path, node in self.all_nodes.items():
+            if "_child_refs" in node.__dict__:
+                resolved_children = []
+                for child_ref in node.__dict__["_child_refs"]:
+                    if isinstance(child_ref, str):
+                        # 路径引用，查找实际节点
+                        if child_ref in self.all_nodes:
+                            resolved_children.append(self.all_nodes[child_ref])
+                            print(f"Resolved reference: {child_ref}")
+                        else:
+                            print(f"Warning: 未找到路径引用 {child_ref}")
+                    else:
+                        # 直接的节点对象（a/da节点）
+                        resolved_children.append(child_ref)
+
+                # 更新children
+                node.children = resolved_children
+                # 清理临时属性
+                del node.__dict__["_child_refs"]
+
+        print("=== 后处理完成 ===")
 
     def visit(
         self, elem: ET.Element, context: ElementVisitorContext
@@ -266,26 +239,26 @@ class ElementExtractVisitor(ElementVisitor):
         cur_path = self.path_visitor.get_current_path()
 
         ns, tag = get_namespace_and_tag(elem)
-        child_list: List[XmlNode.MetaData] = []
+        child_list: List[Union[XmlNode.MetaData, str]] = []  # 子节点或路径引用
         child_tag_counts = {}  # 用于计算子节点的索引
-        
+
         # 提取子节点信息
         for child in elem:
             child_ns, child_tag = get_namespace_and_tag(child)
-            
+
             # 计算子节点在兄弟节点中的索引
             if child_tag not in child_tag_counts:
                 child_tag_counts[child_tag] = 0
             else:
                 child_tag_counts[child_tag] += 1
-            
+
             child_index = child_tag_counts[child_tag]
             # 生成子节点的唯一路径
             child_path = f"{cur_path}/{child_tag}[{child_index}]"
-            
-            print(f"Processing child: {child_path} (ns={child_ns}, tag={child_tag})")
-            
-            # 区分处理：a/da节点递归解析，其他节点保存引用
+
+            # print(f"Processing child: {child_path} (ns={child_ns}, tag={child_tag})")
+
+            # 区分处理：a/da节点递归解析，其他目标节点保存路径引用
             if child_tag in ["a", "da"]:
                 # a/da节点：递归解析所有子节点
                 grandchildren = self._recursively_parse_a_da(child, child_path)
@@ -297,27 +270,26 @@ class ElementExtractVisitor(ElementVisitor):
                     children=grandchildren,
                 )
                 child_list.append(child_meta)
-            else:
-                # 其他节点：只保存路径引用，不展开
-                self.node_refs[child_path] = child
-                child_meta = XmlNode.MetaData(
-                    namespace=child_ns,
-                    tag=child_tag,
-                    attributes=dict(child.attrib),
-                    text=child.text.strip() if child.text else "",
-                    children=[],  # 不展开，等待后处理
-                )
-                child_list.append(child_meta)
+            else:  # child_tag in ["datamodel", "ctr", "var", "lst", "chc", "ref"]:
+                # 目标节点：保存路径引用，等待后处理
+                child_list.append(child_path)
+            # 其他非目标节点忽略
 
         cur_xml_node = XmlNode.MetaData(
             namespace=ns,
             tag=tag,
-            attributes=elem.attrib,
+            attributes=dict(elem.attrib),
             text=elem.text.strip() if elem.text else "",
-            children=child_list,
+            children=[],  # 暂时为空，后续通过路径引用替换
         )
-        print(f"Extracted XML node: {cur_xml_node} at path: {cur_path}")
-        # 提取节点信息
+        # 将混合的子节点列表（包含路径引用）存储到特殊属性中
+        cur_xml_node.__dict__["_child_refs"] = child_list
+
+        # 保存到全局映射表
+        self.all_nodes[cur_path] = cur_xml_node
+        print(f"Stored node: {cur_path} -> {tag}")
+
+        # 添加到结果列表
         self.result.append(cur_xml_node)
 
         return ElementVisitorResult.CONTINUE
@@ -332,20 +304,15 @@ if __name__ == "__main__":
     extract_visitor = ElementExtractVisitor()
     visitor_chain = ElementVisitorChain(visitors=[filter_visitor, extract_visitor])
 
-    # 第一阶段：遍历并提取节点
+    # 第一阶段：遍历并提取节点（包含占位节点）
     print("=== 第一阶段：节点提取 ===")
     visitor_chain.traverse(ET.parse(xdm_file).getroot())
 
-    # 第二阶段：后处理节点引用
-    print("\n=== 第二阶段：后处理节点引用 ===")
-    processed_refs = extract_visitor.post_process_node_refs()
+    # 第二阶段：后处理替换路径引用
+    print("\n=== 第二阶段：后处理替换路径引用 ===")
+    extract_visitor.post_process()
 
-    # 打印提取结果
-    print(f"\n=== 最终结果统计 ===")
-    print(f"直接提取的节点数: {len(extract_visitor.result)}")
-    print(f"后处理的引用节点数: {len(processed_refs)}")
-    
-    # 打印后处理后的结果
-    root_element = extract_visitor.result[0]
-    if root_element.tag == "datamodel":
-        print(root_element)
+    # 打印根节点的完整树结构
+    if extract_visitor.result:
+        print("\n=== 完整树结构 ===")
+        print(extract_visitor.result[0])
