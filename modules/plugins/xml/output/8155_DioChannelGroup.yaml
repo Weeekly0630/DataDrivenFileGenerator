@@ -1,0 +1,54 @@
+CHILDREN_PATH:
+- 7411_DioChannelGroupIdentification.yaml
+- 7411_DioPortBitNumber.yaml
+- 7411_DioPortOffset.yaml
+- 7411_DioPortMask.yaml
+a_da:
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                            <html><p>\n\
+      \                                                                A channel group\
+      \ represents several adjoining DIO channels represented by a logical group.\n\
+      \                                                                This container\
+      \ definition does not explicitly define a symbolic name parameter, but symbolic\
+      \ names will be generated for\n                                            \
+      \                    each channel group. Each group provides a structure with\
+      \ parameters port, offset and mask.\n                                      \
+      \                      </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:39154b03-0601-4bfd-8f96-5ec46a6543ea
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioChannelGroup
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

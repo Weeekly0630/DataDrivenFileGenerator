@@ -1,0 +1,120 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Port Id
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                        <html><p>\n\
+      \                                                            Numeric identifier\
+      \ of the DIO port. Symbolic names will be generated for each port pin id\n \
+      \                                                           for the pins which\
+      \ being used for configuration.\n                                          \
+      \                  NOTE: Use the following values to configure different ports.\n\
+      \                                                            <ul>\n        \
+      \                                                        <li>PortA=0</li>\n\
+      \                                                                <li>PortB=1</li>\n\
+      \                                                                <li>PortC=2</li>\n\
+      \                                                                <li>PortD=3</li>\n\
+      \                                                                <li>PortE=4</li>\n\
+      \                                                            </ul>\n       \
+      \                                                 </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: Link
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: AUTOSAR_ECUC
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'true'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: ECU
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:e572b945-92b2-4a6b-9209-16791c1307cc
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: '0'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: Multi
+  children:
+  - attributes:
+      expr: text:uniq(../../*/DioPortId, .)
+      'false': DioPortId is repeated for two or more ports.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes:
+      expr: (num:hextoint(ecu:list('Dio.AvailablePortPinsForWrite')[num:dectoint(node:current())+1])
+        != num:i('0')) or (num:hextoint(ecu:list('Dio.AvailablePortPinsForRead')[num:dectoint(node:current())+1])
+        != num:i('0'))
+      'false': This port is not available for the selected package. Please see RM
+        for a list of available ports for selected package.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioPortId
+  type: INTEGER
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

@@ -1,0 +1,95 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Module Id
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN: \n                                                <html><p>Module ID\
+      \ of this module from Module List.</p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: PublishedInformation
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PublishedInformation
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: NXP
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: LOCAL
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:ed907e0d-66b4-4665-81ed-098b94ea6ab5
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: '120'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: Range
+  children:
+  - attributes:
+      expr: '>=120'
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: tst
+    text: ''
+  - attributes:
+      expr: <=120
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: tst
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: ModuleId
+  type: INTEGER_LABEL
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

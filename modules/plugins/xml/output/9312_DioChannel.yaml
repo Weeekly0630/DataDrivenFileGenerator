@@ -1,0 +1,8 @@
+CHILDREN_PATH:
+- 8155_DioChannel.yaml
+attributes:
+  name: DioChannel
+  type: MAP
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: lst
+text: ''

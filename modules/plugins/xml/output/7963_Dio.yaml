@@ -1,0 +1,9 @@
+CHILDREN_PATH:
+- 4777_unnamed_ctr.yaml
+attributes:
+  name: Dio
+  type: AR-ELEMENT
+  value: MODULE-DEF
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: chc
+text: ''

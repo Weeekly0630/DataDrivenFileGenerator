@@ -1,0 +1,110 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Channel Id
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                                <html><p>\n\
+      \                                                                    Channel\
+      \ Id of the DIO channel. This value will be assigned to the symbolic names.\n\
+      \                                                                </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: Link
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: AUTOSAR_ECUC
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: ECU
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'true'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:0222ad95-d800-476d-a551-96fcf5c84481
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: '0'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: Multi
+  children:
+  - attributes:
+      expr: text:uniq(../../*/DioChannelId, .)
+      'false': DioChannelId is repeated for two or more channels.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes:
+      expr: (bit:and(num:hextoint(ecu:list('Dio.AvailablePortPinsForWrite')[num:dectoint((node:current())/../../../DioPortId)+1]),bit:shl(
+        num:i(1),num:dectoint ( node:current() ) )) != '0') or (bit:and(num:hextoint(ecu:list('Dio.AvailablePortPinsForRead')[num:dectoint((node:current())/../../../DioPortId)+1]),bit:shl(
+        num:i(1),num:dectoint ( node:current() ) )) != '0')
+      'false': This channel is not available in the selected package. Please see RM
+        for a list of available channels for selected package.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioChannelId
+  type: INTEGER
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

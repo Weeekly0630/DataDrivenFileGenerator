@@ -1,0 +1,16 @@
+CHILDREN_PATH:
+- 8546_DioPort.yaml
+a_da:
+- attributes:
+    name: MIN
+    value: '1'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioPort
+  type: MAP
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: lst
+text: ''

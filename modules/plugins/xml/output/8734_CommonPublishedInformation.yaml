@@ -1,0 +1,36 @@
+CHILDREN_PATH:
+- 2999_ArReleaseMajorVersion.yaml
+- 2999_ArReleaseMinorVersion.yaml
+- 2999_ArReleaseRevisionVersion.yaml
+- 2999_ModuleId.yaml
+- 2999_SwMajorVersion.yaml
+- 2999_SwMinorVersion.yaml
+- 2999_SwPatchVersion.yaml
+- 2999_VendorApiInfix.yaml
+- 2999_VendorId.yaml
+a_da:
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                            <html><p>Common container,\
+      \ aggregated by all modules. It contains published information about vendor\
+      \ and versions.</p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:ef717b12-97df-4b5b-b6a6-d0b8996f2e38
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: CommonPublishedInformation
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

@@ -1,0 +1,85 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Masked Write Port Api
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                <html><p>\n      \
+      \                                              Defines whether the driver function\
+      \ Dio_MaskedWritePort() will be\n                                          \
+      \          included at compile time or excluded.<br>\n                     \
+      \                               This API is an AutoSAR extension. <br>\n   \
+      \                                                 True - Dio_MaskedWritePort()\
+      \ API enabled.<br>\n                                                    False\
+      \ - Dio_MaskedWritePort() API disabled.<br>\n                              \
+      \                  </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: NXP
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: LOCAL
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:39ce509a-1849-4eb4-ace9-8e17cfbc8429
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioMaskedWritePortApi
+  type: BOOLEAN
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

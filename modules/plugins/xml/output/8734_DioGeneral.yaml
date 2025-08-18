@@ -1,0 +1,34 @@
+CHILDREN_PATH:
+- 2999_DioDevErrorDetect.yaml
+- 2999_DioVersionInfoApi.yaml
+- 2999_DioReversePortBits.yaml
+- 2999_DioFlipChannelApi.yaml
+- 2999_DioReadZeroForUndefinedPortPins.yaml
+- 2999_DioMaskedWritePortApi.yaml
+- 2999_DioEnableUserModeSupport.yaml
+a_da:
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                            <html><p>\n          \
+      \                                      General DIO module configuration parameters.\n\
+      \                                            </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:14bebd57-a98c-496c-9b67-0d150cd8719c
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioGeneral
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

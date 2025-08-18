@@ -1,0 +1,140 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Port Mask
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                                <html><p>\n\
+      \                                                                This shall\
+      \ be the mask which defines the positions of the channel group.\n          \
+      \                                                      This field holds a decimal\
+      \ value that, when converted into binary, represents a bitmask for the channels\
+      \ in the group(e.g a value of 14 = 0x0E selects channels 1, 2 and 3).\n    \
+      \                                                            The binary value\
+      \ of the mask should have a single continuous group of 1 bits.\n           \
+      \                                                     The data type depends\
+      \ on the port width.\n                                                     \
+      \           To display the correct result you must click on the \"calculator\"\
+      \ icon near the Dio Port Mask field\n                                      \
+      \                          Calculation formula: DioPortMask=DioPortBitNumber<<DioPortOffset\n\
+      \                                                                </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: Link
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: AUTOSAR_ECUC
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: LOCAL
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:a13389fa-d994-47e4-99d7-4cfaea7c4f1d
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    type: XPath
+  children:
+  - attributes:
+      expr: '                                                                     (                                                                           bit:shl((bit:shl(1,node:fallback(../DioPortBitNumber,0))
+        - 1), node:fallback(../DioPortOffset,1))                                                                     )                                                         '
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: tst
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: Multi
+  children:
+  - attributes:
+      expr: '                                                         (                                                             not(
+        node:empty( node:fallback(., 1) )) and                                                              (                                                                 num:i(node:fallback(.,
+        1)) !=                                                                  (                                                                       bit:shl((bit:shl(1,node:fallback(../DioPortBitNumber,0))
+        - 1), node:fallback(../DioPortOffset,1))                                                                 )                                                             )                                                         )'
+      'true': This value is wrong. DioPortMask is calculated by formula in the description.
+        Please press the button to calculate the value automatically.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes:
+      expr: '(node:fallback(node:value(../../../../../../DioGeneral/DioReversePortBits),
+        ''false'') = ''false'')  and ((bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get(''Dio.AvailablePortPinsForWrite''),node:value(../../../DioPortId)*11
+        + 1 ,10))))!=0) and (bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get(''Dio.AvailablePortPinsForRead''),node:value(../../../DioPortId)*11
+        + 1 ,10))))!=0)) '
+      'true': You are trying to write an unavailable channel
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes:
+      expr: (node:fallback(node:value(../../../../../../DioGeneral/DioReversePortBits),
+        'false') = 'true')  and ((bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForWriteReversedBits'),node:value(../../../DioPortId)*11
+        + 1 ,10))))!=0) and (bit:and ((node:fallback(., 1)),bit:not(num:hextoint(substring(ecu:get('Dio.AvailablePortPinsForReadReversedBits'),node:value(../../../DioPortId)*11
+        + 1 ,10))))!=0))
+      'true': You are trying to write an unavailable channel. Please note that ReversePortBits
+        option in DioGeneral is checked.
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioPortMask
+  type: INTEGER
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

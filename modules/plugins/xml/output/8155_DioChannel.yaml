@@ -1,0 +1,49 @@
+CHILDREN_PATH:
+- 7411_DioChannelId.yaml
+a_da:
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                            <html><p>\n\
+      \                                                                Configuration\
+      \ of an individual DIO channel. Symbolic names will be generated for each channel.\n\
+      \                                                                A general purpose\
+      \ digital IO pin represents a DIO channel which will be having value either\
+      \ STD_HIGH or STD_LOW.\n                                                   \
+      \         </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:27aaf24e-fe6b-4d85-9666-e20239723ac8
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioChannel
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

@@ -1,0 +1,105 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Port Offset
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                                <html><p>\n\
+      \                                                                 The position\
+      \ of the Channel Group on the port, counted from the least significant bit.\
+      \ This value can be derived from DioPortMask.\n                            \
+      \                                     calculationFormula = Position of the first\
+      \ bit of DioPortMask which is set to 1 counted from least significant bit\n\
+      \                                                                </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: Link
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: AUTOSAR_ECUC
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: LOCAL
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:0222ad95-d800-476d-a551-96fcf6c84482
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: '0'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: Multi
+  children:
+  - attributes:
+      expr: (node:fallback(.,0) >= 0) and (node:fallback(.,0) <= (num:i(32-node:fallback(../DioPortBitNumber,
+        '1'))))
+      'false': 'Value out of range: '
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: xpath
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/11/multitest.xsd
+    tag: range
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioPortOffset
+  type: INTEGER
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

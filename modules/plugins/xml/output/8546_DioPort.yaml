@@ -1,0 +1,54 @@
+CHILDREN_PATH:
+- 9312_DioPortId.yaml
+- 9312_DioChannel.yaml
+- 9312_DioChannelGroup.yaml
+a_da:
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                    <html><p>\n  \
+      \                                                      Configuration of individual\
+      \ DIO ports, consisting of channels and possible channel groups.\n         \
+      \                                               The single DIO channel levels\
+      \ inside a DIO port represent a bit in the DIO port value. A channel group is\
+      \ a formal\n                                                        logical\
+      \ combination of several adjoining DIO channels within a DIO port. The configuration\
+      \ process for Dio module\n                                                 \
+      \       shall provide symbolic names for each configured DIO channel, port and\
+      \ group.\n                                                    </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      mclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:4e6fabe5-32b5-42b8-b166-115c11cdc751
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioPort
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

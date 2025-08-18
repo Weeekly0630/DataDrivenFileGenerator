@@ -1,0 +1,16 @@
+CHILDREN_PATH:
+- 4943_unnamed_lst.yaml
+a_da:
+- attributes:
+    name: UUID
+    value: ECUC:7690b8cf-35e0-40d4-8b90-603d098bfa1b
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: TS_T40D2M10I1R0
+  type: AR-PACKAGE
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: ctr
+text: ''

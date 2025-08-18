@@ -1,0 +1,111 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: LABEL
+    value: Dio Channel Group Identification
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: v
+    text: "EN:\n                                                                <html><p>\n\
+      \                                                                    A DIO channel\
+      \ group is identified in DIO APIs by a pointer to a data structure of type Dio_ChannelGroupType.\
+      \ This data structure\n                                                    \
+      \                contains the channel group information. This parameter contains\
+      \ the code fragment that has to be inserted in the API call of the calling module\
+      \ to get the address\n                                                     \
+      \               of the variable in memory which holds the channel group information,\
+      \ a string value should be given for this parameter. Symbolic names will be\
+      \ generated for\n                                                          \
+      \          each DioChannelGroup, which will be assigned with address of this\
+      \ string inorder to point to the structure parameters. Example: OutputGroup\n\
+      \                                                                </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPLEMENTATIONCONFIGCLASS
+    type: IMPLEMENTATIONCONFIGCLASS
+  children:
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantLinkTime
+  - attributes:
+      vclass: PreCompile
+    namespace: http://www.tresos.de/_projects/DataModel2/08/implconfigclass.xsd
+    tag: v
+    text: VariantPreCompile
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ORIGIN
+    value: AUTOSAR_ECUC
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SCOPE
+    value: ECU
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: SYMBOLICNAMEVALUE
+    value: 'true'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:0222ad95-d800-476d-a551-96fcf5c84482
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DEFAULT
+    value: DioChannelGroup
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+- attributes:
+    name: INVALID
+    type: XPath
+  children:
+  - attributes:
+      expr: 'text:match(normalize-space(.),''^[_a-zA-Z]+[_0-9a-zA-Z]*$'') or normalize-space(.)
+        = '' '' '
+      'false': DioChannelGroupIdentification name should be entered as string.
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: tst
+    text: ''
+  - attributes:
+      expr: text:uniq(../../../..//DioChannelGroup//DioChannelGroupIdentification,
+        .)
+      'false': DioChannelGroupIdentification is repeated for two or more channel groups.
+        Please enter different symbolic name.
+    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+    tag: tst
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioChannelGroupIdentification
+  type: STRING
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: var
+text: ''

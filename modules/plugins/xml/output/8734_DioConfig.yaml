@@ -1,0 +1,25 @@
+CHILDREN_PATH:
+- 2999_DioPort.yaml
+a_da:
+- attributes:
+    name: DESC
+    value: 'EN: This container contains the configuration parameters and sub containers
+      of the AUTOSAR DIO module. This container is a MultipleConfigurationContainer,
+      i.e. this container and its sub-containers exist once per configuration set.'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:4e1b9d37-58b0-46ba-a549-c40c8e80d6f3
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: DioConfig
+  type: IDENTIFIABLE
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: ctr
+text: ''

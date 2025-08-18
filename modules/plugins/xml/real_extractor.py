@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import IntFlag
 import sys
 import os
+import yaml
 
 
 # 自动添加项目根目录到 sys.path
@@ -164,6 +165,192 @@ class ElementExtractVisitor(ElementVisitor):
         self.result: List[XmlNode.MetaData] = []
         self.all_nodes: Dict[str, XmlNode.MetaData] = {}  # 路径 -> 节点映射表
 
+
+    def save_node_to_yaml_tree(self, out_dir: str) -> None:
+        """将节点保存为一个yaml文件树，文件名优先用attributes['name']，否则用unnamed_<tag>.yaml"""
+        root_node = self.result[0] if self.result else None
+
+        if root_node is None:
+            print("No nodes to save.")
+            return
+
+        os.makedirs(out_dir, exist_ok=True)
+        
+        # 使用扁平化结构避免路径过长
+        self.flat_mode = True  # 启用扁平化模式
+        self.saved_files = {}  # 记录已保存的文件，避免重复
+        
+        self._save_node_recursive(root_node, out_dir)
+
+    def _get_safe_filename(self, node: XmlNode.MetaData, parent_path: str = "") -> str:
+        """获取安全的文件名，避免路径过长"""
+        name = node.attributes.get("name")
+        if name:
+            base_name = name
+        else:
+            base_name = f"unnamed_{node.tag}"
+        
+        # 在扁平化模式下，使用父路径信息作为前缀
+        if hasattr(self, 'flat_mode') and self.flat_mode and parent_path:
+            # 将路径层级信息编码到文件名中
+            path_hash = abs(hash(parent_path)) % 10000  # 4位数字避免冲突
+            safe_name = f"{path_hash:04d}_{base_name}"
+        else:
+            safe_name = base_name
+            
+        return f"{safe_name}.yaml"
+
+    def _get_node_filename(self, node: XmlNode.MetaData) -> str:
+        """获取节点的yaml文件名"""
+        name = node.attributes.get("name")
+        if name:
+            return f"{name}.yaml"
+        else:
+            return f"unnamed_{node.tag}.yaml"
+
+    def _resolve_filename_conflicts(self, node: XmlNode.MetaData) -> None:
+        """解决子节点中的文件名冲突问题"""
+        # 收集无name属性的重名节点
+        unnamed_nodes = {}
+        for child in node.children:
+            if hasattr(child, "tag") and child.tag not in ["a", "da"]:
+                fname = self._get_node_filename(child)
+                if fname.startswith("unnamed_"):
+                    unnamed_nodes.setdefault(fname, []).append(child)
+
+        # 为重名节点添加索引后缀
+        for fname, nodes in unnamed_nodes.items():
+            if len(nodes) > 1:
+                for i, n in enumerate(nodes):
+                    n.attributes["name"] = f"{n.tag}_{i+1}"
+
+    def _validate_no_duplicates(self, node: XmlNode.MetaData, cur_dir: str) -> None:
+        """验证没有重复的yaml文件名"""
+        filename_count = {}
+        for child in node.children:
+            if hasattr(child, "tag") and child.tag not in ["a", "da"]:
+                fname = self._get_node_filename(child)
+                filename_count[fname] = filename_count.get(fname, 0) + 1
+
+        duplicate_files = [fname for fname, count in filename_count.items() if count > 1]
+        if duplicate_files:
+            raise RuntimeError(f"Duplicate yaml filenames detected in directory '{cur_dir}': {duplicate_files}. Please check node names or tags.")
+
+    def _process_a_da_nodes(self, node: XmlNode.MetaData) -> List[Dict[str, Any]]:
+        """处理a/da节点，将其转换为字典格式"""
+        a_da_list = []
+        for child in node.children:
+            if hasattr(child, "tag") and child.tag in ["a", "da"]:
+                a_da_list.append({
+                    "namespace": child.namespace,
+                    "tag": child.tag,
+                    "attributes": child.attributes,
+                    "text": child.text,
+                    "children": [
+                        {
+                            "namespace": gc.namespace,
+                            "tag": gc.tag,
+                            "attributes": gc.attributes,
+                            "text": gc.text,
+                        }
+                        for gc in child.children
+                    ],
+                })
+        return a_da_list
+
+    def _get_children_directory(self, node: XmlNode.MetaData, cur_dir: str) -> Optional[str]:
+        """获取子节点目录路径，如果没有非a/da子节点则返回None"""
+        has_child_nodes = any(hasattr(child, "tag") and child.tag not in ["a", "da"] for child in node.children)
+        if not has_child_nodes:
+            return None
+        
+        # 扁平化模式：所有文件都保存在根目录，不创建子目录
+        if hasattr(self, 'flat_mode') and self.flat_mode:
+            return cur_dir
+            
+        parent_yaml_name = self._get_node_filename(node)
+        parent_folder_name = os.path.splitext(parent_yaml_name)[0] + "_children"
+        children_dir = os.path.join(cur_dir, parent_folder_name)
+        
+        # 确保所有父目录都存在
+        try:
+            os.makedirs(children_dir, exist_ok=True)
+            return children_dir
+        except Exception as e:
+            print(f"Failed to create directory {children_dir}: {e}")
+            print(f"Current directory: {cur_dir}")
+            print(f"Parent exists: {os.path.exists(cur_dir)}")
+            raise RuntimeError(f"Cannot create children directory {children_dir}: {e}")
+
+    def _save_node_recursive(self, node: XmlNode.MetaData, cur_dir: str, parent_path: str = "") -> None:
+        """递归保存节点及其子节点"""
+        # 1. 解决文件名冲突
+        self._resolve_filename_conflicts(node)
+        
+        # 2. 验证没有重复文件名（扁平化模式下跳过）
+        if not (hasattr(self, 'flat_mode') and self.flat_mode):
+            self._validate_no_duplicates(node, cur_dir)
+
+        # 3. 处理a/da节点
+        a_da_list = self._process_a_da_nodes(node)
+
+        # 4. 准备children目录
+        children_dir = self._get_children_directory(node, cur_dir)
+
+        # 5. 构建yaml数据结构
+        yaml_dict: Dict[str, Any] = {
+            "namespace": node.namespace,
+            "tag": node.tag,
+            "attributes": node.attributes,
+            "text": node.text,
+            "CHILDREN_PATH": [],
+        }
+
+        if a_da_list:
+            yaml_dict["a_da"] = a_da_list
+
+        # 6. 递归处理非a/da子节点
+        if children_dir:
+            for child in node.children:
+                if hasattr(child, "tag") and child.tag not in ["a", "da"]:
+                    # 扁平化模式：使用安全文件名
+                    if hasattr(self, 'flat_mode') and self.flat_mode:
+                        child_path = f"{parent_path}/{node.tag}" if parent_path else node.tag
+                        child_filename = self._get_safe_filename(child, child_path)
+                        
+                        # 检查文件是否已存在，避免重复保存
+                        if child_filename not in self.saved_files:
+                            child_yaml_path = os.path.join(children_dir, child_filename)
+                            yaml_dict["CHILDREN_PATH"].append(child_filename)
+                            self.saved_files[child_filename] = True
+                            self._save_node_recursive(child, children_dir, child_path)
+                        else:
+                            yaml_dict["CHILDREN_PATH"].append(child_filename)
+                    else:
+                        child_yaml_path = os.path.join(children_dir, self._get_node_filename(child))
+                        yaml_dict["CHILDREN_PATH"].append(os.path.relpath(child_yaml_path, cur_dir))
+                        self._save_node_recursive(child, children_dir, parent_path)
+
+        # 7. 保存当前节点的yaml文件
+        if hasattr(self, 'flat_mode') and self.flat_mode:
+            out_file = os.path.join(cur_dir, self._get_safe_filename(node, parent_path))
+        else:
+            out_file = os.path.join(cur_dir, self._get_node_filename(node))
+        
+        # 确保输出文件的目录存在
+        os.makedirs(os.path.dirname(out_file), exist_ok=True)
+        
+        try:
+            with open(out_file, "w", encoding="utf-8") as f:
+                yaml.dump(yaml_dict, f, allow_unicode=True, default_flow_style=False)
+            print(f"Saved: {out_file}")
+        except Exception as e:
+            print(f"Error saving file: {out_file}")
+            print(f"Directory exists: {os.path.exists(os.path.dirname(out_file))}")
+            print(f"Directory path: {os.path.dirname(out_file)}")
+            print(f"File path length: {len(out_file)}")
+            raise RuntimeError(f"Failed to save yaml file {out_file}: {e}")
+        
     def _recursively_parse_a_da(
         self, elem: ET.Element, base_path: str = ""
     ) -> List[XmlNode.MetaData]:
@@ -316,3 +503,8 @@ if __name__ == "__main__":
     if extract_visitor.result:
         print("\n=== 完整树结构 ===")
         print(extract_visitor.result[0])
+
+    # 保存为yaml文件
+    output_dir = os.path.join(os.path.dirname(xdm_file), "output")
+    print(f"\n=== 保存为 YAML 文件到 {output_dir} ===")
+    extract_visitor.save_node_to_yaml_tree(output_dir)

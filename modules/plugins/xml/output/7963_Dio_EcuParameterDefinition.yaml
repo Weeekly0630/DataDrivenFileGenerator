@@ -1,0 +1,9 @@
+CHILDREN_PATH:
+- 4777_unnamed_ctr.yaml
+attributes:
+  name: Dio_EcuParameterDefinition
+  type: AR-ELEMENT
+  value: ECU_PARAMETER_DEFINITION
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: chc
+text: ''

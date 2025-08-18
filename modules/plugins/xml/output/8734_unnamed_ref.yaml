@@ -1,0 +1,7 @@
+CHILDREN_PATH: []
+attributes:
+  type: REFINED_MODULE_DEF
+  value: ASPath:/AUTOSAR/EcucDefs/Dio
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: ref
+text: ''

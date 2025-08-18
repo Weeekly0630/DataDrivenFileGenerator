@@ -1,0 +1,16 @@
+CHILDREN_PATH:
+- 8155_DioChannelGroup.yaml
+a_da:
+- attributes:
+    name: MAX
+    value: '255'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: da
+  text: ''
+attributes:
+  name: DioChannelGroup
+  type: MAP
+namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
+tag: lst
+text: ''
