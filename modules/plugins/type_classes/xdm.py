@@ -40,14 +40,18 @@ class XmlNode:
             lines = []
             nodes = []
 
+            def format_attrs(attrs):
+                return " ".join(f'{k}="{v}"' for k, v in attrs.items())
+
             def collect(node, depth):
-                desc = (
-                    f"<{str(node.namespace)+":" if node.namespace else ""}{node.tag}"
-                    + (f" {node.attributes}" if node.attributes else "")
-                )
-                if node.text:
-                    desc += f" text='{node.text}'"
+                ns_prefix = f"{node.namespace}:" if node.namespace else ""
+                attrs_str = format_attrs(node.attributes)
+                desc = f"<{ns_prefix}{node.tag}"
+                if attrs_str:
+                    desc += f" {attrs_str}"
                 desc += ">"
+                if node.text:
+                    desc += f" {node.text}"
                 nodes.append((depth, desc))
                 for child in node.children:
                     collect(child, depth + 1)

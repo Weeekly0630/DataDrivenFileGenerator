@@ -241,7 +241,7 @@ def extract_xml_structure(xml_path: str) -> ET.Element:
 
 # 示例用法
 if __name__ == "__main__":
-    xml_file = r"U:\Users\Enlink\Documents\参考文档\AUTOSAR_SampleProject_S32K144-master\plugins\Dio_TS_T40D2M10I1R0\config\Dio.xdm"
+    xml_file = r"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\xml\Dio.xdm"
     output_file = r"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\xml\Dio_tree.txt"
     root_elem = extract_xml_structure(xml_file)
     print_xml_tree(root_elem)
