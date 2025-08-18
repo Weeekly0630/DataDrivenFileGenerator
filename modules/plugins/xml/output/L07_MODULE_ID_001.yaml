@@ -1,0 +1,22 @@
+CHILDREN_PATH: []
+a_da:
+- attributes:
+    name: EDITABLE
+    value: 'false'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: IMPORTER_INFO
+    value: '@DEF'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+attributes:
+  name: MODULE_ID
+  type: INTEGER
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: var
+text: ''

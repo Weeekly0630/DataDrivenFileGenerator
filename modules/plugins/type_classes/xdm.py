@@ -109,8 +109,22 @@ class XdmNsType(Enum):
 
 
 class XdmElementType(Enum):
+    """Xdm 基本元素的type类型"""
+
     AR_PACKAGE = "AR-PACKAGE"
     MODULE_DEF = "MODULE-DEF"
+
+
+class XdmAttributeNodeType(Enum):
+    """XDM节点的属性类型"""
+
+    ADMIN_DATA = "ADMIN-DATA"
+    DESC = "DESC"
+    LOWER_MULTIPLICITY = "LOWER-MULTIPLICITY"
+    UPPER_MULTIPLICITY = "UPPER-MULTIPLICITY"
+    POSTBUILDVARIANTSUPPORT = "POSTBUILDVARIANTSUPPORT"
+    RELEASE = "RELEASE"
+    UUID = "UUID"
 
 
 XDM_CONTENT_RULES: Dict[Tuple[str, str, str], dict] = {
@@ -137,7 +151,9 @@ XDM_CONTENT_RULES: Dict[Tuple[str, str, str], dict] = {
 }
 
 
-class XdmNode:
+class XdmAttributeNode:
+    """XDM节点的属性节点(a/da)"""
+
     @staticmethod
     def get_admin_data_node(data: dict) -> XmlNode.MetaData:
         return XmlNode.MetaData(
@@ -237,12 +253,23 @@ class XdmNode:
             children=[],
         )
 
+
+class XdmNode:
+    """目标Xdm基本元素节点"""
+
+    class Config:
+        """XDM节点的配置项"""
+
+        @dataclass
+        class MetaData(MetaBase):
+            attributes: Dict[str, Any]  # 节点属性
+            children: Dict[str, Any]  # 配置a/da子节点配置项
+
     @dataclass
     class MetaData(MetaBase):
         """XDM节点的元数据，支持分类和type分组"""
 
         xml_meta: XmlNode.MetaData  # XML元数据
-        config: Optional[Dict[str, Any]] = None  # 可选的配置项
 
         @property
         def namespace(self) -> Optional[str]:
@@ -260,46 +287,87 @@ class XdmNode:
             return self.xml_meta.attributes.get("type", "")
 
     @staticmethod
-    def create(
-        context: UserFunctionContext,
-        ns: str,
-        tag: str,
-        type: str,
-        content: Dict[str, Any] = {},
-    ) -> "XdmNode.MetaData":
+    def _get_rules_key(
+        ns: str, tag: str, type: str
+    ) -> Tuple[List[str], List[str], List[str], List[str]]:
+        """获取当前节点的规则键值
+        返回(
+            attributes_required,
+            attributes_optional,
+            children_required,
+            children_optional
+        )"""
         key = (ns, tag, type)
         rules = XDM_CONTENT_RULES.get(key)
         if not rules:
             raise ValueError(f"不支持的XDM节点类型: {key}")
 
-        # 构造 attributes
         attr_required = rules.get("attributes", {}).get("required", [])
         attr_optional = rules.get("attributes", {}).get("optional", [])
-        attributes = {}
-        for attr in attr_required:
-            if attr not in content:
-                raise ValueError(f"缺少必填属性: {attr}")
-            attributes[attr] = str(content[attr])
-        for attr in attr_optional:
-            if attr in content:
-                attributes[attr] = str(content[attr])
-
-        # 构造 children
         child_required = rules.get("children", {}).get("required", [])
         child_optional = rules.get("children", {}).get("optional", [])
+
+        return (attr_required, attr_optional, child_required, child_optional)
+
+    @staticmethod
+    def create(
+        context: UserFunctionContext,
+        ns: str,
+        tag: str,
+        type: str,
+        config: Optional["XdmNode.Config.MetaData"] = None,
+    ) -> "XdmNode.MetaData":
+        (attr_required, attr_optional, child_required, child_optional) = (
+            XdmNode._get_rules_key(ns, tag, type)
+        )
+
+        if config is None and (attr_required or child_required):
+            raise ValueError(f"缺少必需的配置项以生成XDM节点: {ns}, {tag}, {type}")
+
+        # 构造 attributes
+        attributes = {}
+        if config is not None:
+            for attr in attr_required:
+                if attr not in config.attributes:
+                    raise ValueError(f"缺少必填属性: {attr}")
+                attributes[attr] = str(config.attributes[attr])
+            for attr in attr_optional:
+                if attr in config.attributes:
+                    attributes[attr] = str(config.attributes[attr])
+        else:
+            raise ValueError(f"缺少配置项以生成XDM节点: {ns}, {tag}, {type}")
+
+        def create_child_attribute(attr_name: str, value: Any) -> XmlNode.MetaData:
+            """创建子节点属性"""
+            generator = getattr(
+                XdmAttributeNode,
+                f"get_{attr_name.lower().replace('-', '_')}_node",
+                None,
+            )
+            if generator is None:
+                raise ValueError(f"未定义的属性生成器: {attr_name}")
+            # 确保 value 是字典格式
+            if not isinstance(value, dict):
+                value = {"value": value}
+            child_node = generator(value)
+            if not isinstance(child_node, XmlNode.MetaData):
+                raise ValueError(f"生成的节点不是 XmlNode.MetaData 类型: {child_node}")
+            return child_node
+
+        # 构造 children
         children = []
-        for child_tag in child_required + child_optional:
-            if child_tag in content:
-                data = content[child_tag]
-                func_name = f"get_{child_tag.lower().replace('-', '_')}_node"
-                generator = getattr(XdmNode, func_name, None)
-                if generator is None:
-                    raise ValueError(f"未定义的子节点生成器: {func_name}")
-                    generator = lambda d: XdmNode.get_default_node(child_tag, d)
-                if not isinstance(data, dict):
-                    data = {"value": data}
-                child_node = generator(data)
-                children.append(child_node)
+        for child_tag in child_required:
+            if child_tag not in config.children:
+                raise ValueError(f"缺少必填子节点: {child_tag}")
+            data = config.children[child_tag]
+            # 下一步创建
+            children.append(create_child_attribute(child_tag, data))
+
+        for child_tag in child_optional:
+            if child_tag in config.children:
+                data = config.children[child_tag]
+                # 下一步创建
+                children.append(create_child_attribute(child_tag, data))
 
         xml_meta = XmlNode.MetaData(
             namespace=ns,
@@ -308,6 +376,7 @@ class XdmNode:
             text="",
             children=children,
         )
+        
         return XdmNode.MetaData(xml_meta=xml_meta)
 
 
@@ -322,12 +391,19 @@ if __name__ == "__main__":
         "UPPER-MULTIPLICITY": {"value": "10"},
         "UUID": {"value": "ECUC:xxxx"},
     }
+    
     node = XdmNode.create(
         context=None,
-        ns=XdmNsType.V.value,
+        ns=XdmNsType.DATA.value,
         tag=XdmTagType.CTR.value,
-        type=XdmElementType.MODULE_DEF.value,
-        content=test_content,
+        type=XdmElementType.AR_PACKAGE.value,
+        config=XdmNode.Config.MetaData(
+            attributes={"name": "NameOfNode"},
+            children={
+                "UUID": {"value": "ECUC:xxxx"},
+            },
+        ),
     )
+    
     print("生成的MODULE-DEF节点结构：")
     print(node.xml_meta)

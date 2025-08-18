@@ -1,8 +1,5 @@
 CHILDREN_PATH:
-- 7411_DioChannelGroupIdentification.yaml
-- 7411_DioPortBitNumber.yaml
-- 7411_DioPortOffset.yaml
-- 7411_DioPortMask.yaml
+- L12_DioChannelId.yaml
 a_da:
 - attributes:
     name: DESC
@@ -11,14 +8,12 @@ a_da:
     namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
     tag: v
     text: "EN:\n                                                            <html><p>\n\
-      \                                                                A channel group\
-      \ represents several adjoining DIO channels represented by a logical group.\n\
-      \                                                                This container\
-      \ definition does not explicitly define a symbolic name parameter, but symbolic\
-      \ names will be generated for\n                                            \
-      \                    each channel group. Each group provides a structure with\
-      \ parameters port, offset and mask.\n                                      \
-      \                      </p></html>"
+      \                                                                Configuration\
+      \ of an individual DIO channel. Symbolic names will be generated for each channel.\n\
+      \                                                                A general purpose\
+      \ digital IO pin represents a DIO channel which will be having value either\
+      \ STD_HIGH or STD_LOW.\n                                                   \
+      \         </p></html>"
   namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
   tag: a
   text: ''
@@ -41,13 +36,13 @@ a_da:
   text: ''
 - attributes:
     name: UUID
-    value: ECUC:39154b03-0601-4bfd-8f96-5ec46a6543ea
+    value: ECUC:27aaf24e-fe6b-4d85-9666-e20239723ac8
   children: []
   namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
   tag: a
   text: ''
 attributes:
-  name: DioChannelGroup
+  name: DioChannel
   type: IDENTIFIABLE
 namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
 tag: ctr

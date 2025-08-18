@@ -13,8 +13,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.type_classes.xdm import XmlNode
-
+from modules.plugins.type_classes.xdm import XmlNode, XdmNode, XdmTagType, XdmNsType, XdmElementType, XDM_CONTENT_RULES
 
 class ElementVisitorResult(IntFlag):
     CONTINUE = 0  # 继续遍历子节点
@@ -156,7 +155,63 @@ class PathResolveVisitor(ElementVisitor):
         """获取当前解析的路径"""
         return self.current_path if self.current_path else "/"
 
-
+class XdmNodeConverter:
+    """将XmlNode.MetaData转换为XdmNode"""
+    
+    def __init__(self):
+        self.conversion_stats = {
+            "converted": 0,
+            "unknown_types": set(),
+            "errors": []
+        }
+    
+    def convert_xml_to_xdm(self, xml_node: XmlNode.MetaData) -> Optional[XdmNode.MetaData]:
+        """将 XML 节点转换为 XDM 节点"""
+        try:
+            # 检查是否是已知的 XDM 节点类型
+            node_key = (xml_node.namespace, xml_node.tag, xml_node.attributes.get("type", ""))
+            
+            if node_key in XDM_CONTENT_RULES:
+                return self._convert_known_xdm_node(xml_node, node_key)
+            else:
+                # 记录未知类型
+                self.conversion_stats["unknown_types"].add(node_key)
+                return self._convert_generic_xdm_node(xml_node)
+                
+        except Exception as e:
+            self.conversion_stats["errors"].append(f"转换节点时出错: {e}")
+            return None
+    
+    def _convert_known_xdm_node(self, xml_node: XmlNode.MetaData, node_key: tuple) -> XdmNode.MetaData:
+        """转换已知的 XDM 节点类型"""
+        rules = XDM_CONTENT_RULES[node_key]
+        
+        # 验证和提取内容
+        content = {}
+        
+        # 处理属性
+        for attr in rules.get("attributes", {}).get("required", []):
+            if attr in xml_node.attributes:
+                content[attr] = xml_node.attributes[attr]
+        
+        for attr in rules.get("attributes", {}).get("optional", []):
+            if attr in xml_node.attributes:
+                content[attr] = xml_node.attributes[attr]
+        
+        # 处理子节点（a/da 节点）
+        ada_nodes = self._extract_ada_nodes(xml_node.children)
+        content.update(ada_nodes)
+        
+        # 创建 XDM 节点
+        xdm_node = XdmNode.MetaData(xml_meta=xml_node)
+        self.conversion_stats["converted"] += 1
+        
+        return xdm_node
+    
+    def _convert_generic_xdm_node(self, xml_node: XmlNode.MetaData) -> XdmNode.MetaData:
+        """转换通用 XDM 节点"""
+        return XdmNode.MetaData(xml_meta=xml_node)
+    
 class ElementExtractVisitor(ElementVisitor):
     """提取XML元素的访问器, 将符合条件的节点转换为 XmlNode"""
 
@@ -179,22 +234,34 @@ class ElementExtractVisitor(ElementVisitor):
         # 使用扁平化结构避免路径过长
         self.flat_mode = True  # 启用扁平化模式
         self.saved_files = {}  # 记录已保存的文件，避免重复
+        self.filename_counter = {}  # 文件名计数器，确保唯一性
         
         self._save_node_recursive(root_node, out_dir)
 
     def _get_safe_filename(self, node: XmlNode.MetaData, parent_path: str = "") -> str:
-        """获取安全的文件名，避免路径过长"""
+        """获取安全的文件名，保证唯一性"""
         name = node.attributes.get("name")
         if name:
             base_name = name
         else:
             base_name = f"unnamed_{node.tag}"
         
-        # 在扁平化模式下，使用父路径信息作为前缀
+        # 在扁平化模式下，使用层级序号确保唯一性
         if hasattr(self, 'flat_mode') and self.flat_mode and parent_path:
-            # 将路径层级信息编码到文件名中
-            path_hash = abs(hash(parent_path)) % 10000  # 4位数字避免冲突
-            safe_name = f"{path_hash:04d}_{base_name}"
+            # 使用路径深度和序号来生成唯一前缀
+            path_parts = parent_path.split('/')
+            depth = len(path_parts)
+            
+            # 生成基础文件名
+            candidate_name = f"L{depth:02d}_{base_name}"
+            
+            # 如果文件名已存在，添加序号后缀
+            if candidate_name in self.filename_counter:
+                self.filename_counter[candidate_name] += 1
+                safe_name = f"{candidate_name}_{self.filename_counter[candidate_name]:03d}"
+            else:
+                self.filename_counter[candidate_name] = 0
+                safe_name = candidate_name
         else:
             safe_name = base_name
             

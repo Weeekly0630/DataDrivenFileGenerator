@@ -1,5 +1,5 @@
 CHILDREN_PATH:
-- 2676_unnamed_ctr.yaml
+- L01_unnamed_ctr.yaml
 attributes:
   version: '3.0'
 namespace: http://www.tresos.de/_projects/DataModel2/08/root.xsd

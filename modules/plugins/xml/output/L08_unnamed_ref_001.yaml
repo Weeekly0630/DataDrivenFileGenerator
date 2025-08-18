@@ -1,8 +1,7 @@
-CHILDREN_PATH:
-- 5801_unnamed_lst.yaml
+CHILDREN_PATH: []
 attributes:
-  factory: autosar
-  type: AUTOSAR
+  type: MODULE_REF
+  value: ASPath:/TS_T40D2M10I1R0/Dio
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
-tag: ctr
+tag: ref
 text: ''

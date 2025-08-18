@@ -1,7 +1,7 @@
 CHILDREN_PATH:
-- 9312_DioPortId.yaml
-- 9312_DioChannel.yaml
-- 9312_DioChannelGroup.yaml
+- L10_DioPortId.yaml
+- L10_DioChannel.yaml
+- L10_DioChannelGroup.yaml
 a_da:
 - attributes:
     name: DESC

@@ -1,9 +1,9 @@
 CHILDREN_PATH:
-- 4777_unnamed_ctr.yaml
+- L06_unnamed_ctr_004.yaml
 attributes:
-  name: Dio_EcuParameterDefinition
+  name: Dio_ModuleDescription
   type: AR-ELEMENT
-  value: ECU_PARAMETER_DEFINITION
+  value: BSW_MODULE_DESCRIPTION
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: chc
 text: ''

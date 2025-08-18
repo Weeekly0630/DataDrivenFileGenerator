@@ -1,7 +1,8 @@
 CHILDREN_PATH:
-- 5583_TS_T40D2M10I1R0.yaml
+- L02_unnamed_lst.yaml
 attributes:
-  type: TOP-LEVEL-PACKAGES
+  factory: autosar
+  type: AUTOSAR
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
-tag: lst
+tag: ctr
 text: ''

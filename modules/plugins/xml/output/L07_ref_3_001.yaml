@@ -1,0 +1,8 @@
+CHILDREN_PATH: []
+attributes:
+  name: ref_3
+  type: VENDOR_SPECIFIC_MODULE_DEF
+  value: ASPath:/TS_T40D2M10I1R0/Dio
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: ref
+text: ''

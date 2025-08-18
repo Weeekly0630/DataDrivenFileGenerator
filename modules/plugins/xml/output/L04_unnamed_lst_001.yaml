@@ -1,0 +1,9 @@
+CHILDREN_PATH:
+- L05_Dio.yaml
+- L05_Dio_EcuParameterDefinition.yaml
+- L05_Dio_ModuleDescription.yaml
+attributes:
+  type: ELEMENTS
+namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
+tag: lst
+text: ''

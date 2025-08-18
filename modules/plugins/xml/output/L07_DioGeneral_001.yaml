@@ -1,11 +1,11 @@
 CHILDREN_PATH:
-- 2999_DioDevErrorDetect.yaml
-- 2999_DioVersionInfoApi.yaml
-- 2999_DioReversePortBits.yaml
-- 2999_DioFlipChannelApi.yaml
-- 2999_DioReadZeroForUndefinedPortPins.yaml
-- 2999_DioMaskedWritePortApi.yaml
-- 2999_DioEnableUserModeSupport.yaml
+- L08_DioDevErrorDetect.yaml
+- L08_DioVersionInfoApi.yaml
+- L08_DioReversePortBits.yaml
+- L08_DioFlipChannelApi.yaml
+- L08_DioReadZeroForUndefinedPortPins.yaml
+- L08_DioMaskedWritePortApi.yaml
+- L08_DioEnableUserModeSupport.yaml
 a_da:
 - attributes:
     name: DESC

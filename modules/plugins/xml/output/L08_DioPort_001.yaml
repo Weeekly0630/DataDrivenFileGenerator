@@ -1,5 +1,5 @@
 CHILDREN_PATH:
-- 8546_DioPort.yaml
+- L09_DioPort.yaml
 a_da:
 - attributes:
     name: MIN

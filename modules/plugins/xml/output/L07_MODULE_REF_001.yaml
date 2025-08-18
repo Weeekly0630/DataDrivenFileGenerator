@@ -1,9 +1,7 @@
 CHILDREN_PATH:
-- 4777_unnamed_ctr.yaml
+- L08_unnamed_ref.yaml
 attributes:
-  name: Dio
-  type: AR-ELEMENT
-  value: MODULE-DEF
+  name: MODULE_REF
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
-tag: chc
+tag: lst
 text: ''
