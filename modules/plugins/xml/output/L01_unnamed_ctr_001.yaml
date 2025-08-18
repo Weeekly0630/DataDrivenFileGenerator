@@ -1,8 +1,8 @@
 CHILDREN_PATH:
 - L02_unnamed_lst.yaml
+TEMPLATE_PATH: reserved
 attributes:
   factory: autosar
   type: AUTOSAR
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: ctr
-text: ''

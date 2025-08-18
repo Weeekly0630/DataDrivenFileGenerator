@@ -6,6 +6,7 @@ CHILDREN_PATH:
 - L08_DioReadZeroForUndefinedPortPins.yaml
 - L08_DioMaskedWritePortApi.yaml
 - L08_DioEnableUserModeSupport.yaml
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: DESC
@@ -31,4 +32,3 @@ attributes:
   type: IDENTIFIABLE
 namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
 tag: ctr
-text: ''

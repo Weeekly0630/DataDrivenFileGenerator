@@ -1,7 +1,7 @@
 CHILDREN_PATH:
 - L03_TS_T40D2M10I1R0.yaml
+TEMPLATE_PATH: reserved
 attributes:
   type: TOP-LEVEL-PACKAGES
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: lst
-text: ''

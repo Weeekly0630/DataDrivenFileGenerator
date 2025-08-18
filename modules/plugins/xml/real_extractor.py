@@ -13,7 +13,8 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.type_classes.xdm import XmlNode, XdmNode, XdmTagType, XdmNsType, XdmElementType, XDM_CONTENT_RULES
+from modules.plugins.type_classes.xdm import XmlNode
+
 
 class ElementVisitorResult(IntFlag):
     CONTINUE = 0  # 继续遍历子节点
@@ -155,63 +156,7 @@ class PathResolveVisitor(ElementVisitor):
         """获取当前解析的路径"""
         return self.current_path if self.current_path else "/"
 
-class XdmNodeConverter:
-    """将XmlNode.MetaData转换为XdmNode"""
-    
-    def __init__(self):
-        self.conversion_stats = {
-            "converted": 0,
-            "unknown_types": set(),
-            "errors": []
-        }
-    
-    def convert_xml_to_xdm(self, xml_node: XmlNode.MetaData) -> Optional[XdmNode.MetaData]:
-        """将 XML 节点转换为 XDM 节点"""
-        try:
-            # 检查是否是已知的 XDM 节点类型
-            node_key = (xml_node.namespace, xml_node.tag, xml_node.attributes.get("type", ""))
-            
-            if node_key in XDM_CONTENT_RULES:
-                return self._convert_known_xdm_node(xml_node, node_key)
-            else:
-                # 记录未知类型
-                self.conversion_stats["unknown_types"].add(node_key)
-                return self._convert_generic_xdm_node(xml_node)
-                
-        except Exception as e:
-            self.conversion_stats["errors"].append(f"转换节点时出错: {e}")
-            return None
-    
-    def _convert_known_xdm_node(self, xml_node: XmlNode.MetaData, node_key: tuple) -> XdmNode.MetaData:
-        """转换已知的 XDM 节点类型"""
-        rules = XDM_CONTENT_RULES[node_key]
-        
-        # 验证和提取内容
-        content = {}
-        
-        # 处理属性
-        for attr in rules.get("attributes", {}).get("required", []):
-            if attr in xml_node.attributes:
-                content[attr] = xml_node.attributes[attr]
-        
-        for attr in rules.get("attributes", {}).get("optional", []):
-            if attr in xml_node.attributes:
-                content[attr] = xml_node.attributes[attr]
-        
-        # 处理子节点（a/da 节点）
-        ada_nodes = self._extract_ada_nodes(xml_node.children)
-        content.update(ada_nodes)
-        
-        # 创建 XDM 节点
-        xdm_node = XdmNode.MetaData(xml_meta=xml_node)
-        self.conversion_stats["converted"] += 1
-        
-        return xdm_node
-    
-    def _convert_generic_xdm_node(self, xml_node: XmlNode.MetaData) -> XdmNode.MetaData:
-        """转换通用 XDM 节点"""
-        return XdmNode.MetaData(xml_meta=xml_node)
-    
+
 class ElementExtractVisitor(ElementVisitor):
     """提取XML元素的访问器, 将符合条件的节点转换为 XmlNode"""
 
@@ -219,7 +164,6 @@ class ElementExtractVisitor(ElementVisitor):
         self.path_visitor = PathResolveVisitor()
         self.result: List[XmlNode.MetaData] = []
         self.all_nodes: Dict[str, XmlNode.MetaData] = {}  # 路径 -> 节点映射表
-
 
     def save_node_to_yaml_tree(self, out_dir: str) -> None:
         """将节点保存为一个yaml文件树，文件名优先用attributes['name']，否则用unnamed_<tag>.yaml"""
@@ -230,12 +174,12 @@ class ElementExtractVisitor(ElementVisitor):
             return
 
         os.makedirs(out_dir, exist_ok=True)
-        
+
         # 使用扁平化结构避免路径过长
         self.flat_mode = True  # 启用扁平化模式
         self.saved_files = {}  # 记录已保存的文件，避免重复
         self.filename_counter = {}  # 文件名计数器，确保唯一性
-        
+
         self._save_node_recursive(root_node, out_dir)
 
     def _get_safe_filename(self, node: XmlNode.MetaData, parent_path: str = "") -> str:
@@ -245,26 +189,28 @@ class ElementExtractVisitor(ElementVisitor):
             base_name = name
         else:
             base_name = f"unnamed_{node.tag}"
-        
+
         # 在扁平化模式下，使用层级序号确保唯一性
-        if hasattr(self, 'flat_mode') and self.flat_mode and parent_path:
+        if hasattr(self, "flat_mode") and self.flat_mode and parent_path:
             # 使用路径深度和序号来生成唯一前缀
-            path_parts = parent_path.split('/')
+            path_parts = parent_path.split("/")
             depth = len(path_parts)
-            
+
             # 生成基础文件名
             candidate_name = f"L{depth:02d}_{base_name}"
-            
+
             # 如果文件名已存在，添加序号后缀
             if candidate_name in self.filename_counter:
                 self.filename_counter[candidate_name] += 1
-                safe_name = f"{candidate_name}_{self.filename_counter[candidate_name]:03d}"
+                safe_name = (
+                    f"{candidate_name}_{self.filename_counter[candidate_name]:03d}"
+                )
             else:
                 self.filename_counter[candidate_name] = 0
                 safe_name = candidate_name
         else:
             safe_name = base_name
-            
+
         return f"{safe_name}.yaml"
 
     def _get_node_filename(self, node: XmlNode.MetaData) -> str:
@@ -299,46 +245,57 @@ class ElementExtractVisitor(ElementVisitor):
                 fname = self._get_node_filename(child)
                 filename_count[fname] = filename_count.get(fname, 0) + 1
 
-        duplicate_files = [fname for fname, count in filename_count.items() if count > 1]
+        duplicate_files = [
+            fname for fname, count in filename_count.items() if count > 1
+        ]
         if duplicate_files:
-            raise RuntimeError(f"Duplicate yaml filenames detected in directory '{cur_dir}': {duplicate_files}. Please check node names or tags.")
+            raise RuntimeError(
+                f"Duplicate yaml filenames detected in directory '{cur_dir}': {duplicate_files}. Please check node names or tags."
+            )
 
     def _process_a_da_nodes(self, node: XmlNode.MetaData) -> List[Dict[str, Any]]:
         """处理a/da节点，将其转换为字典格式"""
         a_da_list = []
         for child in node.children:
             if hasattr(child, "tag") and child.tag in ["a", "da"]:
-                a_da_list.append({
-                    "namespace": child.namespace,
-                    "tag": child.tag,
-                    "attributes": child.attributes,
-                    "text": child.text,
-                    "children": [
-                        {
-                            "namespace": gc.namespace,
-                            "tag": gc.tag,
-                            "attributes": gc.attributes,
-                            "text": gc.text,
-                        }
-                        for gc in child.children
-                    ],
-                })
+                a_da_list.append(
+                    {
+                        "namespace": child.namespace,
+                        "tag": child.tag,
+                        "attributes": child.attributes,
+                        "text": child.text,
+                        "children": [
+                            {
+                                "namespace": gc.namespace,
+                                "tag": gc.tag,
+                                "attributes": gc.attributes,
+                                "text": gc.text,
+                            }
+                            for gc in child.children
+                        ],
+                    }
+                )
         return a_da_list
 
-    def _get_children_directory(self, node: XmlNode.MetaData, cur_dir: str) -> Optional[str]:
+    def _get_children_directory(
+        self, node: XmlNode.MetaData, cur_dir: str
+    ) -> Optional[str]:
         """获取子节点目录路径，如果没有非a/da子节点则返回None"""
-        has_child_nodes = any(hasattr(child, "tag") and child.tag not in ["a", "da"] for child in node.children)
+        has_child_nodes = any(
+            hasattr(child, "tag") and child.tag not in ["a", "da"]
+            for child in node.children
+        )
         if not has_child_nodes:
             return None
-        
+
         # 扁平化模式：所有文件都保存在根目录，不创建子目录
-        if hasattr(self, 'flat_mode') and self.flat_mode:
+        if hasattr(self, "flat_mode") and self.flat_mode:
             return cur_dir
-            
+
         parent_yaml_name = self._get_node_filename(node)
         parent_folder_name = os.path.splitext(parent_yaml_name)[0] + "_children"
         children_dir = os.path.join(cur_dir, parent_folder_name)
-        
+
         # 确保所有父目录都存在
         try:
             os.makedirs(children_dir, exist_ok=True)
@@ -349,13 +306,15 @@ class ElementExtractVisitor(ElementVisitor):
             print(f"Parent exists: {os.path.exists(cur_dir)}")
             raise RuntimeError(f"Cannot create children directory {children_dir}: {e}")
 
-    def _save_node_recursive(self, node: XmlNode.MetaData, cur_dir: str, parent_path: str = "") -> None:
+    def _save_node_recursive(
+        self, node: XmlNode.MetaData, cur_dir: str, parent_path: str = ""
+    ) -> None:
         """递归保存节点及其子节点"""
         # 1. 解决文件名冲突
         self._resolve_filename_conflicts(node)
-        
+
         # 2. 验证没有重复文件名（扁平化模式下跳过）
-        if not (hasattr(self, 'flat_mode') and self.flat_mode):
+        if not (hasattr(self, "flat_mode") and self.flat_mode):
             self._validate_no_duplicates(node, cur_dir)
 
         # 3. 处理a/da节点
@@ -366,11 +325,12 @@ class ElementExtractVisitor(ElementVisitor):
 
         # 5. 构建yaml数据结构
         yaml_dict: Dict[str, Any] = {
+            "TEMPLATE_PATH": "reserved",
+            "CHILDREN_PATH": [],
             "namespace": node.namespace,
             "tag": node.tag,
             "attributes": node.attributes,
-            "text": node.text,
-            "CHILDREN_PATH": [],
+            # "text": node.text,
         }
 
         if a_da_list:
@@ -381,10 +341,12 @@ class ElementExtractVisitor(ElementVisitor):
             for child in node.children:
                 if hasattr(child, "tag") and child.tag not in ["a", "da"]:
                     # 扁平化模式：使用安全文件名
-                    if hasattr(self, 'flat_mode') and self.flat_mode:
-                        child_path = f"{parent_path}/{node.tag}" if parent_path else node.tag
+                    if hasattr(self, "flat_mode") and self.flat_mode:
+                        child_path = (
+                            f"{parent_path}/{node.tag}" if parent_path else node.tag
+                        )
                         child_filename = self._get_safe_filename(child, child_path)
-                        
+
                         # 检查文件是否已存在，避免重复保存
                         if child_filename not in self.saved_files:
                             child_yaml_path = os.path.join(children_dir, child_filename)
@@ -394,19 +356,23 @@ class ElementExtractVisitor(ElementVisitor):
                         else:
                             yaml_dict["CHILDREN_PATH"].append(child_filename)
                     else:
-                        child_yaml_path = os.path.join(children_dir, self._get_node_filename(child))
-                        yaml_dict["CHILDREN_PATH"].append(os.path.relpath(child_yaml_path, cur_dir))
+                        child_yaml_path = os.path.join(
+                            children_dir, self._get_node_filename(child)
+                        )
+                        yaml_dict["CHILDREN_PATH"].append(
+                            os.path.relpath(child_yaml_path, cur_dir)
+                        )
                         self._save_node_recursive(child, children_dir, parent_path)
 
         # 7. 保存当前节点的yaml文件
-        if hasattr(self, 'flat_mode') and self.flat_mode:
+        if hasattr(self, "flat_mode") and self.flat_mode:
             out_file = os.path.join(cur_dir, self._get_safe_filename(node, parent_path))
         else:
             out_file = os.path.join(cur_dir, self._get_node_filename(node))
-        
+
         # 确保输出文件的目录存在
         os.makedirs(os.path.dirname(out_file), exist_ok=True)
-        
+
         try:
             with open(out_file, "w", encoding="utf-8") as f:
                 yaml.dump(yaml_dict, f, allow_unicode=True, default_flow_style=False)
@@ -417,7 +383,7 @@ class ElementExtractVisitor(ElementVisitor):
             print(f"Directory path: {os.path.dirname(out_file)}")
             print(f"File path length: {len(out_file)}")
             raise RuntimeError(f"Failed to save yaml file {out_file}: {e}")
-        
+
     def _recursively_parse_a_da(
         self, elem: ET.Element, base_path: str = ""
     ) -> List[XmlNode.MetaData]:

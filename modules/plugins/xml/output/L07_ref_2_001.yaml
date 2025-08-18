@@ -1,4 +1,5 @@
 CHILDREN_PATH: []
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: EDITABLE
@@ -19,4 +20,3 @@ attributes:
   type: PRE_CONFIGURED_CONF
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: ref
-text: ''

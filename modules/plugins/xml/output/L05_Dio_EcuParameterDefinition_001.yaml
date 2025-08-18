@@ -1,9 +1,9 @@
 CHILDREN_PATH:
 - L06_unnamed_ctr_002.yaml
+TEMPLATE_PATH: reserved
 attributes:
   name: Dio_EcuParameterDefinition
   type: AR-ELEMENT
   value: ECU_PARAMETER_DEFINITION
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: chc
-text: ''

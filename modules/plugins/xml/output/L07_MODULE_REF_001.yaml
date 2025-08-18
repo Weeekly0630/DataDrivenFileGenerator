@@ -1,7 +1,7 @@
 CHILDREN_PATH:
 - L08_unnamed_ref.yaml
+TEMPLATE_PATH: reserved
 attributes:
   name: MODULE_REF
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: lst
-text: ''

@@ -1,4 +1,5 @@
 CHILDREN_PATH: []
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: LABEL
@@ -93,4 +94,3 @@ attributes:
   type: INTEGER_LABEL
 namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
 tag: var
-text: ''

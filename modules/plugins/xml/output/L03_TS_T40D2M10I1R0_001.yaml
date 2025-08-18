@@ -1,5 +1,6 @@
 CHILDREN_PATH:
 - L04_unnamed_lst.yaml
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: UUID
@@ -13,4 +14,3 @@ attributes:
   type: AR-PACKAGE
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: ctr
-text: ''

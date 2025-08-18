@@ -3,6 +3,7 @@ CHILDREN_PATH:
 - L12_DioPortBitNumber.yaml
 - L12_DioPortOffset.yaml
 - L12_DioPortMask.yaml
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: DESC
@@ -51,4 +52,3 @@ attributes:
   type: IDENTIFIABLE
 namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
 tag: ctr
-text: ''

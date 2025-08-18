@@ -1,5 +1,6 @@
 CHILDREN_PATH:
 - L07_MODULE_REF.yaml
+TEMPLATE_PATH: reserved
 a_da:
 - attributes:
     name: DEF
@@ -19,4 +20,3 @@ attributes:
   type: AR-ELEMENT
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: ctr
-text: ''

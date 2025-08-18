@@ -1,70 +1,69 @@
 CHILDREN_PATH:
-  - L07_IMPLEMENTATION_CONFIG_VARIANT.yaml
-  - L07_DioConfig.yaml
-  - L07_DioGeneral.yaml
-  - L07_CommonPublishedInformation.yaml
-  - L07_unnamed_ref.yaml
+- L07_IMPLEMENTATION_CONFIG_VARIANT.yaml
+- L07_DioConfig.yaml
+- L07_DioGeneral.yaml
+- L07_CommonPublishedInformation.yaml
+- L07_unnamed_ref.yaml
+TEMPLATE_PATH: reserved
 a_da:
-  - attributes:
-      name: RELEASE
-      value: asc:4.2
-    children: []
+- attributes:
+    name: RELEASE
+    value: asc:4.2
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: ADMIN-DATA
+    type: ADMIN-DATA
+  children:
+  - attributes: {}
+    namespace: http://www.tresos.de/_projects/DataModel2/08/admindata.xsd
+    tag: ADMIN-DATA
+    text: ''
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: POSTBUILDVARIANTSUPPORT
+    value: 'true'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: DESC
+  children:
+  - attributes: {}
     namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: ADMIN-DATA
-      type: ADMIN-DATA
-    children:
-      - attributes: {}
-        namespace: http://www.tresos.de/_projects/DataModel2/08/admindata.xsd
-        tag: ADMIN-DATA
-        text: ""
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: POSTBUILDVARIANTSUPPORT
-      value: "true"
-    children: []
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: DESC
-    children:
-      - attributes: {}
-        namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-        tag: v
-        text:
-          "EN:\n                                        <html><p> Configuration of\
-          \ the Dio (Digital IO) module. </p></html>"
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: LOWER-MULTIPLICITY
-      value: "1"
-    children: []
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: UPPER-MULTIPLICITY
-      value: "1"
-    children: []
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
-  - attributes:
-      name: UUID
-      value: ECUC:68e60706-b10b-4b09-8ae8-3bec4104934c
-    children: []
-    namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
-    tag: a
-    text: ""
+    tag: v
+    text: "EN:\n                                        <html><p> Configuration of\
+      \ the Dio (Digital IO) module. </p></html>"
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: LOWER-MULTIPLICITY
+    value: '1'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UPPER-MULTIPLICITY
+    value: '1'
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
+- attributes:
+    name: UUID
+    value: ECUC:68e60706-b10b-4b09-8ae8-3bec4104934c
+  children: []
+  namespace: http://www.tresos.de/_projects/DataModel2/08/attribute.xsd
+  tag: a
+  text: ''
 attributes:
   type: MODULE-DEF
 namespace: http://www.tresos.de/_projects/DataModel2/06/schema.xsd
 tag: ctr
-text: ""

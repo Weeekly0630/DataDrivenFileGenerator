@@ -1,9 +1,9 @@
 CHILDREN_PATH:
 - L06_unnamed_ctr.yaml
+TEMPLATE_PATH: reserved
 attributes:
   name: Dio
   type: AR-ELEMENT
   value: MODULE-DEF
 namespace: http://www.tresos.de/_projects/DataModel2/06/data.xsd
 tag: chc
-text: ''
