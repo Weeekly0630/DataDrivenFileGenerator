@@ -1,0 +1,20 @@
+{%- macro xml_node(me, indent=0) -%}
+{%- set space = '    ' * indent -%}
+{%- set ns_prefix = me.namespace ~ ':' if me.namespace else '' -%}
+{%- set has_content = me.text or me.tail or (me.children and me.children|length > 0) -%}
+{%- if not has_content -%}
+{{ space }}<{{ ns_prefix }}{{ me.tag }}{% for k, v in me.attributes.items() %} {{ k }}="{{ v }}"{% endfor %} />
+{%- else -%}
+{{ space }}<{{ ns_prefix }}{{ me.tag }}{% for k, v in me.attributes.items() %} {{ k }}="{{ v }}"{% endfor %}>
+{%- if me.text %}
+{{ space }}    {{ me.text }}
+{%- endif %}
+{%- for child in me.children %}
+{{ xml_node(child, indent + 1) }}
+{%- endfor %}
+{%- if me.tail %}
+{{ space }}    {{ me.tail }}
+{%- endif %}
+{{ space }}</{{ ns_prefix }}{{ me.tag }}>
+{%- endif -%}
+{%- endmacro -%}

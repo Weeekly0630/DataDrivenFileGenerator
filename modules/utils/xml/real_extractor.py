@@ -13,7 +13,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.type_classes.xdm import XmlNode
+from modules.utils.type_classes.xml import XmlNode
 
 
 class ElementVisitorResult(IntFlag):
@@ -516,7 +516,7 @@ class ElementExtractVisitor(ElementVisitor):
 
 
 if __name__ == "__main__":
-    xdm_file = rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\xml\Dio.xdm"
+    xdm_file = rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\xml\Dio.xdm"
 
     filter_visitor = ElementFilterVisitor(
         included_tags=["datamodel", "ctr", "var", "lst", "chc", "ref"]
@@ -538,6 +538,6 @@ if __name__ == "__main__":
         print(extract_visitor.result[0])
 
     # 保存为yaml文件
-    output_dir = os.path.join(os.path.dirname(xdm_file), "output")
-    print(f"\n=== 保存为 YAML 文件到 {output_dir} ===")
-    extract_visitor.save_node_to_yaml_tree(output_dir)
+    # output_dir = os.path.join(os.path.dirname(xdm_file), "output")
+    # print(f"\n=== 保存为 YAML 文件到 {output_dir} ===")
+    # extract_visitor.save_node_to_yaml_tree(output_dir)

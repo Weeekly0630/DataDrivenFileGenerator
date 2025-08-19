@@ -216,6 +216,7 @@ preserved_children_content_key: CHILDREN_CONTENT
             preserved_children_content_key=config.get(
                 "preserved_children_content_key", "CHILDREN_CONTENT"
             ),
+            plugin_includes=config.get("plugin_includes", None),
         )
 
         # 4. 初始化生成器

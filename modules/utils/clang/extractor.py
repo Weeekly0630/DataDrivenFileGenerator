@@ -10,7 +10,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.type_classes.c import Decl, Expr, Attr, Preprocess
+from modules.utils.type_classes.c import Decl, Expr, Attr, Preprocess
 
 try:
     from clang import cindex

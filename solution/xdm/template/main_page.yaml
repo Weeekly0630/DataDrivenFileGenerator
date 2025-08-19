@@ -1,0 +1,20 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "main_page.j2"
+CHILDREN_PATH: []
+
+meta: "{xdma_mainpage_create(
+    '1.0',
+    {'d': 'http://www.tresos.de/_projects/DataModel2/06/data.xsd', 'v': 'http://www.tresos.de/_projects/DataModel2/06/schema.xsd', 'a': 'http://www.tresos.de/_projects/DataModel2/08/attribute.xsd'},
+    'Adc',
+    'ARM',
+    'ADC12BSARV2',
+    '4.2.2',
+    '1.0.1',
+    'YourCompany',
+    'AUTOSAR',
+    'autosar',
+    {'d': 'http://www.tresos.de/_projects/DataModel2/06/data.xsd', 'v': 'http://www.tresos.de/_projects/DataModel2/06/schema.xsd', 'a': 'http://www.tresos.de/_projects/DataModel2/08/attribute.xsd'},
+    'TS_T40D2M10I1R0',
+    'AR-PACKAGE',
+    {'UUID': '123e4567-e89b-12d3-a456-426614174000'}
+  )}"

@@ -11,7 +11,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.plugins.type_classes.xdm import XmlNode
+from modules.utils.type_classes.xml import XmlNode
 
 
 class ElementVisitorResult(IntFlag):

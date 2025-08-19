@@ -30,7 +30,8 @@ class XmlNode:
         namespace: Optional[str]  # 命名空间
         attributes: Dict[str, str] = field(default_factory=dict)  # 节点属性
         tag: str = ""  # 节点名
-        text: str = ""  # 节点文本内容
+        text: Optional[str] = None  # 节点文本内容
+        tail: Optional[str] = None  # 节点尾部文本内容
         children: List["XmlNode.MetaData"] = field(default_factory=list)  # 子节点列表
 
         def __str__(self) -> str:

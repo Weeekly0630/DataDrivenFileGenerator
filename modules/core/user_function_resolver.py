@@ -9,6 +9,7 @@ from modules.node.data_node import DataNode
 from modules.core import DataHandler, TemplateHandler
 from pathlib import Path
 import importlib
+import fnmatch
 from modules.core.fsm_parser import FunctionParser, FunctionFSM
 
 UserFunctionHandlerType = Callable[..., Any]
@@ -113,9 +114,10 @@ class UserFunctionContext:
 class UserFunctionResolver:
     """User-defined function resolver."""
 
-    def __init__(self, plugins_dirs: List[str]) -> None:
+    def __init__(self, plugins_dirs: List[str], plugin_includes: Optional[List[str]] = None) -> None:
         self.functions: Dict[str, UserFunctionInfo] = {}
         self.plugin_classes: List[Type[FunctionPlugin]] = []
+        self.plugin_includes = plugin_includes  # 保存插件包含配置
 
         # 初始化时加载所有插件
         for plugins_dir in plugins_dirs:
@@ -173,6 +175,19 @@ class UserFunctionResolver:
         for key, value in self.functions.items():
             result += self._serialize_function_info(value, indent=0) + "\n\n"
         return result
+
+    def _should_load_plugin(self, plugin_name: str) -> bool:
+        """判断是否应该加载指定插件（支持通配符）"""
+        # 如果没有指定 includes，加载所有插件
+        if self.plugin_includes is None:
+            return True
+        
+        # 检查插件名是否匹配任何一个 include 模式
+        for pattern in self.plugin_includes:
+            if fnmatch.fnmatch(plugin_name, pattern):
+                return True
+        
+        return False
 
     def _collect_functions(self):
         """收集所有插件的静态函数"""
@@ -240,14 +255,21 @@ class UserFunctionResolver:
             ):
 
                 plugin_class = attr
+                plugin_name = plugin_class.__name__
+                
+                # 检查是否应该加载此插件
+                if not self._should_load_plugin(plugin_name):
+                    print(f"Skipped plugin: {plugin_name} (not in includes)")
+                    continue
+
                 try:
                     # 调用插件初始化方法
                     plugin_class.on_plugin_load()
                     self.plugin_classes.append(plugin_class)
-                    print(f"Loaded plugin: {plugin_class.__name__}")
+                    print(f"Loaded plugin: {plugin_name}")
                 except Exception as e:
                     print(
-                        f"Error initializing plugin {plugin_class.__name__}: {str(e)}"
+                        f"Error initializing plugin {plugin_name}: {str(e)}"
                     )
 
 

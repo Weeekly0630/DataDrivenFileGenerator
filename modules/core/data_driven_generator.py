@@ -33,6 +33,8 @@ class DataDrivenGeneratorConfig:
     preserved_children_key: str  # 指定字典树中的字典的保留子节点键
     preserved_children_content_key: str  # 指定模板中引用子节点数据对象名称
 
+    plugin_includes: Optional[List[str]] = None  # 插件包含列表
+
 
 class FlexibleChildrenContent:
     """Auto handle Cildren Content"""
@@ -91,7 +93,9 @@ class DataDrivenGenerator:
 
         plugins_dir = os.path.join(os.path.dirname(__file__), "../plugins")
         plugins_dir = os.path.abspath(plugins_dir)
-        self.user_function_resolver = UserFunctionResolver(plugins_dirs=[plugins_dir])
+        self.user_function_resolver = UserFunctionResolver(
+            plugins_dirs=[plugins_dir], plugin_includes=config.plugin_includes
+        )
 
         print("======== User Function Resolver Info ========")
         print(self.user_function_resolver.show_function_info())

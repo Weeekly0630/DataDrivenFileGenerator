@@ -1,18 +1,18 @@
 data_type: yaml
 data_config:
-  file_root_path: .\source\data
+  file_root_path: .\data
   file_pattern: ["*.yaml"]
   encoding: utf-8
 
 template_type: jinja
 template_config:
-  template_dir: .\source\template
+  template_dir: .\template
   autoescape: false
 
 pattern:
-  - "root.yaml"
+  - "*.yaml"
 
-output_dir: .\source\output
+output_dir: .\output
 output_file_extension: xml
 
 preserved_template_key: TEMPLATE_PATH

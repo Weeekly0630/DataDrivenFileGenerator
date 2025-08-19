@@ -1,0 +1,45 @@
+{% import "macro/xml.j2" as Xml %}
+<?xml version='{{ meta.xml_version }}'?>
+<datamodel version="3.0"
+  xmlns="http://www.tresos.de/_projects/DataModel2/08/root.xsd"
+  xmlns:a="http://www.tresos.de/_projects/DataModel2/08/attribute.xsd"
+  xmlns:v="http://www.tresos.de/_projects/DataModel2/06/schema.xsd"
+  xmlns:d="http://www.tresos.de/_projects/DataModel2/06/data.xsd">
+  <!--
+*   @file    {{ meta.project or "UnknownProject" }}.xdm
+*   @version {{ meta.build_version or "UnknownVersion" }}
+*
+*   @brief   AUTOSAR {{ meta.project or "" }} - Tresos Studio plugin schema file
+*   @details This file contains the schema configuration for {{ meta.project or "" }} Tresos Studio
+*            plugin.
+-->
+  <!--
+  ====================================================================================================
+*   Project              : {{ meta.project or "" }}
+*   Platform             : {{ meta.platform or "" }}
+*   Peripheral           : {{ meta.peripheral or "" }}
+*   Dependencies         : none
+*
+*   Autosar Version      : {{ meta.autosar_version or "" }}
+*   Build Version        : {{ meta.build_version or "" }}
+
+*   (c) Copyright {{ meta.copyright or "Unknown Copyright" }}
+  ====================================================================================================
+  ====================================================================================================
+  ====================================================================================================
+-->
+  <d:ctr type="{{ meta.ctr_type or 'AUTOSAR' }}" factory="{{ meta.ctr_factory or 'autosar' }}"
+    {% for ns, url in meta.ctr_namespaces.items() %}
+    xmlns:{{ ns }}="{{ url }}"
+    {% endfor %}
+  >
+    <d:lst type="TOP-LEVEL-PACKAGES">
+      <d:ctr name="{{ meta.top_level_package_name or 'TS_T40D2M10I1R0' }}" type="{{ meta.top_level_package_type or 'AR-PACKAGE' }}">
+        {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
+        <d:lst type="ELEMENTS">
+          {{ CHILDREN_CONTEXT | string }}
+        </d:lst>
+      </d:ctr>
+    </d:lst>
+  </d:ctr>
+</datamodel>
