@@ -1,6 +1,6 @@
 ### Preserved Key for DataDrivenGenerator
 TEMPLATE_PATH: "main_page.j2"
-CHILDREN_PATH: []
+CHILDREN_PATH: [module_def.yaml]
 
 meta: "{xdma_mainpage_create(
     '1.0',

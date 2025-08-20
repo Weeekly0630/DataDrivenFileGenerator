@@ -7,10 +7,10 @@ data_config:
 template_type: jinja
 template_config:
   template_dir: .\template
-  autoescape: false
+  autoescape: true # for xml/html
 
 pattern:
-  - "*.yaml"
+  - "main_page.yaml"
 
 output_dir: .\output
 output_file_extension: xml

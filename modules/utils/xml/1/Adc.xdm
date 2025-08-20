@@ -123,7 +123,7 @@
                       </a:a>
                       <a:a name="SCOPE" value="LOCAL" />
                       <a:a name="POSTBUILDVARIANTVALUE" value="true" />
-                      <a:a name="IMPLEMENTATIONCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS">
+                      <a:a name="IMPLEMENTATIOINTEGERNCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS">
                         <icc:v vclass="PostBuild">VariantPostBuild</icc:v>
                         <icc:v vclass="PreCompile">VariantPreCompile</icc:v>
                       </a:a>

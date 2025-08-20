@@ -1,0 +1,6 @@
+{% import "macro/xml.j2" as Xml %}
+<v:lst name="{{ meta.name }}">
+{% for attr in meta.additional_attributes %}
+  {{ Xml.xml_node(attr, indent=0)}}
+{% endfor %}
+</v:lst>

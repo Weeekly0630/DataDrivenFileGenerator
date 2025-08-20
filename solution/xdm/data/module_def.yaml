@@ -1,0 +1,24 @@
+### Preserved Key for DataDrivenGenerator
+TEMPLATE_PATH: "main_block/module_def.j2"
+CHILDREN_PATH: []
+
+meta: "{xdma_moduledefblock_create(
+    name='Dio',
+    release_attr_xml=xdmattribute_node_create('RELEASE', 'asc:4.2.2'),
+    admin_data_attr_xml=xdmattribute_node_create('ADMIN-DATA', {'revision_label': '4.6.0', 'issued_by': 'AUTOSAR', 'date': '2025-08-20'}),
+    postbuildvariantsupport_attr_xml=xdmattribute_node_create('POSTBUILDVARIANTSUPPORT', 'true'),
+    desc_attr_xml=xdmattribute_node_create('DESC', '<![CDATA[EN:
+                                        <html><p> Configuration of the Dio (Digital IO) module. </p></html>
+                                    ]]>'),
+    lower_multiplicity_attr_xml=xdmattribute_node_create('LOWER-MULTIPLICITY', '0'),
+    upper_multiplicity_attr_xml=xdmattribute_node_create('UPPER-MULTIPLICITY', '0'),
+    uuid_attr_xml=xdmattribute_node_create('UUID', 'f0c8b1a2-3d4e-11ec-8d3d-0242ac130003'),
+    imp_desc_attr_xml=xdmattribute_node_create('DESC', 'desc'),
+    imp_implementationconfigclass_attr_xml=xdmattribute_node_create('IMPLEMENTATIONCONFIGCLASS', [{'class': 'Precompile', 'value': 'VariantPostBuild'}, {'class': 'Precompile', 'value': 'VariantPreCompile'}]),
+    imp_label_attr_xml=xdmattribute_node_create('LABEL', 'Dio'),
+    imp_uuid_attr_xml=xdmattribute_node_create('UUID', 'f0c8b1a2-3d4e-11ec-8d3d-0242ac130003'),
+    imp_default_attr_xml=xdmattribute_node_create('DEFAULT', 'VariantPostBuild'),
+    imp_range_attr_xml=xdmattribute_node_create('RANGE', ['VariantPostBuild', 'VariantPreCompile']),
+    module_refined_module_def_path='ASPath:/TS_T40D2M10I1R0/Dio'
+    )
+  }"

@@ -1,0 +1,22 @@
+{% import "macro/xml.j2" as Xml %}
+<d:chc name="{{ meta.name }}" 
+       type="AR-ELEMENT" value="BSW_MODULE_DESCRIPTION">
+  <d:ctr type="AR-ELEMENT">
+    <a:a name="DEF" 
+         value="ASPath:/AR_PACKAGE_SCHEMA/BSW_MODULE_DESCRIPTION"/>
+    <d:var name="MODULE_ID" type="INTEGER" >
+      <a:a name="EDITABLE" value="false"/>
+      <a:a name="IMPORTER_INFO" value="@DEF"/>
+    </d:var>
+    <d:ref type="RECOMMENDED_CONFIGURATION" >
+      <a:a name="EDITABLE" value="false"/>
+      <a:a name="IMPORTER_INFO" value="@DEF"/>
+    </d:ref>
+    <d:ref type="PRE_CONFIGURED_CONF" >
+      <a:a name="EDITABLE" value="false"/>
+      <a:a name="IMPORTER_INFO" value="@DEF"/>
+    </d:ref>
+    <d:ref type="VENDOR_SPECIFIC_MODULE_DEF" 
+           value="{{ meta.module_ref_path }}"/>
+  </d:ctr>
+</d:chc>

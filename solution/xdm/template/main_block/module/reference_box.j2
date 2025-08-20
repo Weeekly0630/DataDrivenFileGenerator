@@ -1,0 +1,10 @@
+{% import "macro/xml.j2" as Xml %}
+<v:ref name="{{meta.name}}" type="{{meta.type}}">
+  {{ Xml.xml_node(meta.desc_attr_xml, indent=0) }}
+  {{ Xml.xml_node(meta.label_attr_xml, indent=0) }}
+  {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
+  {{ Xml.xml_node(meta.ref_attr_xml, indent=0) }}
+  {% for attr in meta.additional_attributes %}
+  {{ Xml.xml_node(attr, indent=0) }}
+  {% enfor %}
+</v:ref>

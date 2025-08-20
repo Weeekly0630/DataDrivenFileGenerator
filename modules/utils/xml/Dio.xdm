@@ -70,8 +70,7 @@
                     <d:chc name="Dio_EcuParameterDefinition" 
                            type="AR-ELEMENT" value="ECU_PARAMETER_DEFINITION">
                         <d:ctr type="AR-ELEMENT">
-                            <a:a name="DEF" 
-                                 value="ASPath:/AR_PACKAGE_SCHEMA/ECU_PARAMETER_DEFINITION"/>
+                            
                             <a:a name="UUID" value="ECUC:47c84e0c-43c6-4152-98fa-0e2553449fac"/>
                             <d:lst name="MODULE_REF">
                                 <d:ref type="MODULE_REF" value="ASPath:/TS_T40D2M10I1R0/Dio"/>

@@ -36,7 +36,28 @@
       <d:ctr name="TS_T40D2M10I1R0" type="AR-PACKAGE">
         <a:a name="UUID" value="123e4567-e89b-12d3-a456-426614174000" />
         <d:lst type="ELEMENTS">
-          
+          <d:chc name="Dio" type="AR-ELEMENT" value="MODULE-DEF">
+            <v:ctr type="MODULE-DEF">
+              <a:a name="RELEASE" value="asc:4.2.2" />
+              <a:a name="ADMIN-DATA" type="ADMIN-DATA"><ad:ADMIN-DATA><ad:DOC-REVISIONS><ad:DOC-REVISION><ad:REVISION-LABEL>4.6.0</ad:REVISION-LABEL><ad:ISSUED-BY>AUTOSAR</ad:ISSUED-BY><ad:DATE>2025-08-20</ad:DATE></ad:DOC-REVISION></ad:DOC-REVISIONS></ad:ADMIN-DATA></a:a>
+              <a:a name="POSTBUILDVARIANTSUPPORT" value="true" />
+              <a:a name="DESC"><a:v><![CDATA[EN: <html><p> Configuration of the Dio (Digital IO) module. </p></html> ]]></a:v></a:a>
+              <a:a name="LOWER-MULTIPLICITY" value="0" />
+              <a:a name="UPPER-MULTIPLICITY" value="0" />
+              <a:a name="UUID" value="f0c8b1a2-3d4e-11ec-8d3d-0242ac130003" />
+              <!--  /** @implements  ConfigVariant_Object */ -->
+              <v:var name="IMPLEMENTATION_CONFIG_VARIANT" type="ENUMERATION">
+                <a:a name="DESC"><a:v>desc</a:v></a:a>
+                <a:a name="IMPLEMENTATIONCONFIGCLASS" type="IMPLEMENTATIONCONFIGCLASS"><icc:v class="Precompile">VariantPostBuild</icc:v><icc:v class="Precompile">VariantPreCompile</icc:v></a:a>
+                <a:a name="LABEL" value="Dio" />
+                <a:a name="UUID" value="f0c8b1a2-3d4e-11ec-8d3d-0242ac130003" />
+                <a:a name="DEFAULT" value="VariantPostBuild" />
+                <a:da name="RANGE"><a:v>VariantPostBuild</a:v><a:v>VariantPreCompile</a:v></a:da>
+              </v:var>
+              
+              <d:ref type="REFINED_MODULE_DEF" value="ASPath:/TS_T40D2M10I1R0/Dio"/>
+            </v:ctr>
+          </d:chc>
         </d:lst>
       </d:ctr>
     </d:lst>

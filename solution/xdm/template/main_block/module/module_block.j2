@@ -1,0 +1,11 @@
+{% import "macro/xml.j2" as Xml %}
+<!--  @implements {{ meta.name }}_Object  -->
+<v:ctr name="{{ meta.name }}" type="IDENTIFIABLE">
+  {{ Xml.xml_node(meta.desc_attr_xml, indent=0) }}
+  {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
+  {% for attr in meta.additional_attributes %}
+  {{ Xml.xml_node(attr, indent=0) }}
+  {% enfor %}
+  {{ CHILDREN_CONTEXT | string | indent(2) }}
+</v:ctr>
+  

@@ -2,6 +2,44 @@
 TEMPLATE_PATH: "main_block/module_def.j2"
 CHILDREN_PATH: []
 
-meta: "{
-    
+meta: "{xdma_moduledefblock_create(
+    name=<name_value>,
+    release_attr_xml=<release_attr_xml_value>,
+    admin_data_attr_xml=<admin_data_attr_xml_value>,
+    postbuildvariantsupport_attr_xml=<postbuildvariantsupport_attr_xml_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    lower_multiplicity_attr_xml=<lower_multiplicity_attr_xml_value>,
+    upper_multiplicity_attr_xml=<upper_multiplicity_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    imp_desc_attr_xml=<imp_desc_attr_xml_value>,
+    imp_implementationconfigclass_attr_xml=<imp_implementationconfigclass_attr_xml_value>,
+    imp_label_attr_xml=<imp_label_attr_xml_value>,
+    imp_uuid_attr_xml=<imp_uuid_attr_xml_value>,
+    imp_default_attr_xml=<imp_default_attr_xml_value>,
+    imp_range_attr_xml=<imp_range_attr_xml_value>,
+    refind_module_def_value=<refind_module_def_value_value>)
   }"
+
+# Preserved Key for DataDrivenGenerator
+# TEMPLATE_PATH: "main_block/module_def.j2"
+# CHILDREN_PATH: []
+
+# meta: "{xdma_moduledefblock_create(
+#     name='Dio',
+#     release_attr_xml=xdmattribute_node_create('RELEASE', 'asc:4.2.2'),
+#     admin_data_attr_xml=xdmattribute_node_create('ADMIN-DATA', {'revision_label': '4.6.0', 'issued_by': 'AUTOSAR', 'date': '2025-08-20'}),
+#     postbuildvariantsupport_attr_xml=xdmattribute_node_create('POSTBUILDVARIANTSUPPORT', 'true'),
+#     desc_attr_xml=xdmattribute_node_create('DESC', '<![CDATA[EN:
+#                                         <html><p> Configuration of the Dio (Digital IO) module. </p></html>
+#                                     ]]>'),
+#     lower_multiplicity_attr_xml=xdmattribute_node_create('LOWER-MULTIPLICITY', '0'),
+#     upper_multiplicity_attr_xml=xdmattribute_node_create('UPPER-MULTIPLICITY', '0'),
+#     uuid_attr_xml=xdmattribute_node_create('UUID', 'f0c8b1a2-3d4e-11ec-8d3d-0242ac130003'),
+#     imp_desc_attr_xml=xdmattribute_node_create('DESC', 'desc'),
+#     imp_implementationconfigclass_attr_xml=xdmattribute_node_create('IMPLEMENTATIONCONFIGCLASS', [{'class': 'Precompile', 'value': 'VariantPostBuild'}, {'class': 'Precompile', 'value': 'VariantPreCompile'}]),
+#     imp_label_attr_xml=xdmattribute_node_create('LABEL', 'Dio'),
+#     imp_uuid_attr_xml=xdmattribute_node_create('UUID', 'f0c8b1a2-3d4e-11ec-8d3d-0242ac130003'),
+#     imp_default_attr_xml=xdmattribute_node_create('DEFAULT', 'VariantPostBuild'),
+#     imp_range_attr_xml=xdmattribute_node_create('RANGE', ['VariantPostBuild', 'VariantPreCompile'])
+#     )
+#   }"

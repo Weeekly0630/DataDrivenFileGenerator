@@ -20,54 +20,70 @@ class FunctionCollectorPlugin(FunctionPlugin):
     
     @staticmethod
     def discover_plugin_classes() -> List[str]:
-        """自动发现插件目录中的所有可用类"""
+        """自动发现插件目录中的所有可用类（递归扫描子目录）"""
         plugin_classes = []
         plugins_dir = os.path.dirname(__file__)
         
         print(f"扫描插件目录: {plugins_dir}")
         
-        # 扫描插件文件
-        for filename in os.listdir(plugins_dir):
-            if filename.endswith('.py') and not filename.startswith('__') and filename != 'function_collector.py':
-                module_name = filename[:-3]
-                print(f"扫描模块: {module_name}")
+        # 递归扫描所有Python文件
+        def scan_directory(current_dir: str, base_module_path: str = "modules.plugins"):
+            """递归扫描目录中的Python文件"""
+            for item in os.listdir(current_dir):
+                item_path = os.path.join(current_dir, item)
                 
-                try:
-                    module_path = f"modules.plugins.{module_name}"
-                    module = importlib.import_module(module_path)
+                if os.path.isfile(item_path) and item.endswith('.py') and not item.startswith('__') and item != 'function_collector.py':
+                    # 计算相对于plugins目录的模块路径
+                    rel_path = os.path.relpath(item_path, plugins_dir)
+                    module_parts = rel_path.replace(os.sep, '.').replace('.py', '')
+                    module_name = module_parts
+                    module_path = f"{base_module_path}.{module_parts}"
                     
-                    # 查找模块中的所有类
-                    for name, obj in inspect.getmembers(module, inspect.isclass):
-                        # 跳过导入的类（不是在当前模块定义的）
-                        if obj.__module__ != module_path:
-                            continue
+                    print(f"扫描模块: {module_name} ({module_path})")
+                    
+                    try:
+                        module = importlib.import_module(module_path)
                         
-                        print(f"  检查类: {name}")
-                        
-                        # 直接用 auto_register_factories 来检查是否是插件类
-                        try:
-                            user_funcs, registry = auto_register_factories(obj)
-                            if len(user_funcs) > 0:  # 如果能生成函数，说明是有效的插件类
-                                if name not in plugin_classes:
-                                    plugin_classes.append(name)
-                                    print(f"    ✓ 发现插件类: {name} (生成了 {len(user_funcs)} 个函数)")
-                            else:
-                                print(f"    ✗ 不是插件类: {name} (没有生成函数)")
-                        except Exception as e:
-                            print(f"    ✗ 检查类 {name} 时出错: {type(e).__name__}: {e}")
+                        # 查找模块中的所有类
+                        for name, obj in inspect.getmembers(module, inspect.isclass):
+                            # 跳过导入的类（不是在当前模块定义的）
+                            if obj.__module__ != module_path:
+                                continue
                             
-                except ImportError as e:
-                    print(f"导入模块 {module_name} 失败（ImportError）: {e}")
-                    continue
-                except AttributeError as e:
-                    print(f"模块 {module_name} 属性错误（AttributeError）: {e}")
-                    continue
-                except SyntaxError as e:
-                    print(f"模块 {module_name} 语法错误（SyntaxError）: {e}")
-                    continue
-                except Exception as e:
-                    print(f"扫描模块 {module_name} 时出现未知错误: {type(e).__name__}: {e}")
-                    continue
+                            print(f"  检查类: {name}")
+                            
+                            # 直接用 auto_register_factories 来检查是否是插件类
+                            try:
+                                user_funcs, registry = auto_register_factories(obj)
+                                if len(user_funcs) > 0:  # 如果能生成函数，说明是有效的插件类
+                                    if name not in plugin_classes:
+                                        plugin_classes.append(name)
+                                        print(f"    ✓ 发现插件类: {name} (生成了 {len(user_funcs)} 个函数)")
+                                else:
+                                    print(f"    ✗ 不是插件类: {name} (没有生成函数)")
+                            except Exception as e:
+                                print(f"    ✗ 检查类 {name} 时出错: {type(e).__name__}: {e}")
+                                
+                    except ImportError as e:
+                        print(f"导入模块 {module_name} 失败（ImportError）: {e}")
+                        continue
+                    except AttributeError as e:
+                        print(f"模块 {module_name} 属性错误（AttributeError）: {e}")
+                        continue
+                    except SyntaxError as e:
+                        print(f"模块 {module_name} 语法错误（SyntaxError）: {e}")
+                        continue
+                    except Exception as e:
+                        print(f"扫描模块 {module_name} 时出现未知错误: {type(e).__name__}: {e}")
+                        continue
+                        
+                elif os.path.isdir(item_path) and not item.startswith('__') and not item.startswith('.'):
+                    # 递归扫描子目录
+                    print(f"进入子目录: {item}")
+                    scan_directory(item_path, base_module_path)
+        
+        # 开始递归扫描
+        scan_directory(plugins_dir)
         
         print(f"总共发现 {len(plugin_classes)} 个插件类: {plugin_classes}")
         return plugin_classes
@@ -87,33 +103,50 @@ class FunctionCollectorPlugin(FunctionPlugin):
                 # 动态导入插件类
                 target_class = None
                 
-                # 尝试从所有插件模块导入
+                # 尝试从所有插件模块导入（递归查找）
                 plugins_dir = os.path.dirname(__file__)
-                for filename in os.listdir(plugins_dir):
-                    if filename.endswith('.py') and not filename.startswith('__'):
-                        module_name = filename[:-3]
-                        try:
-                            module_path = f"modules.plugins.{module_name}"
-                            module = importlib.import_module(module_path)
-                            if hasattr(module, class_name):
-                                candidate_class = getattr(module, class_name)
-                                # 确保这个类是在该模块中定义的
-                                if candidate_class.__module__ == module_path:
-                                    target_class = candidate_class
-                                    print(f"在模块 {module_name} 中找到类 {class_name}")
-                                    break
-                        except ImportError as e:
-                            print(f"导入模块 {module_name} 失败（ImportError）: {e}")
-                            continue
-                        except AttributeError as e:
-                            print(f"模块 {module_name} 属性错误（AttributeError）: {e}")
-                            continue
-                        except SyntaxError as e:
-                            print(f"模块 {module_name} 语法错误（SyntaxError）: {e}")
-                            continue
-                        except Exception as e:
-                            print(f"检查模块 {module_name} 时出现未知错误: {type(e).__name__}: {e}")
-                            continue
+                
+                def find_class_in_directory(current_dir: str, base_module_path: str = "modules.plugins"):
+                    """递归查找指定类"""
+                    for item in os.listdir(current_dir):
+                        item_path = os.path.join(current_dir, item)
+                        
+                        if os.path.isfile(item_path) and item.endswith('.py') and not item.startswith('__'):
+                            # 计算相对于plugins目录的模块路径
+                            rel_path = os.path.relpath(item_path, plugins_dir)
+                            module_parts = rel_path.replace(os.sep, '.').replace('.py', '')
+                            module_path = f"{base_module_path}.{module_parts}"
+                            
+                            try:
+                                module = importlib.import_module(module_path)
+                                if hasattr(module, class_name):
+                                    candidate_class = getattr(module, class_name)
+                                    # 确保这个类是在该模块中定义的
+                                    if candidate_class.__module__ == module_path:
+                                        print(f"在模块 {module_parts} 中找到类 {class_name}")
+                                        return candidate_class
+                            except ImportError as e:
+                                print(f"导入模块 {module_parts} 失败（ImportError）: {e}")
+                                continue
+                            except AttributeError as e:
+                                print(f"模块 {module_parts} 属性错误（AttributeError）: {e}")
+                                continue
+                            except SyntaxError as e:
+                                print(f"模块 {module_parts} 语法错误（SyntaxError）: {e}")
+                                continue
+                            except Exception as e:
+                                print(f"检查模块 {module_parts} 时出现未知错误: {type(e).__name__}: {e}")
+                                continue
+                                
+                        elif os.path.isdir(item_path) and not item.startswith('__') and not item.startswith('.'):
+                            # 递归查找子目录
+                            result = find_class_in_directory(item_path, base_module_path)
+                            if result is not None:
+                                return result
+                    
+                    return None
+                
+                target_class = find_class_in_directory(plugins_dir)
                 
                 if target_class is None:
                     print(f"未找到类 {class_name}")

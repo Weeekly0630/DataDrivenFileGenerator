@@ -1,0 +1,12 @@
+{% import "macro/xml.j2" as Xml %}
+<d:chc name="{{ meta.name }}" 
+       type="AR-ELEMENT" value="ECU_PARAMETER_DEFINITION">
+  <d:ctr type="AR-ELEMENT">
+    <a:a name="DEF" 
+         value="ASPath:/AR_PACKAGE_SCHEMA/ECU_PARAMETER_DEFINITION"/>
+    {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
+    <d:lst name="MODULE_REF">
+      <d:ref type="MODULE_REF" value="{{ meta.module_ref_path }}"/>
+    </d:lst>
+  </d:ctr>
+</d:chc>

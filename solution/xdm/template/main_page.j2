@@ -37,7 +37,7 @@
       <d:ctr name="{{ meta.top_level_package_name or 'Unknown package_name' }}" type="{{ meta.top_level_package_type or 'AR-PACKAGE' }}">
         {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
         <d:lst type="ELEMENTS">
-          {{ CHILDREN_CONTEXT | string }}
+          {{ CHILDREN_CONTEXT | string | indent(10) }}
         </d:lst>
       </d:ctr>
     </d:lst>
