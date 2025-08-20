@@ -16,5 +16,5 @@ meta: "{xdma_mainpage_create(
     {'d': 'http://www.tresos.de/_projects/DataModel2/06/data.xsd', 'v': 'http://www.tresos.de/_projects/DataModel2/06/schema.xsd', 'a': 'http://www.tresos.de/_projects/DataModel2/08/attribute.xsd'},
     'TS_T40D2M10I1R0',
     'AR-PACKAGE',
-    xdmattribute_node_create('UUID', {'namespace': 'a', 'value': '123e4567-e89b-12d3-a456-426614174000'})
+    xdmattribute_node_create('UUID', '123e4567-e89b-12d3-a456-426614174000')
   )}"

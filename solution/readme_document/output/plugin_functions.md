@@ -5,542 +5,34 @@
 ## 目录
 
 ### 按类别浏览
-- [Decl 类函数](#decl-类函数)
 - [Node 类函数](#node-类函数)
+- [XdmA 类函数](#xdma-类函数)
+- [XdmAttribute 类函数](#xdmattribute-类函数)
 
 ### 所有函数列表
-- [插件函数使用文档](#插件函数使用文档)
-  - [目录](#目录)
-    - [按类别浏览](#按类别浏览)
-    - [所有函数列表](#所有函数列表)
-  - [函数收集摘要](#函数收集摘要)
-  - [Decl 类函数](#decl-类函数)
-    - [函数列表](#函数列表)
-    - [decl\_field\_create](#decl_field_create)
-    - [decl\_record\_create](#decl_record_create)
-    - [decl\_struct\_create](#decl_struct_create)
-    - [decl\_typemodifier\_create](#decl_typemodifier_create)
-    - [decl\_typeref\_create](#decl_typeref_create)
-    - [decl\_typedef\_create](#decl_typedef_create)
-    - [decl\_union\_create](#decl_union_create)
-    - [decl\_variable\_create](#decl_variable_create)
-  - [Node 类函数](#node-类函数)
-    - [函数列表](#函数列表-1)
-    - [node\_find\_create](#node_find_create)
-    - [node\_value\_create](#node_value_create)
-  - [使用指南](#使用指南)
-    - [基本语法](#基本语法)
-    - [参数类型说明](#参数类型说明)
-    - [转义字符](#转义字符)
-    - [常见模式](#常见模式)
-  - [附录](#附录)
-    - [生成信息](#生成信息)
+- [node_find_create](#node-find-create)
+- [node_value_create](#node-value-create)
+- [xdma_bswmoduledescblock_create](#xdma-bswmoduledescblock-create)
+- [xdma_ecuparamdefblock_create](#xdma-ecuparamdefblock-create)
+- [xdma_field_create](#xdma-field-create)
+- [xdma_fieldmeta_create](#xdma-fieldmeta-create)
+- [xdma_mainpage_create](#xdma-mainpage-create)
+- [xdma_moduledefblock_create](#xdma-moduledefblock-create)
+- [xdma_referencefield_create](#xdma-referencefield-create)
+- [xdma_table_create](#xdma-table-create)
+- [xdma_tablerow_create](#xdma-tablerow-create)
+- [xdmattribute_node_create](#xdmattribute-node-create)
 
 ---
 
 ## 函数收集摘要
 
-- **总函数数**: 10
-- **成功收集的类**: Decl, Node
-- **发现的类**: Decl, Node
+- **总函数数**: 12
+- **成功收集的类**: Node, XdmA, XdmAttribute
+- **发现的类**: Node, XdmA, XdmAttribute
 
 ---
 
-## Decl 类函数
-
-来源类：`Decl`  
-函数数量：8
-
-### 函数列表
-- [插件函数使用文档](#插件函数使用文档)
-  - [目录](#目录)
-    - [按类别浏览](#按类别浏览)
-    - [所有函数列表](#所有函数列表)
-  - [函数收集摘要](#函数收集摘要)
-  - [Decl 类函数](#decl-类函数)
-    - [函数列表](#函数列表)
-    - [decl\_field\_create](#decl_field_create)
-    - [decl\_record\_create](#decl_record_create)
-    - [decl\_struct\_create](#decl_struct_create)
-    - [decl\_typemodifier\_create](#decl_typemodifier_create)
-    - [decl\_typeref\_create](#decl_typeref_create)
-    - [decl\_typedef\_create](#decl_typedef_create)
-    - [decl\_union\_create](#decl_union_create)
-    - [decl\_variable\_create](#decl_variable_create)
-  - [Node 类函数](#node-类函数)
-    - [函数列表](#函数列表-1)
-    - [node\_find\_create](#node_find_create)
-    - [node\_value\_create](#node_value_create)
-  - [使用指南](#使用指南)
-    - [基本语法](#基本语法)
-    - [参数类型说明](#参数类型说明)
-    - [转义字符](#转义字符)
-    - [常见模式](#常见模式)
-  - [附录](#附录)
-    - [生成信息](#生成信息)
-
-<a id="decl-field-create"></a>
-### decl_field_create
-
-**描述**：C语言结构/联合字段信息
-
-**参数列表**：
-- `name`: str
-  - 名称字符串
-- `modifier`: decl_typemodifier_create
-  - [decl_typemodifier_create](#decl-typemodifier-create)
-- `bitfield_width`: int
-  - 整数值
-
-
-
-**函数签名**：
-```python
-decl_field_create(name: str, modifier: decl_typemodifier_create, bitfield_width: int)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_field_create(
-    <name_value>,
-    <modifier_value>,
-    <bitfield_width_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_field_create(
-    name=<name_value>,
-    modifier=<modifier_value>,
-    bitfield_width=<bitfield_width_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_field_create(
-    name=<name_value>, 
-    modifier=decl_typemodifier_create(<nested_params>), 
-    bitfield_width=<bitfield_width_value>)
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_field_create('example_name', decl_typemodifier_create(), 0)}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_field_create('demo', decl_typemodifier_create(), 1)}"
-```
-
-**相关函数**：
-- [decl_typemodifier_create](#decl-typemodifier-create) - 用于 `modifier` 参数
-
----
-<a id="decl-record-create"></a>
-### decl_record_create
-
-**描述**：C语言结构体/联合体信息
-
-**参数列表**：
-- `name`: str
-  - 名称字符串
-- `fields`: decl_field_create
-  - [decl_field_create](#decl-field-create)
-- `attributes`: List
-  - 列表类型
-- `qualifiers`: str
-  - 限定符字符串
-
-
-
-**函数签名**：
-```python
-decl_record_create(name: str, fields: decl_field_create, attributes: List, qualifiers: str)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_record_create(
-    <name_value>,
-    <fields_value>,
-    <attributes_value>,
-    <qualifiers_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_record_create(
-    name=<name_value>,
-    fields=<fields_value>,
-    attributes=<attributes_value>,
-    qualifiers=<qualifiers_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_record_create(
-    name=<name_value>, 
-    fields=decl_field_create(<nested_params>), 
-    attributes=<attributes_value>, 
-    qualifiers=<qualifiers_value>)
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_record_create('example_name', decl_field_create(), [], 'example_qualifiers')}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_record_create('demo', decl_field_create(), ['item1', 'item2'], 'demo')}"
-```
-
-**相关函数**：
-- [decl_field_create](#decl-field-create) - 用于 `fields` 参数
-
----
-<a id="decl-struct-create"></a>
-### decl_struct_create
-
-**描述**：C语言结构体信息
-
-**参数列表**：
-- `record`: Any
-  - 任意类型
-
-
-
-**函数签名**：
-```python
-decl_struct_create(record: Any)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_struct_create(
-    <record_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_struct_create(
-    record=<record_value>)
-}"
-```
-
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_struct_create('record_value')}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_struct_create('demo')}"
-```
-
-
----
-<a id="decl-typemodifier-create"></a>
-### decl_typemodifier_create
-
-**描述**：C语言类型修饰符信息
-
-**参数列表**：
-- `type`: decl_typeref_create
-  - [decl_typeref_create](#decl-typeref-create)
-- `qualifiers`: str
-  - 限定符字符串
-- `attributes`: List
-  - 列表类型
-- `is_pointer`: bool
-  - 布尔值
-- `pointer_level`: int
-  - 整数值
-- `is_array`: bool
-  - 布尔值
-- `array_dims`: List
-  - 列表类型
-
-
-
-**函数签名**：
-```python
-decl_typemodifier_create(type: decl_typeref_create, qualifiers: str, attributes: List, is_pointer: bool, pointer_level: int, is_array: bool, array_dims: List)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_typemodifier_create(
-    <type_value>,
-    <qualifiers_value>,
-    <attributes_value>,
-    <is_pointer_value>,
-    <pointer_level_value>,
-    <is_array_value>,
-    <array_dims_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_typemodifier_create(
-    type=<type_value>,
-    qualifiers=<qualifiers_value>,
-    attributes=<attributes_value>,
-    is_pointer=<is_pointer_value>,
-    pointer_level=<pointer_level_value>,
-    is_array=<is_array_value>,
-    array_dims=<array_dims_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_typemodifier_create(
-    type=decl_typeref_create(<nested_params>), 
-    qualifiers=<qualifiers_value>, 
-    attributes=<attributes_value>, 
-    is_pointer=<is_pointer_value>, 
-    pointer_level=<pointer_level_value>, 
-    is_array=<is_array_value>, 
-    array_dims=<array_dims_value>)
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_typemodifier_create(decl_typeref_create(), 'example_qualifiers', [], false, 0, false, [])}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_typemodifier_create(decl_typeref_create(), 'demo', ['item1', 'item2'], true, 1, true, ['item1', 'item2'])}"
-```
-
-**相关函数**：
-- [decl_typeref_create](#decl-typeref-create) - 用于 `type` 参数
-
----
-<a id="decl-typeref-create"></a>
-### decl_typeref_create
-
-**描述**：C语言类型引用信息
-
-**参数列表**：
-- `ref`: decl_typeref_create
-  - [decl_typeref_create](#decl-typeref-create)
-
-
-
-**函数签名**：
-```python
-decl_typeref_create(ref: decl_typeref_create)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_typeref_create(
-    <ref_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_typeref_create(
-    ref=<ref_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_typeref_create(
-    ref=decl_typeref_create(<nested_params>))
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_typeref_create(decl_typeref_create())}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_typeref_create(decl_typeref_create())}"
-```
-
-**相关函数**：
-- [decl_typeref_create](#decl-typeref-create) - 用于 `ref` 参数
-
----
-<a id="decl-typedef-create"></a>
-### decl_typedef_create
-
-**描述**：C语言类型定义信息
-
-**参数列表**：
-- `name`: str
-  - 名称字符串
-- `typeref`: decl_typeref_create
-  - [decl_typeref_create](#decl-typeref-create)
-
-
-
-**函数签名**：
-```python
-decl_typedef_create(name: str, typeref: decl_typeref_create)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_typedef_create(
-    <name_value>,
-    <typeref_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_typedef_create(
-    name=<name_value>,
-    typeref=<typeref_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_typedef_create(
-    name=<name_value>, 
-    typeref=decl_typeref_create(<nested_params>))
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_typedef_create('example_name', decl_typeref_create())}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_typedef_create('demo', decl_typeref_create())}"
-```
-
-**相关函数**：
-- [decl_typeref_create](#decl-typeref-create) - 用于 `typeref` 参数
-
----
-<a id="decl-union-create"></a>
-### decl_union_create
-
-**描述**：C语言联合体信息
-
-**参数列表**：
-- `record`: Any
-  - 任意类型
-
-
-
-**函数签名**：
-```python
-decl_union_create(record: Any)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_union_create(
-    <record_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_union_create(
-    record=<record_value>)
-}"
-```
-
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_union_create('record_value')}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_union_create('demo')}"
-```
-
-
----
-<a id="decl-variable-create"></a>
-### decl_variable_create
-
-**描述**：C语言变量信息
-
-**参数列表**：
-- `name`: str
-  - 名称字符串
-- `modifier`: decl_typemodifier_create
-  - [decl_typemodifier_create](#decl-typemodifier-create)
-- `init_expr`: Any
-  - 初始化表达式
-
-
-
-**函数签名**：
-```python
-decl_variable_create(name: str, modifier: decl_typemodifier_create, init_expr: Any)
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{decl_variable_create(
-    <name_value>,
-    <modifier_value>,
-    <init_expr_value>)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{decl_variable_create(
-    name=<name_value>,
-    modifier=<modifier_value>,
-    init_expr=<init_expr_value>)
-}"
-```
-
-*嵌套调用示例：*
-```yaml
-data: "{decl_variable_create(
-    name=<name_value>, 
-    modifier=decl_typemodifier_create(<nested_params>), 
-    init_expr=<init_expr_value>)
-}"
-```
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{decl_variable_create('example_name', decl_typemodifier_create(), 'init_expr_value')}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {decl_variable_create('demo', decl_typemodifier_create(), 'demo')}"
-```
-
-**相关函数**：
-- [decl_typemodifier_create](#decl-typemodifier-create) - 用于 `modifier` 参数
-
----
 ## Node 类函数
 
 来源类：`Node`  
@@ -636,6 +128,558 @@ example2: f"结果: {node_value_create('demo')}"
 
 
 ---
+## XdmA 类函数
+
+来源类：`XdmA`  
+函数数量：9
+
+### 函数列表
+- [xdma_bswmoduledescblock_create](#xdma-bswmoduledescblock-create)
+- [xdma_ecuparamdefblock_create](#xdma-ecuparamdefblock-create)
+- [xdma_field_create](#xdma-field-create)
+- [xdma_fieldmeta_create](#xdma-fieldmeta-create)
+- [xdma_mainpage_create](#xdma-mainpage-create)
+- [xdma_moduledefblock_create](#xdma-moduledefblock-create)
+- [xdma_referencefield_create](#xdma-referencefield-create)
+- [xdma_table_create](#xdma-table-create)
+- [xdma_tablerow_create](#xdma-tablerow-create)
+
+<a id="xdma-bswmoduledescblock-create"></a>
+### xdma_bswmoduledescblock_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_bswmoduledescblock_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_bswmoduledescblock_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_bswmoduledescblock_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_bswmoduledescblock_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_bswmoduledescblock_create()}"
+```
+
+
+---
+<a id="xdma-ecuparamdefblock-create"></a>
+### xdma_ecuparamdefblock_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_ecuparamdefblock_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_ecuparamdefblock_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_ecuparamdefblock_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_ecuparamdefblock_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_ecuparamdefblock_create()}"
+```
+
+
+---
+<a id="xdma-field-create"></a>
+### xdma_field_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_field_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_field_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_field_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_field_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_field_create()}"
+```
+
+
+---
+<a id="xdma-fieldmeta-create"></a>
+### xdma_fieldmeta_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_fieldmeta_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_fieldmeta_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_fieldmeta_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_fieldmeta_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_fieldmeta_create()}"
+```
+
+
+---
+<a id="xdma-mainpage-create"></a>
+### xdma_mainpage_create
+
+**描述**：MetaData(xml_version: str, namespaces: Dict[str, str], project: Optional[str], platform: Optional[str], peripheral: Optional[str], autosar_version: Optional[str], build_version: Optional[str], copyright: Optional[str], ctr_type: str, ctr_factory: str, ctr_namespaces: Dict[str, str], top_level_package_name: Optional[str], top_level_package_type: Optional[str], uuid_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData)
+
+**参数列表**：
+- `xml_version`: Any
+  - 任意类型
+- `namespaces`: Any
+  - 任意类型
+- `project`: Any
+  - 任意类型
+- `platform`: Any
+  - 任意类型
+- `peripheral`: Any
+  - 任意类型
+- `autosar_version`: Any
+  - 任意类型
+- `build_version`: Any
+  - 任意类型
+- `copyright`: Any
+  - 任意类型
+- `ctr_type`: Any
+  - 任意类型
+- `ctr_factory`: Any
+  - 任意类型
+- `ctr_namespaces`: Any
+  - 任意类型
+- `top_level_package_name`: Any
+  - 任意类型
+- `top_level_package_type`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_mainpage_create(xml_version: Any, namespaces: Any, project: Any, platform: Any, peripheral: Any, autosar_version: Any, build_version: Any, copyright: Any, ctr_type: Any, ctr_factory: Any, ctr_namespaces: Any, top_level_package_name: Any, top_level_package_type: Any, uuid_attr_xml: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_mainpage_create(
+    <xml_version_value>,
+    <namespaces_value>,
+    <project_value>,
+    <platform_value>,
+    <peripheral_value>,
+    <autosar_version_value>,
+    <build_version_value>,
+    <copyright_value>,
+    <ctr_type_value>,
+    <ctr_factory_value>,
+    <ctr_namespaces_value>,
+    <top_level_package_name_value>,
+    <top_level_package_type_value>,
+    <uuid_attr_xml_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_mainpage_create(
+    xml_version=<xml_version_value>,
+    namespaces=<namespaces_value>,
+    project=<project_value>,
+    platform=<platform_value>,
+    peripheral=<peripheral_value>,
+    autosar_version=<autosar_version_value>,
+    build_version=<build_version_value>,
+    copyright=<copyright_value>,
+    ctr_type=<ctr_type_value>,
+    ctr_factory=<ctr_factory_value>,
+    ctr_namespaces=<ctr_namespaces_value>,
+    top_level_package_name=<top_level_package_name_value>,
+    top_level_package_type=<top_level_package_type_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_mainpage_create('xml_version_value', 'namespaces_value', 'project_value', 'platform_value', 'peripheral_value', 'autosar_version_value', 'build_version_value', 'copyright_value', 'ctr_type_value', 'ctr_factory_value', 'ctr_namespaces_value', 'top_level_package_name_value', 'top_level_package_type_value', 'uuid_attr_xml_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_mainpage_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
+```
+
+
+---
+<a id="xdma-moduledefblock-create"></a>
+### xdma_moduledefblock_create
+
+**描述**：MetaData(name: str, release_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, admin_data_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, postbuildvariantsupport_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, desc_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, lower_multiplicity_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, upper_multiplicity_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_desc_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_implementationconfigclass_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_label_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_uuid_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_default_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, imp_range_attr_xml: modules.utils.type_classes.xml.XmlNode.MetaData, refind_module_def_value: str)
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `release_attr_xml`: Any
+  - 任意类型
+- `admin_data_attr_xml`: Any
+  - 任意类型
+- `postbuildvariantsupport_attr_xml`: Any
+  - 任意类型
+- `desc_attr_xml`: Any
+  - 任意类型
+- `lower_multiplicity_attr_xml`: Any
+  - 任意类型
+- `upper_multiplicity_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `imp_desc_attr_xml`: Any
+  - 任意类型
+- `imp_implementationconfigclass_attr_xml`: Any
+  - 任意类型
+- `imp_label_attr_xml`: Any
+  - 任意类型
+- `imp_uuid_attr_xml`: Any
+  - 任意类型
+- `imp_default_attr_xml`: Any
+  - 任意类型
+- `imp_range_attr_xml`: Any
+  - 任意类型
+- `refind_module_def_value`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_moduledefblock_create(name: str, release_attr_xml: Any, admin_data_attr_xml: Any, postbuildvariantsupport_attr_xml: Any, desc_attr_xml: Any, lower_multiplicity_attr_xml: Any, upper_multiplicity_attr_xml: Any, uuid_attr_xml: Any, imp_desc_attr_xml: Any, imp_implementationconfigclass_attr_xml: Any, imp_label_attr_xml: Any, imp_uuid_attr_xml: Any, imp_default_attr_xml: Any, imp_range_attr_xml: Any, refind_module_def_value: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_moduledefblock_create(
+    <name_value>,
+    <release_attr_xml_value>,
+    <admin_data_attr_xml_value>,
+    <postbuildvariantsupport_attr_xml_value>,
+    <desc_attr_xml_value>,
+    <lower_multiplicity_attr_xml_value>,
+    <upper_multiplicity_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <imp_desc_attr_xml_value>,
+    <imp_implementationconfigclass_attr_xml_value>,
+    <imp_label_attr_xml_value>,
+    <imp_uuid_attr_xml_value>,
+    <imp_default_attr_xml_value>,
+    <imp_range_attr_xml_value>,
+    <refind_module_def_value_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_moduledefblock_create(
+    name=<name_value>,
+    release_attr_xml=<release_attr_xml_value>,
+    admin_data_attr_xml=<admin_data_attr_xml_value>,
+    postbuildvariantsupport_attr_xml=<postbuildvariantsupport_attr_xml_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    lower_multiplicity_attr_xml=<lower_multiplicity_attr_xml_value>,
+    upper_multiplicity_attr_xml=<upper_multiplicity_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    imp_desc_attr_xml=<imp_desc_attr_xml_value>,
+    imp_implementationconfigclass_attr_xml=<imp_implementationconfigclass_attr_xml_value>,
+    imp_label_attr_xml=<imp_label_attr_xml_value>,
+    imp_uuid_attr_xml=<imp_uuid_attr_xml_value>,
+    imp_default_attr_xml=<imp_default_attr_xml_value>,
+    imp_range_attr_xml=<imp_range_attr_xml_value>,
+    refind_module_def_value=<refind_module_def_value_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_moduledefblock_create('example_name', 'release_attr_xml_value', 'admin_data_attr_xml_value', 'postbuildvariantsupport_attr_xml_value', 'desc_attr_xml_value', 'lower_multiplicity_attr_xml_value', 'upper_multiplicity_attr_xml_value', 'uuid_attr_xml_value', 'imp_desc_attr_xml_value', 'imp_implementationconfigclass_attr_xml_value', 'imp_label_attr_xml_value', 'imp_uuid_attr_xml_value', 'imp_default_attr_xml_value', 'imp_range_attr_xml_value', 'refind_module_def_value_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_moduledefblock_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
+```
+
+
+---
+<a id="xdma-referencefield-create"></a>
+### xdma_referencefield_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_referencefield_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_referencefield_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_referencefield_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_referencefield_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_referencefield_create()}"
+```
+
+
+---
+<a id="xdma-table-create"></a>
+### xdma_table_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_table_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_table_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_table_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_table_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_table_create()}"
+```
+
+
+---
+<a id="xdma-tablerow-create"></a>
+### xdma_tablerow_create
+
+**描述**：MetaData()
+
+无参数
+
+
+
+**函数签名**：
+```python
+xdma_tablerow_create()
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_tablerow_create(
+)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_tablerow_create(
+)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_tablerow_create()}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_tablerow_create()}"
+```
+
+
+---
+## XdmAttribute 类函数
+
+来源类：`XdmAttribute`  
+函数数量：1
+
+### 函数列表
+- [xdmattribute_node_create](#xdmattribute-node-create)
+
+<a id="xdmattribute-node-create"></a>
+### xdmattribute_node_create
+
+**描述**：Xdm Attribute Metadata
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `metadata`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdmattribute_node_create(name: str, metadata: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdmattribute_node_create(
+    <name_value>,
+    <metadata_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdmattribute_node_create(
+    name=<name_value>,
+    metadata=<metadata_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdmattribute_node_create('example_name', 'metadata_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdmattribute_node_create('demo', 'demo')}"
+```
+
+
+---
 
 ## 使用指南
 
@@ -694,5 +738,5 @@ example2: f"结果: {node_value_create('demo')}"
 
 ### 生成信息
 
-- 总函数数：10
-- 成功收集的类：Decl, Node
+- 总函数数：12
+- 成功收集的类：Node, XdmA, XdmAttribute

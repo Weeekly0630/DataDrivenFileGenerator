@@ -1,0 +1,24 @@
+{% import "macro/xml.j2" as Xml %}
+<d:chc name="{{ meta.name }}" type="AR-ELEMENT" value="MODULE-DEF">
+    <v:ctr type="MODULE-DEF">
+        {{ Xml.xml_node(meta.release_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.admin_data_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.postbuildvariantsupport_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.desc_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.lower_multiplicity_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.upper_multiplicity_attr_xml, indent=0) }}
+        {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
+        <!--  /** @implements  ConfigVariant_Object */ -->
+        <v:var name="IMPLEMENTATION_CONFIG_VARIANT" type="ENUMERATION">
+            {{ Xml.xml_node(meta.imp_desc_attr_xml, indent=0) }}
+            {{ Xml.xml_node(meta.imp_implementationconfigclass_attr_xml, indent=0) }}
+            {{ Xml.xml_node(meta.imp_label_attr_xml, indent=0) }}
+            {{ Xml.xml_node(meta.imp_uuid_attr_xml, indent=0) }}
+            {{ Xml.xml_node(meta.imp_default_attr_xml, indent=0) }}
+            {{ Xml.xml_node(meta.imp_range_attr_xml, indent=0) }}
+        </v:var>
+        {{ CHILDREN_CONTEXT | string }}
+
+        <d:ref type="REFINED_MODULE_DEF" value="{{ meta.refind_module_def_value }}" />
+    </v:ctr>
+</d:chc>

@@ -34,7 +34,7 @@
     {% endfor %}
   >
     <d:lst type="TOP-LEVEL-PACKAGES">
-      <d:ctr name="{{ meta.top_level_package_name or 'TS_T40D2M10I1R0' }}" type="{{ meta.top_level_package_type or 'AR-PACKAGE' }}">
+      <d:ctr name="{{ meta.top_level_package_name or 'Unknown package_name' }}" type="{{ meta.top_level_package_type or 'AR-PACKAGE' }}">
         {{ Xml.xml_node(meta.uuid_attr_xml, indent=0) }}
         <d:lst type="ELEMENTS">
           {{ CHILDREN_CONTEXT | string }}
