@@ -194,9 +194,8 @@ class XdmAttribute:
 
         results.extend(range_node)
         results.extend(xpath_node)
-        
-        return results
 
+        return results
 
     @staticmethod
     def _init_by_type(meta_data: Dict[str, Any]) -> Tuple[List[XmlNode.MetaData], str]:
@@ -923,34 +922,35 @@ class XdmA:
             uuid_attr_xml: XmlNode.MetaData  # UUID attribute XML node
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
 
+        OPTIONAL_ATTRS = [
+            # ("a", "DESC"),
+            ("a", "EDITABLE"),
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "INVALID"),
+            ("a", "LABEL"),
+            ("a", "OPTIONAL"),
+            ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+            ("a", "REQUIRES-INDEX"),
+            ("a", "TAB"),
+            # ("a", "UUID"),
+            ("a", "VISIBLE"),
+            ("da", "EDITABLE"),
+            ("da", "ENABLE"),
+            ("da", "INVALID"),
+            ("da", "OPTIONAL"),
+            ("da", "READONLY"),
+            ("da", "TAB"),
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.ModuleBlock.MetaData":
             # Check additional attributes
 
-            allowed_attributes = [
-                ("a", "DESC"),
-                ("a", "EDITABLE"),
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "INVALID"),
-                ("a", "LABEL"),
-                ("a", "OPTIONAL"),
-                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                ("a", "REQUIRES-INDEX"),
-                ("a", "TAB"),
-                ("a", "UUID"),
-                ("a", "VISIBLE"),
-                ("da", "EDITABLE"),
-                ("da", "ENABLE"),
-                ("da", "INVALID"),
-                ("da", "OPTIONAL"),
-                ("da", "READONLY"),
-                ("da", "TAB"),
-            ]
-
             XdmA._check_attributes(
-                kwargs.get("additional_attributes", args[3]), allowed_attributes
+                kwargs.get("additional_attributes", args[3]),
+                XdmA.ModuleBlock.OPTIONAL_ATTRS,
             )
 
             return XdmA.ModuleBlock.MetaData(*args, **kwargs)
@@ -965,27 +965,29 @@ class XdmA:
             name: str
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
 
+        OPTIONAL_ATTRS = [
+            ("a", "COLUMNS"),
+            ("a", "EDITABLE"),
+            ("a", "LABEL"),
+            ("a", "MAX"),
+            ("a", "MIN"),
+            ("a", "VISIBLE"),
+            ("da", "EDITABLE"),
+            ("da", "INVALID"),
+            ("da", "MAX"),
+            ("da", "MIN"),
+            ("da", "READONLY"),
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.MapTable.MetaData":
             # Check additional attributes
-            allowed_attributes = [
-                ("a", "COLUMNS"),
-                ("a", "EDITABLE"),
-                ("a", "LABEL"),
-                ("a", "MAX"),
-                ("a", "MIN"),
-                ("a", "VISIBLE"),
-                ("da", "EDITABLE"),
-                ("da", "INVALID"),
-                ("da", "MAX"),
-                ("da", "MIN"),
-                ("da", "READONLY"),
-            ]
 
             XdmA._check_attributes(
-                kwargs.get("additional_attributes", args[1]), allowed_attributes
+                kwargs.get("additional_attributes", args[1]),
+                XdmA.MapTable.OPTIONAL_ATTRS,
             )
 
             return XdmA.MapTable.MetaData(*args, **kwargs)
@@ -998,20 +1000,22 @@ class XdmA:
             name: str
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
 
+        OPTIONAL_ATTRIBUTES = [
+            ("a", "EDITABLE"),
+            ("da", "INVALID"),
+            ("da", "MAX"),
+            ("da", "MIN"),  # 注意最后一个是10/attribute.xsd，但元组只保留tag和name
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.OrderedTable.MetaData":
             # Check additional attributes
-            allowed_attributes = [
-                ("a", "EDITABLE"),
-                ("da", "INVALID"),
-                ("da", "MAX"),
-                ("da", "MIN"),  # 注意最后一个是10/attribute.xsd，但元组只保留tag和name
-            ]
 
             XdmA._check_attributes(
-                kwargs.get("additional_attributes", args[1]), allowed_attributes
+                kwargs.get("additional_attributes", args[1]),
+                XdmA.OrderedTable.OPTIONAL_ATTRIBUTES,
             )
 
             return XdmA.OrderedTable.MetaData(*args, **kwargs)
@@ -1034,50 +1038,51 @@ class XdmA:
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
             is_label: bool = False  # 是否是标签类型
 
+        ENUMERATION_ATTRS = [
+            ("a", "CALCULATION-FORMULA"),
+            ("a", "CALCULATION-LANGUAGE"),
+            ("a", "DERIVED"),
+            ("a", "DESC"),
+            ("a", "EDITABLE"),
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "INVALID"),
+            ("a", "LABEL"),
+            ("a", "OPTIONAL"),
+            ("a", "ORIGIN"),
+            ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+            ("a", "POSTBUILDVARIANTVALUE"),
+            ("a", "READONLY"),
+            ("a", "SCOPE"),
+            ("a", "SYMBOLICNAMEVALUE"),
+            ("a", "UUID"),
+            ("da", "DEFAULT"),
+            ("da", "EDITABLE"),
+            ("da", "ENABLE"),
+            ("da", "INVALID"),
+            ("da", "OPTIONAL"),
+            ("da", "RANGE"),
+            ("da", "READONLY"),
+            ("da", "WARNING"),
+            ("da", "WIDTH"),
+        ]
+        ENUMERATION_LABEL_ATTRS = [
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "ORIGIN"),
+            ("a", "POSTBUILDVARIANTVALUE"),
+            ("a", "SCOPE"),
+            ("a", "SYMBOLICNAMEVALUE"),
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.ComboBox.MetaData":
             # Check additional attributes
-            ENUMERATION_ATTRS = [
-                ("a", "CALCULATION-FORMULA"),
-                ("a", "CALCULATION-LANGUAGE"),
-                ("a", "DERIVED"),
-                ("a", "DESC"),
-                ("a", "EDITABLE"),
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "INVALID"),
-                ("a", "LABEL"),
-                ("a", "OPTIONAL"),
-                ("a", "ORIGIN"),
-                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                ("a", "POSTBUILDVARIANTVALUE"),
-                ("a", "READONLY"),
-                ("a", "SCOPE"),
-                ("a", "SYMBOLICNAMEVALUE"),
-                ("a", "UUID"),
-                ("da", "DEFAULT"),
-                ("da", "EDITABLE"),
-                ("da", "ENABLE"),
-                ("da", "INVALID"),
-                ("da", "OPTIONAL"),
-                ("da", "RANGE"),
-                ("da", "READONLY"),
-                ("da", "WARNING"),
-                ("da", "WIDTH"),
-            ]
-            ENUMERATION_LABEL_ATTRS = [
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "ORIGIN"),
-                ("a", "POSTBUILDVARIANTVALUE"),
-                ("a", "SCOPE"),
-                ("a", "SYMBOLICNAMEVALUE"),
-            ]
 
             allowed_attrs = (
-                ENUMERATION_LABEL_ATTRS
+                XdmA.ComboBox.ENUMERATION_LABEL_ATTRS
                 if kwargs.get("is_label", args[7] if len(args) > 7 else False)
-                else ENUMERATION_ATTRS
+                else XdmA.ComboBox.ENUMERATION_ATTRS
             )
 
             XdmA._check_attributes(
@@ -1096,24 +1101,139 @@ class XdmA:
             desc_attr_xml: XmlNode.MetaData
             label_attr_xml: XmlNode.MetaData
             uuid_attr_xml: XmlNode.MetaData
-            range_attr_xml: XmlNode.MetaData
+            # range_attr_xml: XmlNode.MetaData
             default_attr_xml: XmlNode.MetaData
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
             is_label: bool = False  # 是否是标签类型
+
+        OPTIONAL_ATTRS_DICT = {
+            "INTEGER": [
+                ("a", "CALCULATION-FORMULA"),
+                ("a", "CALCULATION-LANGUAGE"),
+                ("a", "DEFAULT_RADIX"),
+                ("a", "DERIVED"),
+                ("a", "EDITABLE"),
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "INVALID"),
+                ("a", "OPTIONAL"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "READONLY"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("a", "WIDTH"),
+                ("da", "DEFAULT"),
+                ("da", "EDITABLE"),
+                ("da", "ENABLE"),
+                ("da", "INVALID"),
+                ("da", "RANGE"),
+                ("da", "READONLY"),
+                ("da", "TOOLTIP"),
+                ("da", "VISIBLE"),
+                ("da", "WARNING"),
+            ],
+            "INTEGER_LABEL": [
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("da", "DEFAULT"),
+                ("da", "INVALID"),
+                ("da", "READONLY"),
+            ],
+            "FLOAT": [
+                ("a", "EDITABLE"),
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "INVALID"),
+                ("a", "OPTIONAL"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "RANGE"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("da", "DEFAULT"),
+                ("da", "EDITABLE"),
+                ("da", "ENABLE"),
+                ("da", "INVALID"),
+                ("da", "RANGE"),
+            ],
+            "FLOAT_LABEL": [
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("da", "DEFAULT"),
+                ("da", "INVALID"),
+                ("da", "READONLY"),
+            ],
+            "STRING": [
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "OPTIONAL"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("da", "DEFAULT"),
+                ("da", "EDITABLE"),
+                ("da", "ENABLE"),
+                ("da", "INVALID"),
+                ("da", "RANGE"),
+            ],
+            "STRING_LABEL": [
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "OPTIONAL"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("da", "DEFAULT"),
+                ("da", "EDITABLE"),
+                ("da", "ENABLE"),
+                ("da", "READONLY"),
+            ],
+            "FUNCTION-NAME": [
+                ("a", "EDITABLE"),
+                ("a", "IMPLEMENTATIONCONFIGCLASS"),
+                ("a", "OPTIONAL"),
+                ("a", "ORIGIN"),
+                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+                ("a", "POSTBUILDVARIANTVALUE"),
+                ("a", "READONLY"),
+                ("a", "SCOPE"),
+                ("a", "SYMBOLICNAMEVALUE"),
+                ("a", "VISIBLE"),
+                ("da", "DEFAULT"),
+                ("da", "EDITABLE"),
+                ("da", "ENABLE"),
+                ("da", "INVALID"),
+            ],
+        }
+        ALLOWED_TYPES = [
+            "INTEGER",
+            "FLOAT",
+            "STRING",
+            "INTEGER_LABEL",
+            "FLOAT_LABEL",
+            "STRING_LABEL",
+            "FUNCTION-NAME",
+        ]
 
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.InputBox.MetaData":
-            allowed_types = [
-                "INTEGER",
-                "FLOAT",
-                "STRING",
-                "INTEGER_LABEL",
-                "FLOAT_LABEL",
-                "STRING_LABEL",
-                "FUNCTION-NAME",
-            ]
+
             # 获取原始type
             input_type_raw = kwargs.get("type", args[1] if len(args) > 1 else None)
 
@@ -1124,125 +1244,12 @@ class XdmA:
             else:
                 input_type = input_type_raw
                 is_label = kwargs.get("is_label", False)
-            if input_type not in allowed_types:
+            if input_type not in XdmA.InputBox.ALLOWED_TYPES:
                 raise ValueError(
-                    f"Unsupported Input type: {input_type_raw}. Allowed types: {allowed_types} or *_LABEL"
+                    f"Unsupported Input type: {input_type_raw}. Allowed types: {XdmA.InputBox.ALLOWED_TYPES} or *_LABEL"
                 )
 
-            type_optional_attrs = {
-                "INTEGER": [
-                    ("a", "CALCULATION-FORMULA"),
-                    ("a", "CALCULATION-LANGUAGE"),
-                    ("a", "DEFAULT_RADIX"),
-                    ("a", "DERIVED"),
-                    ("a", "EDITABLE"),
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "INVALID"),
-                    ("a", "OPTIONAL"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "READONLY"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("a", "WIDTH"),
-                    ("da", "DEFAULT"),
-                    ("da", "EDITABLE"),
-                    ("da", "ENABLE"),
-                    ("da", "INVALID"),
-                    ("da", "RANGE"),
-                    ("da", "READONLY"),
-                    ("da", "TOOLTIP"),
-                    ("da", "VISIBLE"),
-                    ("da", "WARNING"),
-                ],
-                "INTEGER_LABEL": [
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("da", "DEFAULT"),
-                    ("da", "INVALID"),
-                    ("da", "READONLY"),
-                ],
-                "FLOAT": [
-                    ("a", "EDITABLE"),
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "INVALID"),
-                    ("a", "OPTIONAL"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "RANGE"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("da", "DEFAULT"),
-                    ("da", "EDITABLE"),
-                    ("da", "ENABLE"),
-                    ("da", "INVALID"),
-                    ("da", "RANGE"),
-                ],
-                "FLOAT_LABEL": [
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("da", "DEFAULT"),
-                    ("da", "INVALID"),
-                    ("da", "READONLY"),
-                ],
-                "STRING": [
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "OPTIONAL"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("da", "DEFAULT"),
-                    ("da", "EDITABLE"),
-                    ("da", "ENABLE"),
-                    ("da", "INVALID"),
-                    ("da", "RANGE"),
-                ],
-                "STRING_LABEL": [
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "OPTIONAL"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("da", "DEFAULT"),
-                    ("da", "EDITABLE"),
-                    ("da", "ENABLE"),
-                    ("da", "READONLY"),
-                ],
-                "FUNCTION-NAME": [
-                    ("a", "EDITABLE"),
-                    ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                    ("a", "OPTIONAL"),
-                    ("a", "ORIGIN"),
-                    ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                    ("a", "POSTBUILDVARIANTVALUE"),
-                    ("a", "READONLY"),
-                    ("a", "SCOPE"),
-                    ("a", "SYMBOLICNAMEVALUE"),
-                    ("a", "VISIBLE"),
-                    ("da", "DEFAULT"),
-                    ("da", "EDITABLE"),
-                    ("da", "ENABLE"),
-                    ("da", "INVALID"),
-                ],
-            }
-            allowed_attrs = type_optional_attrs[input_type]
+            allowed_attrs = XdmA.InputBox.OPTIONAL_ATTRS_DICT[input_type]
             XdmA._check_attributes(
                 kwargs.get("additional_attributes", args[7] if len(args) > 7 else []),
                 allowed_attrs,
@@ -1265,45 +1272,46 @@ class XdmA:
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
             is_label: bool = False  # 是否为标签
 
+        BOOLEAN_OPTIONAL_ATTRS = [
+            ("a", "EDITABLE"),
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "INVALID"),
+            ("a", "OPTIONAL"),
+            ("a", "ORIGIN"),
+            ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+            ("a", "POSTBUILDVARIANTVALUE"),
+            ("a", "READONLY"),
+            ("a", "SCOPE"),
+            ("a", "SYMBOLICNAMEVALUE"),
+            ("a", "VISIBLE"),
+            ("da", "DEFAULT"),
+            ("da", "EDITABLE"),
+            ("da", "ENABLE"),
+            ("da", "INVALID"),
+            ("da", "READONLY"),
+            ("da", "VISIBLE"),
+            ("da", "WARNING"),
+        ]
+
+        BOOLEAN_LABEL_OPTIONAL_ATTRS = [
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "ORIGIN"),
+            ("a", "SCOPE"),
+            ("a", "SYMBOLICNAMEVALUE"),
+            ("a", "VISIBLE"),
+            ("da", "DEFAULT"),
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
         ) -> "XdmA.CheckBox.MetaData":
             # 可选属性区分
-            BOOLEAN_OPTIONAL_ATTRS = [
-                ("a", "EDITABLE"),
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "INVALID"),
-                ("a", "OPTIONAL"),
-                ("a", "ORIGIN"),
-                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                ("a", "POSTBUILDVARIANTVALUE"),
-                ("a", "READONLY"),
-                ("a", "SCOPE"),
-                ("a", "SYMBOLICNAMEVALUE"),
-                ("a", "VISIBLE"),
-                ("da", "DEFAULT"),
-                ("da", "EDITABLE"),
-                ("da", "ENABLE"),
-                ("da", "INVALID"),
-                ("da", "READONLY"),
-                ("da", "VISIBLE"),
-                ("da", "WARNING"),
-            ]
-
-            BOOLEAN_LABEL_OPTIONAL_ATTRS = [
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "ORIGIN"),
-                ("a", "SCOPE"),
-                ("a", "SYMBOLICNAMEVALUE"),
-                ("a", "VISIBLE"),
-                ("da", "DEFAULT"),
-            ]
 
             if kwargs.get("is_label", args[6] if len(args) > 6 else False):
-                allowed_attrs = BOOLEAN_LABEL_OPTIONAL_ATTRS
+                allowed_attrs = XdmA.CheckBox.BOOLEAN_LABEL_OPTIONAL_ATTRS
             else:
-                allowed_attrs = BOOLEAN_OPTIONAL_ATTRS
+                allowed_attrs = XdmA.CheckBox.BOOLEAN_OPTIONAL_ATTRS
 
             XdmA._check_attributes(
                 kwargs.get("additional_attributes", args[6] if len(args) > 6 else []),
@@ -1324,6 +1332,26 @@ class XdmA:
             ref_attr_xml: XmlNode.MetaData
             additional_attributes: List[XmlNode.MetaData] = field(default_factory=list)
 
+        OPTIONAL_ATTRS = [
+            ("a", "EDITABLE"),
+            ("a", "IMPLEMENTATIONCONFIGCLASS"),
+            ("a", "INVALID"),
+            ("a", "LABEL"),
+            ("a", "OPTIONAL"),
+            ("a", "ORIGIN"),
+            ("a", "POSTBUILDVARIANTMULTIPLICITY"),
+            ("a", "POSTBUILDVARIANTVALUE"),
+            ("a", "REQUIRES-INDEX"),
+            ("a", "READONLY"),
+            ("a", "SCOPE"),
+            ("a", "VISIBLE"),
+            ("da", "EDITABLE"),
+            ("da", "ENABLE"),
+            ("da", "INVALID"),
+            ("da", "RANGE"),
+            ("da", "READONLY"),
+        ]
+
         @staticmethod
         def create(
             context: UserFunctionContext, *args, **kwargs
@@ -1343,27 +1371,147 @@ class XdmA:
                 )
             # Check additional attributes
             # 可选属性
-            OPTIONAL_ATTRS = [
-                ("a", "EDITABLE"),
-                ("a", "IMPLEMENTATIONCONFIGCLASS"),
-                ("a", "INVALID"),
-                ("a", "LABEL"),
-                ("a", "OPTIONAL"),
-                ("a", "ORIGIN"),
-                ("a", "POSTBUILDVARIANTMULTIPLICITY"),
-                ("a", "POSTBUILDVARIANTVALUE"),
-                ("a", "REQUIRES-INDEX"),
-                ("a", "READONLY"),
-                ("a", "SCOPE"),
-                ("a", "VISIBLE"),
-                ("da", "EDITABLE"),
-                ("da", "ENABLE"),
-                ("da", "INVALID"),
-                ("da", "RANGE"),
-                ("da", "READONLY"),
-            ]
+
             XdmA._check_attributes(
                 kwargs.get("additional_attributes", args[5] if len(args) > 5 else []),
-                OPTIONAL_ATTRS,
+                XdmA.ReferenceBox.OPTIONAL_ATTRS,
             )
             return XdmA.ReferenceBox.MetaData(*args, **kwargs)
+
+
+import dataclasses
+
+
+def serialize_xmlnode(node: XmlNode.MetaData) -> str:
+    # 递归处理 XmlNode.MetaData
+    args = []
+    name = node.attributes.get("name", node.tag)
+    value = node.attributes.get("value", None)
+    if value is not None:
+        args.append(f"'{value}'")
+    elif node.children:
+        # 递归处理子节点
+        child_strs = [serialize_xmlnode(child) for child in node.children]
+        args.append(f"[{', '.join(child_strs)}]")
+    elif node.text:
+        args.append(f"'{node.text}'")
+    else:
+        args.append("None")
+    return f"xdmattribute_node_create('{name}', {', '.join(args)})"
+
+
+def serialize_moduledefblock(meta: XdmA.ModuleDefBlock.MetaData) -> str:
+    params = []
+    for field in dataclasses.fields(meta):
+        value = getattr(meta, field.name)
+        if isinstance(value, XmlNode.MetaData):
+            param_str = f"{field.name}={serialize_xmlnode(value)}"
+        elif isinstance(value, str):
+            param_str = f"{field.name}='{value}'"
+        elif value is None:
+            param_str = f"{field.name}=None"
+        else:
+            param_str = f"{field.name}={repr(value)}"
+        params.append(param_str)
+    return f"xdma_moduledefblock_create(\n    {',\n    '.join(params)}\n)"
+
+
+if __name__ == "__main__":
+    print(
+        serialize_moduledefblock(
+            XdmA.ModuleDefBlock.MetaData(
+                name="ExampleModule",
+                release_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "RELEASE", "value": "1.0"},
+                    tag="a",
+                    children=[],
+                ),
+                admin_data_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "ADMIN-DATA", "value": "Admin Data Example"},
+                    tag="a",
+                    children=[],
+                ),
+                postbuildvariantsupport_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "POSTBUILDVARIANTSUPPORT", "value": "true"},
+                    tag="a",
+                    children=[],
+                ),
+                desc_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={
+                        "name": "DESC",
+                        "value": "This is a module description",
+                    },
+                    tag="a",
+                    children=[],
+                ),
+                lower_multiplicity_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "LOWER-MULTIPLICITY", "value": "0"},
+                    tag="a",
+                    children=[],
+                ),
+                upper_multiplicity_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "UPPER-MULTIPLICITY", "value": "1"},
+                    tag="a",
+                    children=[],
+                ),
+                uuid_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={
+                        "name": "UUID",
+                        "value": "123e4567-e89b-12d3-a456-426614174000",
+                    },
+                    tag="a",
+                    children=[],
+                ),
+                imp_desc_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "DESC", "value": "Implementation description"},
+                    tag="a",
+                    children=[],
+                ),
+                imp_implementationconfigclass_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={
+                        "name": "IMPLEMENTATIONCONFIGCLASS",
+                        "value": "ExampleClass",
+                    },
+                    tag="a",
+                    children=[],
+                ),
+                imp_label_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "LABEL", "value": "ExampleLabel"},
+                    tag="a",
+                    children=[],
+                ),
+                imp_uuid_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={
+                        "name": "UUID",
+                        "value": "123e4567-e89b-12d3-a456-426614174001",
+                    },
+                    tag="a",
+                    children=[],
+                ),
+                imp_default_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "DEFAULT", "value": "DefaultValue"},
+                    tag="a",
+                    children=[],
+                ),
+                imp_range_attr_xml=XmlNode.MetaData(
+                    namespace="a",
+                    attributes={"name": "RANGE", "value": "RangeValue"},
+                    tag="a",
+                    children=[],
+                ),
+                module_refined_module_def_path="ASPath:/TS_T40D2M10I1R0/ExampleModule",
+            )
+        )
+    )

@@ -28,21 +28,23 @@
 - [preprocess_macrodefinition_create](#preprocess-macrodefinition-create)
 - [preprocess_macroinstantiation_create](#preprocess-macroinstantiation-create)
 - [xdma_bswmoduledescblock_create](#xdma-bswmoduledescblock-create)
+- [xdma_checkbox_create](#xdma-checkbox-create)
+- [xdma_combobox_create](#xdma-combobox-create)
 - [xdma_ecuparamdefblock_create](#xdma-ecuparamdefblock-create)
-- [xdma_field_create](#xdma-field-create)
-- [xdma_fieldmeta_create](#xdma-fieldmeta-create)
+- [xdma_inputbox_create](#xdma-inputbox-create)
 - [xdma_mainpage_create](#xdma-mainpage-create)
+- [xdma_maptable_create](#xdma-maptable-create)
+- [xdma_moduleblock_create](#xdma-moduleblock-create)
 - [xdma_moduledefblock_create](#xdma-moduledefblock-create)
-- [xdma_referencefield_create](#xdma-referencefield-create)
-- [xdma_table_create](#xdma-table-create)
-- [xdma_tablerow_create](#xdma-tablerow-create)
+- [xdma_orderedtable_create](#xdma-orderedtable-create)
+- [xdma_referencebox_create](#xdma-referencebox-create)
 - [xdmattribute_node_create](#xdmattribute-node-create)
 
 ---
 
 ## 函数收集摘要
 
-- **总函数数**: 25
+- **总函数数**: 27
 - **成功收集的类**: Node, Decl, Preprocess, XdmA, XdmAttribute
 - **发现的类**: Node, Decl, Preprocess, XdmA, XdmAttribute
 
@@ -941,31 +943,37 @@ example2: f"结果: {preprocess_macroinstantiation_create('demo', 'demo')}"
 ## XdmA 类函数
 
 来源类：`XdmA`  
-函数数量：9
+函数数量：11
 
 ### 函数列表
 - [xdma_bswmoduledescblock_create](#xdma-bswmoduledescblock-create)
+- [xdma_checkbox_create](#xdma-checkbox-create)
+- [xdma_combobox_create](#xdma-combobox-create)
 - [xdma_ecuparamdefblock_create](#xdma-ecuparamdefblock-create)
-- [xdma_field_create](#xdma-field-create)
-- [xdma_fieldmeta_create](#xdma-fieldmeta-create)
+- [xdma_inputbox_create](#xdma-inputbox-create)
 - [xdma_mainpage_create](#xdma-mainpage-create)
+- [xdma_maptable_create](#xdma-maptable-create)
+- [xdma_moduleblock_create](#xdma-moduleblock-create)
 - [xdma_moduledefblock_create](#xdma-moduledefblock-create)
-- [xdma_referencefield_create](#xdma-referencefield-create)
-- [xdma_table_create](#xdma-table-create)
-- [xdma_tablerow_create](#xdma-tablerow-create)
+- [xdma_orderedtable_create](#xdma-orderedtable-create)
+- [xdma_referencebox_create](#xdma-referencebox-create)
 
 <a id="xdma-bswmoduledescblock-create"></a>
 ### xdma_bswmoduledescblock_create
 
-**描述**：MetaData()
+**描述**：MetaData(name: str, module_ref_path: str)
 
-无参数
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `module_ref_path`: Any
+  - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_bswmoduledescblock_create()
+xdma_bswmoduledescblock_create(name: str, module_ref_path: Any)
 ```
 
 **YAML 使用模板**：
@@ -973,13 +981,15 @@ xdma_bswmoduledescblock_create()
 *简单调用：*
 ```yaml
 data: "{xdma_bswmoduledescblock_create(
-)}"
+    <name_value>,
+    <module_ref_path_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
 data: "{xdma_bswmoduledescblock_create(
-)
+    name=<name_value>,
+    module_ref_path=<module_ref_path_value>)
 }"
 ```
 
@@ -987,10 +997,148 @@ data: "{xdma_bswmoduledescblock_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_bswmoduledescblock_create()}"
+example1: "{xdma_bswmoduledescblock_create('example_name', 'module_ref_path_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_bswmoduledescblock_create()}"
+example2: f"结果: {xdma_bswmoduledescblock_create('demo', 'demo')}"
+```
+
+
+---
+<a id="xdma-checkbox-create"></a>
+### xdma_checkbox_create
+
+**描述**：MetaData(name: str, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, default_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>, is_label: bool = False)
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `desc_attr_xml`: Any
+  - 任意类型
+- `label_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `default_attr_xml`: Any
+  - 任意类型
+- `additional_attributes`: Any
+  - 任意类型
+- `is_label`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_checkbox_create(name: str, desc_attr_xml: Any, label_attr_xml: Any, uuid_attr_xml: Any, default_attr_xml: Any, additional_attributes: Any, is_label: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_checkbox_create(
+    <name_value>,
+    <desc_attr_xml_value>,
+    <label_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <default_attr_xml_value>,
+    <additional_attributes_value>,
+    <is_label_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_checkbox_create(
+    name=<name_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    label_attr_xml=<label_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    default_attr_xml=<default_attr_xml_value>,
+    additional_attributes=<additional_attributes_value>,
+    is_label=<is_label_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_checkbox_create('example_name', 'desc_attr_xml_value', 'label_attr_xml_value', 'uuid_attr_xml_value', 'default_attr_xml_value', 'additional_attributes_value', 'is_label_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_checkbox_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
+```
+
+
+---
+<a id="xdma-combobox-create"></a>
+### xdma_combobox_create
+
+**描述**：MetaData(name: str, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, range_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, default_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>, is_label: bool = False)
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `desc_attr_xml`: Any
+  - 任意类型
+- `label_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `range_attr_xml`: Any
+  - 任意类型
+- `default_attr_xml`: Any
+  - 任意类型
+- `additional_attributes`: Any
+  - 任意类型
+- `is_label`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_combobox_create(name: str, desc_attr_xml: Any, label_attr_xml: Any, uuid_attr_xml: Any, range_attr_xml: Any, default_attr_xml: Any, additional_attributes: Any, is_label: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_combobox_create(
+    <name_value>,
+    <desc_attr_xml_value>,
+    <label_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <range_attr_xml_value>,
+    <default_attr_xml_value>,
+    <additional_attributes_value>,
+    <is_label_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_combobox_create(
+    name=<name_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    label_attr_xml=<label_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    range_attr_xml=<range_attr_xml_value>,
+    default_attr_xml=<default_attr_xml_value>,
+    additional_attributes=<additional_attributes_value>,
+    is_label=<is_label_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_combobox_create('example_name', 'desc_attr_xml_value', 'label_attr_xml_value', 'uuid_attr_xml_value', 'range_attr_xml_value', 'default_attr_xml_value', 'additional_attributes_value', 'is_label_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_combobox_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
 ```
 
 
@@ -998,15 +1146,21 @@ example2: f"结果: {xdma_bswmoduledescblock_create()}"
 <a id="xdma-ecuparamdefblock-create"></a>
 ### xdma_ecuparamdefblock_create
 
-**描述**：MetaData()
+**描述**：MetaData(name: str, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, module_ref_path: str)
 
-无参数
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `module_ref_path`: Any
+  - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_ecuparamdefblock_create()
+xdma_ecuparamdefblock_create(name: str, uuid_attr_xml: Any, module_ref_path: Any)
 ```
 
 **YAML 使用模板**：
@@ -1014,13 +1168,17 @@ xdma_ecuparamdefblock_create()
 *简单调用：*
 ```yaml
 data: "{xdma_ecuparamdefblock_create(
-)}"
+    <name_value>,
+    <uuid_attr_xml_value>,
+    <module_ref_path_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
 data: "{xdma_ecuparamdefblock_create(
-)
+    name=<name_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    module_ref_path=<module_ref_path_value>)
 }"
 ```
 
@@ -1028,40 +1186,70 @@ data: "{xdma_ecuparamdefblock_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_ecuparamdefblock_create()}"
+example1: "{xdma_ecuparamdefblock_create('example_name', 'uuid_attr_xml_value', 'module_ref_path_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_ecuparamdefblock_create()}"
+example2: f"结果: {xdma_ecuparamdefblock_create('demo', 'demo', 'demo')}"
 ```
 
 
 ---
-<a id="xdma-field-create"></a>
-### xdma_field_create
+<a id="xdma-inputbox-create"></a>
+### xdma_inputbox_create
 
-**描述**：MetaData()
+**描述**：MetaData(name: str, type: str, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, default_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>, is_label: bool = False)
 
-无参数
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `type`: Any
+  - 任意类型
+- `desc_attr_xml`: Any
+  - 任意类型
+- `label_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `default_attr_xml`: Any
+  - 任意类型
+- `additional_attributes`: Any
+  - 任意类型
+- `is_label`: Any
+  - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_field_create()
+xdma_inputbox_create(name: str, type: Any, desc_attr_xml: Any, label_attr_xml: Any, uuid_attr_xml: Any, default_attr_xml: Any, additional_attributes: Any, is_label: Any)
 ```
 
 **YAML 使用模板**：
 
 *简单调用：*
 ```yaml
-data: "{xdma_field_create(
-)}"
+data: "{xdma_inputbox_create(
+    <name_value>,
+    <type_value>,
+    <desc_attr_xml_value>,
+    <label_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <default_attr_xml_value>,
+    <additional_attributes_value>,
+    <is_label_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
-data: "{xdma_field_create(
-)
+data: "{xdma_inputbox_create(
+    name=<name_value>,
+    type=<type_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    label_attr_xml=<label_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    default_attr_xml=<default_attr_xml_value>,
+    additional_attributes=<additional_attributes_value>,
+    is_label=<is_label_value>)
 }"
 ```
 
@@ -1069,51 +1257,10 @@ data: "{xdma_field_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_field_create()}"
+example1: "{xdma_inputbox_create('example_name', 'type_value', 'desc_attr_xml_value', 'label_attr_xml_value', 'uuid_attr_xml_value', 'default_attr_xml_value', 'additional_attributes_value', 'is_label_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_field_create()}"
-```
-
-
----
-<a id="xdma-fieldmeta-create"></a>
-### xdma_fieldmeta_create
-
-**描述**：MetaData()
-
-无参数
-
-
-
-**函数签名**：
-```python
-xdma_fieldmeta_create()
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{xdma_fieldmeta_create(
-)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{xdma_fieldmeta_create(
-)
-}"
-```
-
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{xdma_fieldmeta_create()}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_fieldmeta_create()}"
+example2: f"结果: {xdma_inputbox_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
 ```
 
 
@@ -1213,10 +1360,112 @@ example2: f"结果: {xdma_mainpage_create('demo', 'demo', 'demo', 'demo', 'demo'
 
 
 ---
+<a id="xdma-maptable-create"></a>
+### xdma_maptable_create
+
+**描述**：MetaData(name: str, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>)
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `additional_attributes`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_maptable_create(name: str, additional_attributes: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_maptable_create(
+    <name_value>,
+    <additional_attributes_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_maptable_create(
+    name=<name_value>,
+    additional_attributes=<additional_attributes_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_maptable_create('example_name', 'additional_attributes_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_maptable_create('demo', 'demo')}"
+```
+
+
+---
+<a id="xdma-moduleblock-create"></a>
+### xdma_moduleblock_create
+
+**描述**：MetaData(name: str, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>)
+
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `desc_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `additional_attributes`: Any
+  - 任意类型
+
+
+
+**函数签名**：
+```python
+xdma_moduleblock_create(name: str, desc_attr_xml: Any, uuid_attr_xml: Any, additional_attributes: Any)
+```
+
+**YAML 使用模板**：
+
+*简单调用：*
+```yaml
+data: "{xdma_moduleblock_create(
+    <name_value>,
+    <desc_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <additional_attributes_value>)}"
+```
+
+*带参数名的调用：*
+```yaml
+data: "{xdma_moduleblock_create(
+    name=<name_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    additional_attributes=<additional_attributes_value>)
+}"
+```
+
+
+**使用示例**：
+```yaml
+# 示例 1：基本使用
+example1: "{xdma_moduleblock_create('example_name', 'desc_attr_xml_value', 'uuid_attr_xml_value', 'additional_attributes_value')}"
+
+# 示例 2：在 f-string 中使用
+example2: f"结果: {xdma_moduleblock_create('demo', 'demo', 'demo', 'demo')}"
+```
+
+
+---
 <a id="xdma-moduledefblock-create"></a>
 ### xdma_moduledefblock_create
 
-**描述**：MetaData(name: str, release_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, admin_data_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, postbuildvariantsupport_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, lower_multiplicity_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, upper_multiplicity_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_implementationconfigclass_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_default_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_range_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, refind_module_def_value: str)
+**描述**：MetaData(name: str, release_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, admin_data_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, postbuildvariantsupport_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, lower_multiplicity_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, upper_multiplicity_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_implementationconfigclass_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_default_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, imp_range_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, module_refined_module_def_path: Optional[str] = None)
 
 **参数列表**：
 - `name`: str
@@ -1247,14 +1496,14 @@ example2: f"结果: {xdma_mainpage_create('demo', 'demo', 'demo', 'demo', 'demo'
   - 任意类型
 - `imp_range_attr_xml`: Any
   - 任意类型
-- `refind_module_def_value`: Any
+- `module_refined_module_def_path`: Any
   - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_moduledefblock_create(name: str, release_attr_xml: Any, admin_data_attr_xml: Any, postbuildvariantsupport_attr_xml: Any, desc_attr_xml: Any, lower_multiplicity_attr_xml: Any, upper_multiplicity_attr_xml: Any, uuid_attr_xml: Any, imp_desc_attr_xml: Any, imp_implementationconfigclass_attr_xml: Any, imp_label_attr_xml: Any, imp_uuid_attr_xml: Any, imp_default_attr_xml: Any, imp_range_attr_xml: Any, refind_module_def_value: Any)
+xdma_moduledefblock_create(name: str, release_attr_xml: Any, admin_data_attr_xml: Any, postbuildvariantsupport_attr_xml: Any, desc_attr_xml: Any, lower_multiplicity_attr_xml: Any, upper_multiplicity_attr_xml: Any, uuid_attr_xml: Any, imp_desc_attr_xml: Any, imp_implementationconfigclass_attr_xml: Any, imp_label_attr_xml: Any, imp_uuid_attr_xml: Any, imp_default_attr_xml: Any, imp_range_attr_xml: Any, module_refined_module_def_path: Any)
 ```
 
 **YAML 使用模板**：
@@ -1276,7 +1525,7 @@ data: "{xdma_moduledefblock_create(
     <imp_uuid_attr_xml_value>,
     <imp_default_attr_xml_value>,
     <imp_range_attr_xml_value>,
-    <refind_module_def_value_value>)}"
+    <module_refined_module_def_path_value>)}"
 ```
 
 *带参数名的调用：*
@@ -1296,7 +1545,7 @@ data: "{xdma_moduledefblock_create(
     imp_uuid_attr_xml=<imp_uuid_attr_xml_value>,
     imp_default_attr_xml=<imp_default_attr_xml_value>,
     imp_range_attr_xml=<imp_range_attr_xml_value>,
-    refind_module_def_value=<refind_module_def_value_value>)
+    module_refined_module_def_path=<module_refined_module_def_path_value>)
 }"
 ```
 
@@ -1304,7 +1553,7 @@ data: "{xdma_moduledefblock_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_moduledefblock_create('example_name', 'release_attr_xml_value', 'admin_data_attr_xml_value', 'postbuildvariantsupport_attr_xml_value', 'desc_attr_xml_value', 'lower_multiplicity_attr_xml_value', 'upper_multiplicity_attr_xml_value', 'uuid_attr_xml_value', 'imp_desc_attr_xml_value', 'imp_implementationconfigclass_attr_xml_value', 'imp_label_attr_xml_value', 'imp_uuid_attr_xml_value', 'imp_default_attr_xml_value', 'imp_range_attr_xml_value', 'refind_module_def_value_value')}"
+example1: "{xdma_moduledefblock_create('example_name', 'release_attr_xml_value', 'admin_data_attr_xml_value', 'postbuildvariantsupport_attr_xml_value', 'desc_attr_xml_value', 'lower_multiplicity_attr_xml_value', 'upper_multiplicity_attr_xml_value', 'uuid_attr_xml_value', 'imp_desc_attr_xml_value', 'imp_implementationconfigclass_attr_xml_value', 'imp_label_attr_xml_value', 'imp_uuid_attr_xml_value', 'imp_default_attr_xml_value', 'imp_range_attr_xml_value', 'module_refined_module_def_path_value')}"
 
 # 示例 2：在 f-string 中使用
 example2: f"结果: {xdma_moduledefblock_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
@@ -1312,32 +1561,38 @@ example2: f"结果: {xdma_moduledefblock_create('demo', 'demo', 'demo', 'demo', 
 
 
 ---
-<a id="xdma-referencefield-create"></a>
-### xdma_referencefield_create
+<a id="xdma-orderedtable-create"></a>
+### xdma_orderedtable_create
 
-**描述**：MetaData()
+**描述**：MetaData(name: str, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>)
 
-无参数
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `additional_attributes`: Any
+  - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_referencefield_create()
+xdma_orderedtable_create(name: str, additional_attributes: Any)
 ```
 
 **YAML 使用模板**：
 
 *简单调用：*
 ```yaml
-data: "{xdma_referencefield_create(
-)}"
+data: "{xdma_orderedtable_create(
+    <name_value>,
+    <additional_attributes_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
-data: "{xdma_referencefield_create(
-)
+data: "{xdma_orderedtable_create(
+    name=<name_value>,
+    additional_attributes=<additional_attributes_value>)
 }"
 ```
 
@@ -1345,40 +1600,66 @@ data: "{xdma_referencefield_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_referencefield_create()}"
+example1: "{xdma_orderedtable_create('example_name', 'additional_attributes_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_referencefield_create()}"
+example2: f"结果: {xdma_orderedtable_create('demo', 'demo')}"
 ```
 
 
 ---
-<a id="xdma-table-create"></a>
-### xdma_table_create
+<a id="xdma-referencebox-create"></a>
+### xdma_referencebox_create
 
-**描述**：MetaData()
+**描述**：MetaData(name: str, type: str, desc_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, label_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, uuid_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, ref_attr_xml: modules.plugins.type_classes.xml.XmlNode.MetaData, additional_attributes: List[modules.plugins.type_classes.xml.XmlNode.MetaData] = <factory>)
 
-无参数
+**参数列表**：
+- `name`: str
+  - 名称字符串
+- `type`: Any
+  - 任意类型
+- `desc_attr_xml`: Any
+  - 任意类型
+- `label_attr_xml`: Any
+  - 任意类型
+- `uuid_attr_xml`: Any
+  - 任意类型
+- `ref_attr_xml`: Any
+  - 任意类型
+- `additional_attributes`: Any
+  - 任意类型
 
 
 
 **函数签名**：
 ```python
-xdma_table_create()
+xdma_referencebox_create(name: str, type: Any, desc_attr_xml: Any, label_attr_xml: Any, uuid_attr_xml: Any, ref_attr_xml: Any, additional_attributes: Any)
 ```
 
 **YAML 使用模板**：
 
 *简单调用：*
 ```yaml
-data: "{xdma_table_create(
-)}"
+data: "{xdma_referencebox_create(
+    <name_value>,
+    <type_value>,
+    <desc_attr_xml_value>,
+    <label_attr_xml_value>,
+    <uuid_attr_xml_value>,
+    <ref_attr_xml_value>,
+    <additional_attributes_value>)}"
 ```
 
 *带参数名的调用：*
 ```yaml
-data: "{xdma_table_create(
-)
+data: "{xdma_referencebox_create(
+    name=<name_value>,
+    type=<type_value>,
+    desc_attr_xml=<desc_attr_xml_value>,
+    label_attr_xml=<label_attr_xml_value>,
+    uuid_attr_xml=<uuid_attr_xml_value>,
+    ref_attr_xml=<ref_attr_xml_value>,
+    additional_attributes=<additional_attributes_value>)
 }"
 ```
 
@@ -1386,51 +1667,10 @@ data: "{xdma_table_create(
 **使用示例**：
 ```yaml
 # 示例 1：基本使用
-example1: "{xdma_table_create()}"
+example1: "{xdma_referencebox_create('example_name', 'type_value', 'desc_attr_xml_value', 'label_attr_xml_value', 'uuid_attr_xml_value', 'ref_attr_xml_value', 'additional_attributes_value')}"
 
 # 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_table_create()}"
-```
-
-
----
-<a id="xdma-tablerow-create"></a>
-### xdma_tablerow_create
-
-**描述**：MetaData()
-
-无参数
-
-
-
-**函数签名**：
-```python
-xdma_tablerow_create()
-```
-
-**YAML 使用模板**：
-
-*简单调用：*
-```yaml
-data: "{xdma_tablerow_create(
-)}"
-```
-
-*带参数名的调用：*
-```yaml
-data: "{xdma_tablerow_create(
-)
-}"
-```
-
-
-**使用示例**：
-```yaml
-# 示例 1：基本使用
-example1: "{xdma_tablerow_create()}"
-
-# 示例 2：在 f-string 中使用
-example2: f"结果: {xdma_tablerow_create()}"
+example2: f"结果: {xdma_referencebox_create('demo', 'demo', 'demo', 'demo', 'demo', 'demo', 'demo')}"
 ```
 
 
@@ -1548,5 +1788,5 @@ example2: f"结果: {xdmattribute_node_create('demo', 'demo')}"
 
 ### 生成信息
 
-- 总函数数：25
+- 总函数数：27
 - 成功收集的类：Node, Decl, Preprocess, XdmA, XdmAttribute
