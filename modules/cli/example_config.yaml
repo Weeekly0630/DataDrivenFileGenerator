@@ -16,3 +16,15 @@ output_dir: ../test/test_data/output
 preserved_template_key: TEMPLATE
 preserved_children_key: CHILDREN
 preserved_children_content_key: CHILDREN_CONTENT
+
+record_ref: "{node_value_create('修改记录', meta_data_path).value}"
+
+revise_record_meta_list: "{
+    [
+      mcaldoc_reviserecorditem_create (
+        version=(record['版本号']['x'], record['版本号']['y'], record['版本号']['z']),
+        date=(record['日期']['年'], record['日期']['月'], record['日期']['日']),
+        content=record['主要更改内容']
+      ) for record in record_ref 
+    ]
+  }"

@@ -21,7 +21,7 @@ class Node:
             """引用节点值的元数据"""
 
             value: Any  # 引用的值，可以是任意类型
-
+            
         @staticmethod
         def create(
             context: UserFunctionContext, key: str, file_pattern: str = ""
