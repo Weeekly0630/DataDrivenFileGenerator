@@ -13,16 +13,20 @@ class ExpressionResolver:
         self.function_resolver = function_resolver  # 需要传入UserFunctionResolver实例
 
     def parse(self, expression: str, context: UserFunctionContext) -> Any:
-        def eval_ast(node):
+        def eval_ast(node, local_vars=None):
+            local_vars = local_vars or {}
+
             if isinstance(node, ast.Call):
                 func_name = None
                 if isinstance(node.func, ast.Name):
                     func_name = node.func.id
                 else:
                     raise ValueError("Only simple function calls are supported")
-                args = [eval_ast(arg) for arg in node.args]
-                kwargs = {kw.arg: eval_ast(kw.value) for kw in node.keywords}
-                return self.function_resolver._resolve(func_name, context, *args, **kwargs)
+                args = [eval_ast(arg, local_vars) for arg in node.args]
+                kwargs = {kw.arg: eval_ast(kw.value, local_vars) for kw in node.keywords}
+                return self.function_resolver._resolve(
+                    func_name, context, *args, **kwargs
+                )
             elif isinstance(node, ast.Constant):
                 return node.value
             elif isinstance(node, ast.Str):
@@ -30,21 +34,23 @@ class ExpressionResolver:
             elif isinstance(node, ast.Num):
                 return node.n
             elif isinstance(node, ast.List):
-                return [eval_ast(elt) for elt in node.elts]
+                return [eval_ast(elt, local_vars) for elt in node.elts]
             elif isinstance(node, ast.ListComp):
                 # 只支持一层for的简单推导式
                 if len(node.generators) != 1 or node.generators[0].ifs:
                     raise ValueError("Only simple list comprehensions are supported")
                 gen = node.generators[0]
-                iter_values = eval_ast(gen.iter)
+                iter_values = eval_ast(gen.iter, local_vars)
                 result = []
                 for val in iter_values:
                     # 构造一个临时作用域
                     local_vars = {gen.target.id: val}
+
                     def eval_with_local(n):
                         if isinstance(n, ast.Name) and n.id in local_vars:
                             return local_vars[n.id]
-                        return eval_ast(n)
+                        return eval_ast(n, local_vars)
+
                     # 支持元组等复杂结构
                     def deep_eval(n):
                         if isinstance(n, ast.Tuple):
@@ -55,12 +61,15 @@ class ExpressionResolver:
                             return local_vars[n.id]
                         else:
                             return eval_with_local(n)
+
                     result.append(deep_eval(node.elt))
                 return result
             elif isinstance(node, ast.Tuple):
-                return tuple(eval_ast(elt) for elt in node.elts)
+                return tuple(eval_ast(elt, local_vars) for elt in node.elts)
             elif isinstance(node, ast.Dict):
-                return {eval_ast(k): eval_ast(v) for k, v in zip(node.keys, node.values)}
+                return {
+                    eval_ast(k, local_vars): eval_ast(v, local_vars) for k, v in zip(node.keys, node.values)
+                }
             elif isinstance(node, ast.Name):
                 # 支持作用域链，向上查找 cur_node 的父节点
                 from modules.node.data_node import DataNode
@@ -81,6 +90,8 @@ class ExpressionResolver:
 
                     raise ValueError(f"Unknown variable: {varname} in {expression}")
 
+                if node.id in local_vars:
+                    return local_vars[node.id]
                 if hasattr(context, "cur_node"):
                     return lookup_variable(context.cur_node, node.id)
                 else:
@@ -89,7 +100,7 @@ class ExpressionResolver:
                     )
             elif isinstance(node, ast.Attribute):
                 # 支持 define.name 这种多层变量引用
-                value = eval_ast(node.value)
+                value = eval_ast(node.value, local_vars)
                 if isinstance(value, dict) and node.attr in value:
                     return value[node.attr]
                 elif hasattr(value, node.attr):
@@ -98,27 +109,30 @@ class ExpressionResolver:
                     raise ValueError(f"Attribute '{node.attr}' not found in {value}")
             elif isinstance(node, ast.Subscript):
                 # 支持 include[1]、a['key'] 等下标访问
-                value = eval_ast(node.value)
+                value = eval_ast(node.value, local_vars)
                 # 兼容 Python 3.8 及更早和 3.9+ 的 slice 表达式
                 slice_node = node.slice
                 # Python <3.9: ast.Index; Python 3.9+: 直接是表达式
                 if hasattr(ast, "Index") and isinstance(slice_node, ast.Index):
-                    index = eval_ast(slice_node.value)
+                    index = eval_ast(slice_node.value, local_vars)
                 else:
                     # 3.9+ 直接是表达式（如ast.Constant/ast.Name/ast.Num等）
-                    index = eval_ast(slice_node) if isinstance(slice_node, ast.AST) else slice_node
+                    index = (
+                        eval_ast(slice_node, local_vars)
+                        if isinstance(slice_node, ast.AST)
+                        else slice_node
+                    )
                 return value[index]
             else:
                 raise ValueError(f"Unsupported expression: {ast.dump(node)}")
 
-
         def preprocess_braces(s: str) -> str:
             # 先把转义的 \{ 和 \} 替换成特殊标记
-            return s.replace(r'\{', '__LEFT_BRACE__').replace(r'\}', '__RIGHT_BRACE__')
+            return s.replace(r"\{", "__LEFT_BRACE__").replace(r"\}", "__RIGHT_BRACE__")
 
         def postprocess_braces(s: str) -> str:
             # 处理完表达式后再替换回来
-            return s.replace('__LEFT_BRACE__', '{').replace('__RIGHT_BRACE__', '}')
+            return s.replace("__LEFT_BRACE__", "{").replace("__RIGHT_BRACE__", "}")
 
         def safe_eval_fstring(expr: str) -> str:
             """
@@ -135,7 +149,7 @@ class ExpressionResolver:
                 value = expr
             # 还原转义
             return postprocess_braces(str(value))
-            
+
         def parse_fstring(expr: str) -> str:
             # 先处理转义
             expr = preprocess_braces(expr)
@@ -169,7 +183,7 @@ class ExpressionResolver:
             expr = expression.strip()  # 新增：去除首尾空白字符
 
             # 新增：如果以{开头且以}结尾，直接解析内容并返回原始对象
-            if expr.startswith('{') and expr.endswith('}'):
+            if expr.startswith("{") and expr.endswith("}"):
                 inner = expr[1:-1].strip()
                 try:
                     tree = ast.parse(inner, mode="eval")

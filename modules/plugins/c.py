@@ -7,7 +7,7 @@ from modules.core.user_function_resolver import (
 from typing import List, Dict, Any, Union, Optional, Callable
 from dataclasses import dataclass, field, asdict
 from modules.plugins.type import MetaBase, auto_register_factories
-from modules.utils.type_classes.c import Decl
+from modules.plugins.type_classes.c import Decl
 from modules.utils.clang.extractor import (
     CursorExtractVisitor,
     ClangExtractor,

@@ -90,12 +90,12 @@ class Decl:
             qualifiers: str = ""  # 结构体/联合体限定符，如const等
             comment: str = ""  # 可选的注释信息
 
-            def __str__(self) -> str:
-                return (
-                    f"{self.name} {{"
-                    + f"{', '.join(str(field) for field in self.fields)}}}"
-                    + (f" // {self.qualifiers}" if self.qualifiers else "")
-                )
+            # def __str__(self) -> str:
+            #     return (
+            #         f"{self.name} {{"
+            #         + f"{', '.join(str(field) for field in self.fields)}}}"
+            #         + (f" // {self.qualifiers}" if self.qualifiers else "")
+            #     )
 
     class TypeRef:
         """C语言类型引用信息"""
@@ -111,17 +111,17 @@ class Decl:
                 "Decl.Union.MetaData",  # 联合体声明
             ]
 
-            def __str__(self):
-                if isinstance(self.ref, str):
-                    return self.ref
-                elif isinstance(self.ref, Decl.Typedef.MetaData):
-                    return self.ref.name
-                elif isinstance(self.ref, Decl.Struct.MetaData):
-                    return f"struct {self.ref.record.name}"
-                elif isinstance(self.ref, Decl.Union.MetaData):
-                    return f"union {self.ref.record.name}"
-                else:
-                    raise TypeError(f"Unsupported type reference: {type(self.ref)}")
+            # def __str__(self):
+            #     if isinstance(self.ref, str):
+            #         return self.ref
+            #     elif isinstance(self.ref, Decl.Typedef.MetaData):
+            #         return self.ref.name
+            #     elif isinstance(self.ref, Decl.Struct.MetaData):
+            #         return f"struct {self.ref.record.name}"
+            #     elif isinstance(self.ref, Decl.Union.MetaData):
+            #         return f"union {self.ref.record.name}"
+            #     else:
+            #         raise TypeError(f"Unsupported type reference: {type(self.ref)}")
 
     class TypeModifier:
         @dataclass
@@ -134,8 +134,8 @@ class Decl:
             pointer_level: int = 0  # 指针层级，如int**为2
             array_dims: List[int] = field(default_factory=list)  # 支持多维数组，如[3,4]
 
-            def __str__(self):
-                return f"{self.type}{'*' * self.pointer_level}{''.join(f'[{dim}]' for dim in self.array_dims)}{' ' + self.qualifiers if self.qualifiers else ''}"
+            # def __str__(self):
+            #     return f"{self.type}{'*' * self.pointer_level}{''.join(f'[{dim}]' for dim in self.array_dims)}{' ' + self.qualifiers if self.qualifiers else ''}"
 
     class Variable:
         @dataclass
@@ -149,17 +149,17 @@ class Decl:
             comment: str = ""  # 可选的注释信息
             raw_code: str = ""  # 变量的原始代码文本
 
-            def __str__(self):
-                parts = []
-                if self.storage_class:
-                    parts.append(self.storage_class)
-                parts.append(str(self.modifier.type))
-                parts.append(self.name)
-                if self.init_expr != "":
-                    parts.append(f"= {self.init_expr}")
-                if self.comment:
-                    parts.append(f"// {self.comment}")
-                return " ".join(parts)
+            # def __str__(self):
+            #     parts = []
+            #     if self.storage_class:
+            #         parts.append(self.storage_class)
+            #     parts.append(str(self.modifier.type))
+            #     parts.append(self.name)
+            #     if self.init_expr != "":
+            #         parts.append(f"= {self.init_expr}")
+            #     if self.comment:
+            #         parts.append(f"// {self.comment}")
+            #     return " ".join(parts)
 
     class Field:
         @dataclass
@@ -172,12 +172,12 @@ class Decl:
             raw_code: Optional[str] = None  # 变量的原始代码文本
             comment: Optional[str] = None  # 可选的注释信息
 
-            def __str__(self) -> str:
-                return (
-                    f"{self.name}: {self.modifier.type}"
-                    + (f" : {self.bitfield_width}" if self.bitfield_width else "")
-                    + (f" // {self.comment}" if self.comment else "")
-                )
+            # def __str__(self) -> str:
+            #     return (
+            #         f"{self.name}: {self.modifier.type}"
+            #         + (f" : {self.bitfield_width}" if self.bitfield_width else "")
+            #         + (f" // {self.comment}" if self.comment else "")
+            #     )
 
     class Typedef:
         """C语言类型定义声明信息"""
@@ -188,10 +188,11 @@ class Decl:
 
             name: str
             typeref: "Decl.TypeRef.MetaData"
+            comment: str = ""
             raw_code: Optional[str] = None  # 变量的原始代码文本
 
-            def __str__(self) -> str:
-                return f"typedef {self.typeref} {self.name}"
+            # def __str__(self) -> str:
+            #     return f"typedef {self.typeref} {self.name}"
 
     class Struct:
         """C语言结构体声明信息"""
@@ -205,9 +206,6 @@ class Decl:
 
             # fields: List["Decl.Field.MetaData"] = field(default_factory=list)
 
-            def __str__(self) -> str:
-                return f"struct {self.record}"
-
     class Union:
         """C语言联合声明信息"""
 
@@ -218,10 +216,10 @@ class Decl:
             record: "Decl.Record.MetaData"
             raw_code: Optional[str] = None  # 变量的原始代码文本
 
-            def __str__(self) -> str:
-                return str(
-                    f"union {self.record}"
-                )
+            # def __str__(self) -> str:
+            #     return str(
+            #         f"union {self.record}"
+            #     )
 
     class Param:
         """C语言函数参数信息"""
@@ -234,8 +232,8 @@ class Decl:
             modifier: "Decl.TypeModifier.MetaData"  # 参数类型修饰符
             raw_code: Optional[str] = None  # 参数的原始代码文本
 
-            def __str__(self) -> str:
-                return f"{self.modifier.type} {self.name}"
+            # def __str__(self) -> str:
+            #     return f"{self.modifier.type} {self.name}"
 
     class Function:
         """C语言函数声明信息"""
@@ -252,7 +250,26 @@ class Decl:
             comment: str = ""
             raw_code: str = ""  # 函数的原始代码文本
 
-            def __str__(self):
-                params_str = ", ".join([str(param) for param in self.params])
-                comment_str = f" // {self.comment}" if self.comment else ""
-                return f"{self.return_type} {self.name}({params_str}) {comment_str}"
+            # def __str__(self):
+            #     params_str = ", ".join([str(param) for param in self.params])
+            #     comment_str = f" // {self.comment}" if self.comment else ""
+            #     return f"{self.return_type} {self.name}({params_str}) {comment_str}"
+    class EnumConstant:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言枚举常量信息"""
+
+            name: str
+            value: int
+            comment: str
+            raw_code: str
+
+    class Enum:
+        @dataclass
+        class MetaData(MetaBase):
+            """C语言枚举信息"""
+
+            name: str
+            constants: List["Decl.EnumConstant.MetaData"]
+            comment: str
+            raw_code: str

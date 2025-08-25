@@ -3,10 +3,12 @@ CHILDREN_PATH: # []
 
 info: '{extract_decl_from_c(
     lib_clang_path="U:/Users/Enlink/Documents/clang+llvm-20.1.0-x86_64-pc-windows-msvc/bin/libclang.dll",
-    file_path=r"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_type.c",
+    file_path=r"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\mcal_example.c",
     c_args=[
         "-std=c99",
-        r"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
+        r"--target=arm-none-eabi",
+        r"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\inc",
+        r"-IU:\Users\Enlink\Documents\gcc-arm-none-eabi-10.3-2021.10\arm-none-eabi\include"
     ],
     debug_level=1,
     main_file_only=True).struct_declarations[0]}'

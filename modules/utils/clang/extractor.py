@@ -10,7 +10,7 @@ project_root = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from modules.utils.type_classes.c import Decl, Expr, Attr, Preprocess
+from modules.plugins.type_classes.c import Decl, Expr, Attr, Preprocess
 
 try:
     from clang import cindex
@@ -226,6 +226,8 @@ class CursorExtractVisitor(CursorVisitor):
         self.union_decl_list: List[Decl.Union.MetaData] = []
         self.macro_definition_list: List[Preprocess.MacroDefinition.MetaData] = []
         self.function_decl_list: List[Decl.Function.MetaData] = []
+        self.enum_decl_list: List[Decl.Enum.MetaData] = []
+        self.typedef_decl_list: List[Decl.Typedef.MetaData] = []
 
     @property
     def var_declarations(self) -> List[Decl.Variable.MetaData]:
@@ -247,6 +249,14 @@ class CursorExtractVisitor(CursorVisitor):
     def function_declarations(self) -> List[Decl.Function.MetaData]:
         return self.function_decl_list
 
+    @property
+    def enum_declarations(self) -> List[Decl.Enum.MetaData]:
+        return self.enum_decl_list
+
+    @property
+    def typedef_declarations(self) -> List[Decl.Typedef.MetaData]:
+        return self.typedef_decl_list
+
     def print_summary(self) -> None:
         """打印提取结果的总结信息"""
         print("=== Extraction Summary ===")
@@ -254,26 +264,36 @@ class CursorExtractVisitor(CursorVisitor):
         for var in self.var_decl_list:
             print(var)
             print("Raw code: " + var.raw_code)
-            
+
         print("=== Structs ===")
         for struct in self.struct_decl_list:
             print(struct)
             print("Raw code: " + struct.raw_code)
-            
+
         print("=== Unions ===")
         for union in self.union_decl_list:
             print(union)
             print("Raw code: " + str(union.raw_code))
-            
+
         print("=== Macros ===")
         for macro in self.macro_definition_list:
             print(macro)
             print("Raw code: " + macro.raw_code)
-            
+
         print("=== Functions ===")
         for func in self.function_decl_list:
             print(func)
             print("Raw code: " + str(func.raw_code))
+
+        print("=== Enums ===")
+        for enum in self.enum_decl_list:
+            print(enum)
+            print("Raw code: " + str(enum.raw_code))
+
+        print("=== Typedefs ===")
+        for typedef in self.typedef_decl_list:
+            print(typedef)
+            print("Raw code: " + str(typedef.raw_code))
 
     def visit(
         self, cur: cindex.Cursor, context: CursorVisitorContext
@@ -293,6 +313,21 @@ class CursorExtractVisitor(CursorVisitor):
     def visit_macro_definition(
         self, cursor: cindex.Cursor, context: CursorVisitorContext
     ) -> CursorVisitorResult:
+        # 去重逻辑
+        if not hasattr(self, "_macro_keys"):
+            self._macro_keys = set()
+
+        macro_key = (
+            cursor.spelling,
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        if macro_key in self._macro_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+        self._macro_keys.add(macro_key)
+
         # 提取宏名
         name = cursor.spelling
         # 提取所有tokens
@@ -426,6 +461,27 @@ class CursorExtractVisitor(CursorVisitor):
         self, cursor: cindex.Cursor, context: CursorVisitorContext
     ) -> CursorVisitorResult:
         """访问联合体声明节点"""
+        # 跳过匿名联合体的typedef声明
+        if cursor.is_anonymous():
+            for child in cursor.get_children():
+                if child.kind == cindex.CursorKind.TYPEDEF_DECL:
+                    return CursorVisitorResult.SKIP_CHILDREN
+
+        # 去重逻辑
+        if not hasattr(self, "_union_keys"):
+            self._union_keys = set()
+
+        union_key = (
+            cursor.spelling,
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        if union_key in self._union_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+        self._union_keys.add(union_key)
+
         self.union_decl_list.append(
             Decl.Union.MetaData(
                 record=CursorExtractVisitor.extract_record(cursor),
@@ -438,6 +494,30 @@ class CursorExtractVisitor(CursorVisitor):
         self, cursor: cindex.Cursor, context: CursorVisitorContext
     ) -> CursorVisitorResult:
         """访问结构体声明节点"""
+        # 跳过匿名结构体的typedef声明，因为它会在typedef_decl中处理
+        if cursor.is_anonymous():
+            for child in cursor.get_children():
+                if child.kind == cindex.CursorKind.TYPEDEF_DECL:
+                    return CursorVisitorResult.SKIP_CHILDREN
+
+        # 初始化结构体key集合（用于去重）
+        if not hasattr(self, "_struct_keys"):
+            self._struct_keys = set()
+
+        # 使用结构体名称和位置作为唯一标识
+        struct_key = (
+            cursor.spelling,
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        # 如果已经处理过这个结构体，跳过
+        if struct_key in self._struct_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+
+        self._struct_keys.add(struct_key)
+
         # 1. Record
         self.struct_decl_list.append(
             Decl.Struct.MetaData(
@@ -451,7 +531,23 @@ class CursorExtractVisitor(CursorVisitor):
     def visit_var_decl(
         self, cursor: cindex.Cursor, context: CursorVisitorContext
     ) -> CursorVisitorResult:
-        """访问函数声明节点"""
+        """访问变量声明节点"""
+        # 去重逻辑
+        if not hasattr(self, "_var_keys"):
+            self._var_keys = set()
+
+        var_key = (
+            cursor.spelling,
+            cursor.type.spelling if cursor.type else "",
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        if var_key in self._var_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+        self._var_keys.add(var_key)
+
         # 1. Name
         name = cursor.spelling
 
@@ -496,18 +592,25 @@ class CursorExtractVisitor(CursorVisitor):
     ) -> CursorVisitorResult:
         """访问函数声明节点"""
         raw_code = CursorExtractVisitor.extract_raw_code(cursor)
-        
+
         if cursor.is_definition():
             # 如果是函数定义，提取声明部分
-            idx = raw_code.find('{')
+            idx = raw_code.find("{")
             if idx != -1:
                 raw_code = raw_code[:idx].rstrip()
-        
-        # 去重逻辑：用函数名和参数类型做唯一标识
+
+        # 去重逻辑：用函数名、参数类型和位置信息做唯一标识
         param_types = tuple(
-            p.type.spelling if hasattr(p, "type") else "" for p in cursor.get_arguments()
+            p.type.spelling if hasattr(p, "type") else ""
+            for p in cursor.get_arguments()
         )
-        func_key = (cursor.spelling, param_types)
+        func_key = (
+            cursor.spelling,
+            param_types,
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
         # 已收集的函数key集合
         if not hasattr(self, "_function_keys"):
             self._function_keys = set()
@@ -522,6 +625,104 @@ class CursorExtractVisitor(CursorVisitor):
                 params=CursorExtractVisitor.extract_params(cursor),
                 comment=CursorExtractVisitor.extract_comment(cursor),
                 raw_code=raw_code,
+            )
+        )
+
+        return CursorVisitorResult.SKIP_CHILDREN  # 跳过子节点解析
+
+    def visit_typedef_decl(
+        self, cursor: cindex.Cursor, context: CursorVisitorContext
+    ) -> CursorVisitorResult:
+        """访问typedef声明节点"""
+        # 去重逻辑
+        if not hasattr(self, "_typedef_keys"):
+            self._typedef_keys = set()
+
+        typedef_key = (
+            cursor.spelling,
+            (
+                cursor.underlying_typedef_type.spelling
+                if cursor.underlying_typedef_type
+                else ""
+            ),
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        if typedef_key in self._typedef_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+        self._typedef_keys.add(typedef_key)
+
+        # 获取原始类型
+        underlying_type = cursor.underlying_typedef_type
+        # 获取类型定义的目标类型
+        type_ref = Decl.TypeRef.MetaData(
+            ref=underlying_type.spelling if underlying_type else ""
+        )
+
+        # 提取注释
+        comment = self.extract_comment(cursor)
+
+        # 提取源码
+        raw_code = self.extract_raw_code(cursor)
+
+        self.typedef_decl_list.append(
+            Decl.Typedef.MetaData(
+                name=cursor.spelling,
+                typeref=type_ref,
+                comment=comment,
+                raw_code=raw_code,
+            )
+        )
+
+        return CursorVisitorResult.SKIP_CHILDREN
+
+    def visit_enum_decl(
+        self, cursor: cindex.Cursor, context: CursorVisitorContext
+    ) -> CursorVisitorResult:
+        """访问枚举声明节点"""
+        # 跳过匿名枚举的typedef声明
+        if cursor.is_anonymous():
+            for child in cursor.get_children():
+                if child.kind == cindex.CursorKind.TYPEDEF_DECL:
+                    return CursorVisitorResult.SKIP_CHILDREN
+
+        # 去重逻辑
+        if not hasattr(self, "_enum_keys"):
+            self._enum_keys = set()
+
+        enum_key = (
+            cursor.spelling,
+            cursor.location.file.name if cursor.location.file else "",
+            cursor.location.line,
+            cursor.location.column,
+        )
+
+        if enum_key in self._enum_keys:
+            return CursorVisitorResult.SKIP_CHILDREN
+        self._enum_keys.add(enum_key)
+
+        # 提取枚举常量
+        constants = []
+        for child in cursor.get_children():
+            if child.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
+                constants.append(
+                    Decl.EnumConstant.MetaData(
+                        name=child.spelling,
+                        value=child.enum_value,
+                        comment=CursorExtractVisitor.extract_comment(child),
+                        raw_code=CursorExtractVisitor.extract_raw_code(child),
+                    )
+                )
+
+        # 构造枚举声明元数据
+        self.enum_decl_list.append(
+            Decl.Enum.MetaData(
+                name=cursor.spelling,
+                constants=constants,
+                comment=CursorExtractVisitor.extract_comment(cursor),
+                raw_code=CursorExtractVisitor.extract_raw_code(cursor),
             )
         )
 
@@ -735,12 +936,16 @@ class ClangDebugPrinter:
 
     @staticmethod
     def get_info(
-        tu: "cindex.TranslationUnit",
+        tu: Optional["cindex.TranslationUnit"],
         print_tree: bool = False,
         print_diagnostics: bool = True,
     ) -> str:
         """获取TranslationUnit的基本信息"""
         result = ""
+        if not tu:
+            result += "No translation unit available.\n"
+            return result
+
         if print_tree:
             result += "Cursor Tree:\n"
             if tu.cursor:
@@ -836,8 +1041,10 @@ class ClangExtractor:
         c_args = optional.c_args
         main_file_only = optional.main_file_only
 
+        tu: Optional[cindex.TranslationUnit] = None
         try:
-            tu = cindex.TranslationUnit.from_source(
+            index = cindex.Index.create()
+            tu = index.parse(
                 source_file,
                 args=optional.c_args,
                 options=(
@@ -846,8 +1053,17 @@ class ClangExtractor:
                     # | cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
                 ),
             )
-        except cindex.TranslationUnitLoadError as e:
+            if not tu:
+                raise cindex.TranslationUnitLoadError(
+                    "Failed to create translation unit"
+                )
+        except Exception as e:
             sys.stderr.write(f"Failed to parse {source_file}: {e}\n")
+            sys.stderr.write("Command line arguments: " + str(optional.c_args) + "\n")
+            # Print diagnostics even if parsing failed
+            if tu:
+                sys.stderr.write(ClangDebugPrinter.print_diagnostics(tu) + "\n")
+            raise
 
         debug_level = optional.debug_level
 
@@ -872,7 +1088,7 @@ class ClangExtractor:
 
         if debug_level >= 1:
             extract_visitor.print_summary()
-            
+
         return extract_visitor
 
 
@@ -882,14 +1098,15 @@ if __name__ == "__main__":
     )
 
     res = extractor.extract(
-        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\test_type.c",
+        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\mcal_example.c",
         optional=ClangExtractorOptional(
             c_args=[
                 "-std=c99",
-                rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\plugins\clang\test\inc",
+                rf"-IU:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\inc",
+                rf"-IU:\Users\Enlink\Documents\gcc-arm-none-eabi-10.3-2021.10\arm-none-eabi\include",
+                rf"-IU:\Users\Enlink\Documents\gcc-arm-none-eabi-10.3-2021.10\lib\gcc\arm-none-eabi\14.2.1\include",
             ],
             debug_level=1,
             main_file_only=True,
         ),
     )
-    
