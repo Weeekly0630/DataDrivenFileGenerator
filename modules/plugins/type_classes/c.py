@@ -23,8 +23,8 @@ class Preprocess:
             comment: str = ""
             raw_code: str = ""
 
-            def __str__(self):
-                return f"#define {self.name}{'(' + ', '.join(self.params) + ')' if self.params else ''} {self.value}"
+            # def __str__(self):
+            #     return f"#define {self.name}{'(' + ', '.join(self.params) + ')' if self.params else ''} {self.value}"
     class InclusionDirective:
         """C语言包含指令信息"""
 
@@ -45,9 +45,9 @@ class Preprocess:
             name: str  # 宏名
             args: List[str] = field(default_factory=list)  # 实例化参数（如有）
 
-            def __str__(self):
-                args_str = ", ".join(self.args) if self.args else ""
-                return f"Macro Instantation: {self.name}{'(' + args_str + ')' if args_str else ''}"
+            # def __str__(self):
+            #     args_str = ", ".join(self.args) if self.args else ""
+            #     return f"Macro Instantation: {self.name}{'(' + args_str + ')' if args_str else ''}"
 
 
 class Attr:

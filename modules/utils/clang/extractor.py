@@ -366,8 +366,8 @@ class CursorExtractVisitor(CursorVisitor):
                 # 简单宏：#define FOO value
                 value = " ".join(t.spelling for t in tokens[1:])
 
-        # 手动提取前置注释
-        comment = self._extract_macro_comment(cursor)
+        # 提取注释
+        comment = self.extract_comment(cursor)
 
         # 提取源码
         raw_code = self.extract_raw_code(cursor)
@@ -382,80 +382,6 @@ class CursorExtractVisitor(CursorVisitor):
             )
         )
         return CursorVisitorResult.SKIP_CHILDREN  # 跳过子节点解析
-
-    def _extract_macro_comment(self, cursor: cindex.Cursor) -> str:
-        """提取宏定义前面的注释"""
-        try:
-            # 首先尝试获取 Clang 提供的文档注释
-            if cursor.raw_comment:
-                return cursor.raw_comment
-            if cursor.brief_comment:
-                return cursor.brief_comment
-
-            # 如果没有文档注释，尝试从 extent 中查找
-            extent = cursor.extent
-            if not extent or not extent.start.file:
-                return ""
-
-            # 获取翻译单元中的所有 tokens
-            tu = cursor.translation_unit
-            if not tu:
-                return ""
-
-            # 创建一个从文件开始到宏定义位置的范围
-            try:
-                # 使用 cursor 的 extent 来获取之前的 tokens
-                start_loc = extent.start
-                file_tokens = list(tu.get_tokens(extent=tu.cursor.extent))
-
-                # 查找宏定义前的注释 tokens
-                comment_parts = []
-                macro_line = start_loc.line
-
-                for token in file_tokens:
-                    token_loc = token.location
-                    if token_loc.line >= macro_line:
-                        break
-
-                    # 检查是否是注释
-                    token_text = token.spelling
-                    if (
-                        token.kind == cindex.TokenKind.COMMENT
-                        or token_text.startswith("/*")
-                        or token_text.startswith("//")
-                    ):
-                        token_start_line = token_loc.line
-
-                        # 计算注释的实际结束位置
-                        if "/*" in token_text and "*/" in token_text:
-                            # 多行注释：计算结束行
-                            lines_in_comment = token_text.count("\n")
-                            token_end_line = token_start_line + lines_in_comment
-                        else:
-                            # 单行注释或其他情况
-                            token_end_line = token_start_line
-
-                        # 检查注释结尾是否紧邻宏定义
-                        distance = macro_line - token_end_line
-                        if 0 <= distance <= 2:  # 注释结尾到宏定义之间相差0-2行
-                            comment_parts.append(token_text)
-
-                # 清理注释
-                if comment_parts:
-                    comment = " ".join(comment_parts)
-                    # 移除注释符号
-                    comment = (
-                        comment.replace("/*", "").replace("*/", "").replace("//", "")
-                    )
-                    comment = comment.replace("*", "").strip()
-                    return comment
-
-            except Exception:
-                pass
-
-            return ""
-        except Exception:
-            return ""
 
     def visit_union_decl(
         self, cursor: cindex.Cursor, context: CursorVisitorContext
@@ -812,13 +738,216 @@ class CursorExtractVisitor(CursorVisitor):
         return "".join(parts).strip()
 
     @staticmethod
-    def extract_comment(cursor: "cindex.Cursor") -> str:
-        """从Cursor中提取注释"""
-        if cursor.raw_comment:
-            return cursor.raw_comment
-        elif cursor.brief_comment:
-            return cursor.brief_comment
-        return ""
+    def _get_token_comment(token: "cindex.Token") -> str:
+        """清理并返回token的注释内容"""
+        if token.kind != cindex.TokenKind.COMMENT:
+            return ""
+        comment = token.spelling.strip()
+        # 保持注释分隔符
+        return comment
+
+    @staticmethod
+    def _find_preceding_comments(cursor: "cindex.Cursor", tokens: List["cindex.Token"]) -> str:
+        """查找cursor之前的相邻注释"""
+        if not tokens:
+            return ""
+            
+        comments = []
+        cursor_line = cursor.location.line
+        last_comment_line = -1
+        
+        # 反向遍历找到紧邻的注释
+        for token in reversed(tokens):
+            if token.location.line >= cursor_line:
+                continue
+                
+            if token.kind == cindex.TokenKind.COMMENT:
+                # 如果是第一个注释，或者与前一个注释相邻
+                if last_comment_line == -1 or last_comment_line - token.location.line <= 1:
+                    comments.insert(0, CursorExtractVisitor._get_token_comment(token))
+                    last_comment_line = token.location.line
+                else:
+                    # 遇到不相邻的注释就停止
+                    break
+            else:
+                # 遇到非注释token且已有注释时停止
+                if last_comment_line != -1:
+                    break
+                    
+        return "\n".join(comments) if comments else ""
+
+    @staticmethod
+    def _find_trailing_comments(cursor: "cindex.Cursor", tokens: List["cindex.Token"]) -> str:
+        """查找cursor所在行的尾随注释"""
+        if not tokens:
+            return ""
+            
+        comments = []
+        cursor_line = cursor.location.line
+        
+        for token in tokens:
+            if token.location.line == cursor_line and token.kind == cindex.TokenKind.COMMENT:
+                comments.append(CursorExtractVisitor._get_token_comment(token))
+                
+        return "\n".join(comments) if comments else ""
+
+    @classmethod
+    def _init_comment_tracker(cls, tu: "cindex.TranslationUnit"):
+        """初始化注释追踪器"""
+        if not hasattr(cls, '_used_comments'):
+            cls._used_comments = set()
+        if not hasattr(cls, '_current_tu'):
+            cls._current_tu = None
+            
+        # 如果是新的翻译单元，清空已用注释集合
+        if cls._current_tu != tu:
+            cls._used_comments.clear()
+            cls._current_tu = tu
+            
+    @classmethod
+    def _mark_comment_used(cls, token: "cindex.Token"):
+        """标记注释为已使用"""
+        comment_key = (token.location.file.name, token.location.line, token.location.column)
+        cls._used_comments.add(comment_key)
+        
+    @classmethod
+    def _is_comment_used(cls, token: "cindex.Token") -> bool:
+        """检查注释是否已被使用"""
+        comment_key = (token.location.file.name, token.location.line, token.location.column)
+        return comment_key in cls._used_comments
+
+    @classmethod
+    def extract_comment(cls, cursor: "cindex.Cursor") -> str:
+        """统一的注释提取函数，包括前置注释和尾随注释"""
+        try:
+            # 1. 获取游标的位置信息
+            extent = cursor.extent
+            if not extent or not extent.start.file:
+                return ""
+
+            tu = cursor.translation_unit
+            if not tu:
+                return ""
+                
+            # 初始化注释追踪器
+            cls._init_comment_tracker(tu)
+
+            cursor_line = extent.start.line
+            cursor_column = extent.start.column
+            
+            # 对于文件级声明（在第一行附近的声明），忽略文件头注释
+            is_file_level = cursor_line <= 5
+            
+            # 2. 获取整个翻译单元的tokens
+            tokens = list(tu.get_tokens(extent=tu.cursor.extent))
+            
+            # 3. 找到当前游标对应的token的索引
+            cursor_token_index = -1
+            for i, token in enumerate(tokens):
+                if (token.location.line == cursor_line and 
+                    token.location.column == cursor_column):
+                    cursor_token_index = i
+                    break
+            
+            if cursor_token_index == -1:
+                return ""
+
+            # 4. 查找相关注释
+            # 向前找最近的注释块
+            preceding_comments = []
+            i = cursor_token_index - 1
+            last_comment_line = -1
+            
+            while i >= 0:
+                token = tokens[i]
+                token_line = token.location.line
+                
+                # 如果遇到非注释token，检查是否要停止搜索
+                if token.kind != cindex.TokenKind.COMMENT:
+                    # 如果是声明类token并且不在同一行，则停止搜索
+                    if token_line < cursor_line and token.spelling in {
+                        'struct', 'union', 'enum', 'typedef', 'class', '{', '}'
+                    }:
+                        break
+                    i -= 1
+                    continue
+                
+                # 跳过已使用的注释
+                if cls._is_comment_used(token):
+                    i -= 1
+                    continue
+                    
+                comment_text = token.spelling
+                comment_lines = comment_text.count('\n')
+                comment_end_line = token_line + comment_lines
+                
+                # 如果是文件级声明且注释在文件开头，跳过
+                if is_file_level and token_line <= 3:
+                    i -= 1
+                    continue
+                
+                # 检查注释和声明之间的距离
+                if cursor_line - comment_end_line > 2:
+                    break
+                    
+                # 检查注释的连续性
+                if last_comment_line != -1 and (last_comment_line - token_line > 1):
+                    break
+                    
+                preceding_comments.insert(0, (token, comment_text))
+                last_comment_line = token_line
+                i -= 1
+            
+            # 向后找当前行的尾随注释
+            trailing_comments = []
+            i = cursor_token_index + 1
+            while i < len(tokens):
+                token = tokens[i]
+                if token.location.line > cursor_line:
+                    break
+                if token.kind == cindex.TokenKind.COMMENT and not cls._is_comment_used(token):
+                    trailing_comments.append((token, token.spelling))
+                i += 1
+            
+            # 5. 整理并返回注释
+            final_comments = []
+            used_tokens = []
+            
+            # 优先使用前置注释
+            if preceding_comments:
+                final_comments = [comment for _, comment in preceding_comments]
+                used_tokens = [token for token, _ in preceding_comments]
+            # 其次使用尾随注释
+            elif trailing_comments:
+                final_comments = [comment for _, comment in trailing_comments]
+                used_tokens = [token for token, _ in trailing_comments]
+                
+            # 标记已使用的注释
+            for token in used_tokens:
+                cls._mark_comment_used(token)
+                
+            if not final_comments:
+                # 如果都没有找到，尝试使用clang提供的注释
+                if cursor.raw_comment and cursor.raw_comment.strip():
+                    return cursor.raw_comment.strip()
+                if cursor.brief_comment and cursor.brief_comment.strip():
+                    return cursor.brief_comment.strip()
+                return ""
+
+            # 清理注释标记
+            cleaned_comments = []
+            for comment in final_comments:
+                # 移除注释符号并清理
+                cleaned = comment.replace("/**", "").replace("/*", "").replace("*/", "").replace("//", "")
+                cleaned = cleaned.replace("*", "").strip()
+                if cleaned:
+                    cleaned_comments.append(cleaned)
+
+            return "\n".join(cleaned_comments)
+
+        except Exception as e:
+            print(f"Error extracting comment: {e}")
+            return ""
 
     @staticmethod
     def extract_type_modifier(
@@ -1098,7 +1227,7 @@ if __name__ == "__main__":
     )
 
     res = extractor.extract(
-        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\mcal_example.c",
+        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\test_comments.c",
         optional=ClangExtractorOptional(
             c_args=[
                 "-std=c99",

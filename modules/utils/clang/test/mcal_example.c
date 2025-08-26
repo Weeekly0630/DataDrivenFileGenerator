@@ -1,6 +1,6 @@
 #include "mcal_example.h"
 
-#include <stdio.h>
+// #include <stdio.h>
 
 #define EXAMPLE_MACRO 100
 
@@ -68,7 +68,11 @@ Mcal_InternalFunction(void)
     Mcal_InternalStructType s_internalStruct = { 1, "InternalStruct", 3.14f };
 }
 
-/* Function implementations */
+/**
+ * @brief Mcal_Init
+ * 
+ * @param config 
+ */
 void
 Mcal_Init(const Mcal_ConfigType* config)
 {
@@ -115,5 +119,5 @@ Mcal_GetVersion(void)
 void
 Example_Callback(void)
 {
-    printf("Callback called!\n");
+    // printf("Callback called!\n");
 }
