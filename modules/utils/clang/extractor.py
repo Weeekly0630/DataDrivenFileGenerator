@@ -220,7 +220,16 @@ class CursorFilterVisitor(CursorVisitor):
 class CursorExtractVisitor(CursorVisitor):
     """Cursor提取声明访问器"""
 
+    # 基本类型列表
+    PRIMITIVE_TYPES = {
+        'void', 'char', 'short', 'int', 'long', 'float', 'double',
+        'unsigned char', 'unsigned short', 'unsigned int', 'unsigned long',
+        'signed char', 'signed short', 'signed int', 'signed long',
+        '_Bool', 'long long', 'unsigned long long', 'long double'
+    }
+
     def __init__(self) -> None:
+        # 声明列表
         self.var_decl_list: List[Decl.Variable.MetaData] = []
         self.struct_decl_list: List[Decl.Struct.MetaData] = []
         self.union_decl_list: List[Decl.Union.MetaData] = []
@@ -228,6 +237,13 @@ class CursorExtractVisitor(CursorVisitor):
         self.function_decl_list: List[Decl.Function.MetaData] = []
         self.enum_decl_list: List[Decl.Enum.MetaData] = []
         self.typedef_decl_list: List[Decl.Typedef.MetaData] = []
+
+        # 类型声明映射表
+        self._type_decls: Dict[str, Union[
+            Decl.Typedef.MetaData,
+            Decl.Struct.MetaData,
+            Decl.Union.MetaData
+        ]] = {}
 
     @property
     def var_declarations(self) -> List[Decl.Variable.MetaData]:
@@ -408,12 +424,20 @@ class CursorExtractVisitor(CursorVisitor):
             return CursorVisitorResult.SKIP_CHILDREN
         self._union_keys.add(union_key)
 
-        self.union_decl_list.append(
-            Decl.Union.MetaData(
-                record=CursorExtractVisitor.extract_record(cursor),
-                raw_code=CursorExtractVisitor.extract_raw_code(cursor),
-            )
+        # 创建联合体声明
+        union_decl = Decl.Union.MetaData(
+            record=self.extract_record(cursor),
+            raw_code=self.extract_raw_code(cursor),
         )
+        
+        # 添加到声明列表
+        self.union_decl_list.append(union_decl)
+        
+        # 如果不是匿名联合体，添加到类型映射表
+        type_name = cursor.type.spelling
+        if type_name and not cursor.is_anonymous():
+            self._type_decls[type_name] = union_decl
+            
         return CursorVisitorResult.SKIP_CHILDREN  # 跳过子节点解析
 
     def visit_struct_decl(
@@ -445,12 +469,18 @@ class CursorExtractVisitor(CursorVisitor):
         self._struct_keys.add(struct_key)
 
         # 1. Record
-        self.struct_decl_list.append(
-            Decl.Struct.MetaData(
-                record=CursorExtractVisitor.extract_record(cursor),
-                raw_code=CursorExtractVisitor.extract_raw_code(cursor),
-            )
+        struct_decl = Decl.Struct.MetaData(
+            record=self.extract_record(cursor),
+            raw_code=self.extract_raw_code(cursor),
         )
+        
+        # 添加到声明列表
+        self.struct_decl_list.append(struct_decl)
+        
+        # 如果不是匿名结构体，添加到类型映射表
+        type_name = cursor.type.spelling
+        if type_name and not cursor.is_anonymous():
+            self._type_decls[type_name] = struct_decl
 
         return CursorVisitorResult.SKIP_CHILDREN  # 跳过子节点解析
 
@@ -548,8 +578,8 @@ class CursorExtractVisitor(CursorVisitor):
             Decl.Function.MetaData(
                 name=cursor.spelling,
                 return_type=Decl.TypeRef.MetaData(ref=cursor.result_type.spelling),
-                params=CursorExtractVisitor.extract_params(cursor),
-                comment=CursorExtractVisitor.extract_comment(cursor),
+                params=self.extract_params(cursor),
+                comment=self.extract_comment(cursor),
                 raw_code=raw_code,
             )
         )
@@ -582,10 +612,16 @@ class CursorExtractVisitor(CursorVisitor):
 
         # 获取原始类型
         underlying_type = cursor.underlying_typedef_type
-        # 获取类型定义的目标类型
-        type_ref = Decl.TypeRef.MetaData(
-            ref=underlying_type.spelling if underlying_type else ""
-        )
+        base_type_spelling = underlying_type.spelling if underlying_type else ""
+        
+        # 查找原始类型的声明
+        if base_type_spelling in self.PRIMITIVE_TYPES:
+            type_ref = base_type_spelling
+        else:
+            type_ref = self._type_decls.get(base_type_spelling, base_type_spelling)
+            
+        # 构造TypeRef
+        type_ref = Decl.TypeRef.MetaData(ref=type_ref)
 
         # 提取注释
         comment = self.extract_comment(cursor)
@@ -593,14 +629,19 @@ class CursorExtractVisitor(CursorVisitor):
         # 提取源码
         raw_code = self.extract_raw_code(cursor)
 
-        self.typedef_decl_list.append(
-            Decl.Typedef.MetaData(
-                name=cursor.spelling,
-                typeref=type_ref,
-                comment=comment,
-                raw_code=raw_code,
-            )
+        # 创建typedef声明
+        typedef_decl = Decl.Typedef.MetaData(
+            name=cursor.spelling,
+            typeref=type_ref,
+            comment=comment,
+            raw_code=raw_code,
         )
+        
+        # 添加到声明列表
+        self.typedef_decl_list.append(typedef_decl)
+        
+        # 将typedef添加到类型映射表
+        self._type_decls[cursor.spelling] = typedef_decl
 
         return CursorVisitorResult.SKIP_CHILDREN
 
@@ -654,14 +695,13 @@ class CursorExtractVisitor(CursorVisitor):
 
         return CursorVisitorResult.SKIP_CHILDREN  # 跳过子节点解析
 
-    @staticmethod
-    def extract_params(cursor: cindex.Cursor) -> List[Decl.Param.MetaData]:
+    def extract_params(self, cursor: cindex.Cursor) -> List[Decl.Param.MetaData]:
         params: List[Decl.Param.MetaData] = []
         for child in cursor.get_children():
             if child.kind == cindex.CursorKind.PARM_DECL:
                 # 提取参数名和类型
                 name = child.spelling
-                modifier = CursorExtractVisitor.extract_type_modifier(child)
+                modifier = self.extract_type_modifier(child)
                 params.append(
                     Decl.Param.MetaData(
                         name=name,
@@ -671,14 +711,13 @@ class CursorExtractVisitor(CursorVisitor):
                 )
         return params
 
-    @staticmethod
-    def extract_fields(cursor: cindex.Cursor) -> List[Decl.Field.MetaData]:
+    def extract_fields(self, cursor: cindex.Cursor) -> List[Decl.Field.MetaData]:
         fields: List[Decl.Field.MetaData] = []
         for child in cursor.get_children():
             if child.kind == cindex.CursorKind.FIELD_DECL:
                 # 提取字段名和类型
                 name = child.spelling
-                modifier = CursorExtractVisitor.extract_type_modifier(child)
+                modifier = self.extract_type_modifier(child)
                 comment = CursorExtractVisitor.extract_comment(child)
                 bitfield_width = (
                     child.get_bitfield_width() if child.is_bitfield() else None
@@ -699,14 +738,13 @@ class CursorExtractVisitor(CursorVisitor):
     #     """从Cursor中提取属性列表"""
     #     attributes: List[Attr.Attribute.MetaData] = []
 
-    @staticmethod
-    def extract_record(cursor: cindex.Cursor) -> Decl.Record.MetaData:
+    def extract_record(self, cursor: cindex.Cursor) -> Decl.Record.MetaData:
         """从结构体声明节点中提取记录信息"""
         return Decl.Record.MetaData(
             name=cursor.spelling,
-            fields=CursorExtractVisitor.extract_fields(cursor),
-            attribute=CursorExtractVisitor.extract_attribute(cursor),
-            comment=CursorExtractVisitor.extract_comment(cursor),
+            fields=self.extract_fields(cursor),
+            attribute=self.extract_attribute(cursor),
+            comment=self.extract_comment(cursor),
         )
 
     @staticmethod
@@ -949,30 +987,30 @@ class CursorExtractVisitor(CursorVisitor):
             print(f"Error extracting comment: {e}")
             return ""
 
-    @staticmethod
     def extract_type_modifier(
+        self,
         cursor: cindex.Cursor,
     ) -> Decl.TypeModifier.MetaData:
-        """从节点中提取类型修饰符
-        TODO: 处理匿名类型，因为匿名类型没有spelling属性，需要进一步处理
-        例如：struct { int a; } x;
-        这种情况下，cursor.spelling会是空字符串，但我们仍然需要提取类型信息
+        """从节点中提取类型修饰符，并处理类型引用
+        处理以下情况：
+        1. 原生类型（int, char等）：直接使用类型名作为ref
+        2. 已声明的类型（struct, union, typedef）：使用声明对象作为ref
+        3. 匿名类型：使用类型字符串作为ref（TODO：需要进一步处理）
         """
         ctype = cursor.type
         # 指针和数组信息
         pointer_level = 0
         array_dims: List[int] = []
 
-        t = ctype
-        while t.kind == cindex.TypeKind.POINTER:
+        # 获取基础类型（移除所有指针和数组）
+        base_type = ctype
+        while base_type.kind == cindex.TypeKind.POINTER:
             pointer_level += 1
-            is_pointer = True
-            t = t.get_pointee()
+            base_type = base_type.get_pointee()
 
         # 检查是否为数组
-        t = ctype
+        t = base_type
         while t.kind == cindex.TypeKind.CONSTANTARRAY:
-            is_array = True
             array_dims.append(t.element_count)
             t = t.element_type
 
@@ -989,8 +1027,18 @@ class CursorExtractVisitor(CursorVisitor):
         # 属性（可扩展）
         attribute = CursorExtractVisitor.extract_attribute(cursor)
 
+        # 处理类型引用
+        type_spelling = base_type.spelling
+        
+        # 如果是原生类型，直接使用类型名
+        if type_spelling in self.PRIMITIVE_TYPES:
+            type_ref = type_spelling
+        # 否则查找类型声明表
+        else:
+            type_ref = self._type_decls.get(type_spelling, type_spelling)
+
         return Decl.TypeModifier.MetaData(
-            type=Decl.TypeRef.MetaData(ref=ctype.spelling),
+            type=Decl.TypeRef.MetaData(ref=type_ref),
             qualifiers=qualifiers_str,
             attribute=attribute,
             pointer_level=pointer_level,

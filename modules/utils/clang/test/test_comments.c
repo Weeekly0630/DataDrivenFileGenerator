@@ -109,3 +109,5 @@ double global_var4;
 int global_var5;    // Trailing comment
 char global_var6;   /* C-style trailing */
 float global_var7;  /**< Doxygen trailing */
+
+SimpleStruct gloval_struct = {1, 'a', 3.14f};
