@@ -521,8 +521,22 @@ class CursorExtractVisitor(CursorVisitor):
         # 4. Init Expression
         init_expr = ""
         for child in cursor.get_children():
-            if child.kind == cindex.CursorKind.INIT_LIST_EXPR:
-                init_expr = self.extract_raw_code(child)
+            # 检查各种可能的初始化表达式类型
+            if child.kind in [cindex.CursorKind.INIT_LIST_EXPR,
+                            cindex.CursorKind.INTEGER_LITERAL,
+                            cindex.CursorKind.FLOATING_LITERAL,
+                            cindex.CursorKind.CHARACTER_LITERAL,
+                            cindex.CursorKind.STRING_LITERAL,
+                            cindex.CursorKind.UNARY_OPERATOR,
+                            cindex.CursorKind.BINARY_OPERATOR,
+                            cindex.CursorKind.UNEXPOSED_EXPR]:
+                # 如果是UNEXPOSED_EXPR，尝试获取其子节点的表达式
+                if child.kind == cindex.CursorKind.UNEXPOSED_EXPR:
+                    for subchild in child.get_children():
+                        init_expr = self.extract_raw_code(subchild)
+                        break
+                else:
+                    init_expr = self.extract_raw_code(child)
                 break
 
         # 5. Comment
@@ -574,10 +588,31 @@ class CursorExtractVisitor(CursorVisitor):
             return CursorVisitorResult.SKIP_CHILDREN  # 已收集，跳过
         self._function_keys.add(func_key)
 
+        # 提取存储类说明符
+        storage_class = ""
+        if hasattr(cursor, "storage_class") and cursor.storage_class is not None:
+            sc = cursor.storage_class
+            if hasattr(sc, "name") and sc != cindex.StorageClass.NONE:
+                storage_class = str(sc.name)
+
+        # 提取函数说明符
+        function_specifiers = []
+        
+        # 通过检查 Cursor 的 tokens 来识别函数说明符
+        tokens = list(cursor.get_tokens())
+        for token in tokens:
+            if token.spelling == 'inline':
+                function_specifiers.append('inline')
+            elif token.spelling == '_Noreturn':
+                function_specifiers.append('_Noreturn')
+            # 可以在这里添加其他函数说明符的检查
+
         self.function_decl_list.append(
             Decl.Function.MetaData(
                 name=cursor.spelling,
                 return_type=Decl.TypeRef.MetaData(ref=cursor.result_type.spelling),
+                storage_class=storage_class,
+                function_specifiers=function_specifiers,
                 params=self.extract_params(cursor),
                 comment=self.extract_comment(cursor),
                 raw_code=raw_code,
@@ -1275,7 +1310,7 @@ if __name__ == "__main__":
     )
 
     res = extractor.extract(
-        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\test_comments.c",
+        rf"U:\Users\Enlink\Documents\code\python\DataDrivenFileGenerator\modules\utils\clang\test\mcal_example.c",
         optional=ClangExtractorOptional(
             c_args=[
                 "-std=c99",

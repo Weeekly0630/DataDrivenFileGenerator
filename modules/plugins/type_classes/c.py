@@ -243,11 +243,13 @@ class Decl:
             """C语言函数信息"""
 
             name: str  # 函数名
-            return_type: "Decl.TypeRef.MetaData"
+            return_type: "Decl.TypeRef.MetaData"  # 返回值类型
+            storage_class: str = ""  # 存储类说明符(static/extern)
+            function_specifiers: List[str] = field(default_factory=list)  # 函数说明符(inline/noreturn等)
             params: List["Decl.Param.MetaData"] = field(
                 default_factory=list
             )  # 参数列表
-            comment: str = ""
+            comment: str = ""  # 注释信息
             raw_code: str = ""  # 函数的原始代码文本
 
             # def __str__(self):

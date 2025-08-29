@@ -36,34 +36,60 @@ class ExpressionResolver:
             elif isinstance(node, ast.List):
                 return [eval_ast(elt, local_vars) for elt in node.elts]
             elif isinstance(node, ast.ListComp):
-                # 只支持一层for的简单推导式
-                if len(node.generators) != 1 or node.generators[0].ifs:
-                    raise ValueError("Only simple list comprehensions are supported")
-                gen = node.generators[0]
-                iter_values = eval_ast(gen.iter, local_vars)
-                result = []
-                for val in iter_values:
-                    # 构造一个临时作用域
-                    local_vars = {gen.target.id: val}
-
-                    def eval_with_local(n):
-                        if isinstance(n, ast.Name) and n.id in local_vars:
-                            return local_vars[n.id]
-                        return eval_ast(n, local_vars)
-
-                    # 支持元组等复杂结构
-                    def deep_eval(n):
-                        if isinstance(n, ast.Tuple):
-                            return tuple(deep_eval(elt) for elt in n.elts)
-                        elif isinstance(n, ast.List):
-                            return [deep_eval(elt) for elt in n.elts]
-                        elif isinstance(n, ast.Name) and n.id in local_vars:
-                            return local_vars[n.id]
+                def eval_list_comp(node, outer_vars):
+                    # 如果没有生成器，直接返回结果
+                    if not node.generators:
+                        return eval_ast(node.elt, outer_vars)
+                    
+                    result = []
+                    gen = node.generators[0]  # 处理当前层的生成器
+                    
+                    # 评估迭代器，使用外层作用域
+                    iter_values = eval_ast(gen.iter, outer_vars)
+                    
+                    # 处理条件（if子句）
+                    def check_conditions(val, conditions, local_scope):
+                        for cond in conditions:
+                            if not eval_ast(cond, local_scope):
+                                return False
+                        return True
+                    
+                    for val in iter_values:
+                        # 创建新的作用域，包含外层变量
+                        current_vars = outer_vars.copy()
+                        current_vars[gen.target.id] = val
+                        
+                        # 检查if条件
+                        if not check_conditions(val, gen.ifs, current_vars):
+                            continue
+                            
+                        if len(node.generators) > 1:
+                            # 递归处理剩余的生成器
+                            next_comp = ast.ListComp(
+                                elt=node.elt,
+                                generators=node.generators[1:]
+                            )
+                            result.extend(eval_list_comp(next_comp, current_vars))
                         else:
-                            return eval_with_local(n)
-
-                    result.append(deep_eval(node.elt))
-                return result
+                            # 到达最内层，计算结果表达式
+                            def deep_eval(n):
+                                if isinstance(n, ast.Tuple):
+                                    return tuple(deep_eval(elt) for elt in n.elts)
+                                elif isinstance(n, ast.List):
+                                    return [deep_eval(elt) for elt in n.elts]
+                                elif isinstance(n, ast.Name):
+                                    if n.id in current_vars:
+                                        return current_vars[n.id]
+                                    return eval_ast(n, current_vars)
+                                else:
+                                    return eval_ast(n, current_vars)
+                                    
+                            result.append(deep_eval(node.elt))
+                            
+                    return result
+                
+                # 使用当前作用域作为初始外层作用域
+                return eval_list_comp(node, local_vars or {})
             elif isinstance(node, ast.Tuple):
                 return tuple(eval_ast(elt, local_vars) for elt in node.elts)
             elif isinstance(node, ast.Dict):
